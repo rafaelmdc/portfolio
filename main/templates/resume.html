@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load markdown_extras %}
 
 {% block title %}Resume – FolioOne{% endblock %}
 {% block body_class %}resume-page{% endblock %}
@@ -13,7 +14,7 @@
     <p class="lead mb-0">
       I’m passionate about exploring the intersection between <strong>biology</strong> and <strong>data</strong>. I build
       <strong>bioinformatics pipelines</strong> (with existing tools or <em>de&nbsp;novo</em> scripts) to turn biological questions
-      into <strong>reproducible, data-driven insights</strong>.
+      into <strong>reproducible, data-driven insights</strong>. Here is an overview of my academic background and professional experience.
     </p>
   </div>
   <!-- /Section Title -->
@@ -63,17 +64,17 @@
                   <h5>
                     {{ exp.start_year }} – {{ exp.end_year|default:"Present" }}
                   </h5>
-                  <p class="company"><em>{{ exp.company }} {% if exp.location %} · <span class="text-body-secondary">{{ exp.location }}</span>{% endif %}</em></p>
+                  <p class="company"><em>{{ exp.company }} {% if exp.location %} · <span class="company">{{ exp.location }}</span>{% endif %}</em></p>
 
                   {% if exp.blurb %}
-                    <p>{{ exp.blurb|linebreaksbr }}</p>
+                    <p>{{ exp.blurb|markdownify|safe }}</p>
                   {% endif %}
 
                   {% if exp.bullets.all %}
                     {% if exp.bullets.all|length %}
                       <ul>
                         {% for b in exp.bullets.all %}
-                          <li>{{ b.text }}</li>
+                          <li>{{ b.text|markdownify|safe }}</li>
                         {% endfor %}
                       </ul>
                     {% endif %}

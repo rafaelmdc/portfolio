@@ -1,12 +1,24 @@
 from django.shortcuts import render
-from .models import Education, Experience
+from .models import Education, Experience, Skill, SiteCopy
 
 # Create your views here.
 def index(request): 
     return render(request, "index.html")
 
+def _copy_dict():
+    # latest active entry per key
+    copy = {}
+    for key, _label in SiteCopy.COPY_KEYS:
+        row = SiteCopy.objects.filter(key=key, active=True).order_by("-updated_at", "-id").first()
+        copy[key] = row.text if row else ""
+    return copy
+
 def about(request):
-    return render(request, "about.html")
+    context = {
+        "skills": Skill.objects.filter(active=True).order_by("order", "id"),
+        "copy": _copy_dict(),
+    }
+    return render(request, "about.html", context)
 
 def resume(request):
     ctx = {}

@@ -2855,6 +2855,33 @@ section,
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
+/* Reduce vertical space between quote and next section */
+.personal-quote {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  max-width: 700px;
+  font-style: italic;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Pull the skills section slightly upward */
+section.skills {
+  margin-top: -2rem;   /* try -3rem for stronger pull */
+  padding-top: 0;
+}
+
+.personal-quote::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 1.5rem auto 0;
+  border-radius: 1px;
+}
+
+
 .starter-section {
   /* Add your styles here */
 }

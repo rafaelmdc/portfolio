@@ -1,0 +1,95 @@
+{# templates/about.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About – FolioOne{% endblock %}
+{% block body_class %}about-page{% endblock %}
+
+{% block content %}
+
+<section id="about" class="about section">
+
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ copy.about_title|default:"About" }}</h2>
+    <p>{{ copy.about_lead }}</p>
+  </div>
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="row align-items-center justify-content-between gy-5 mb-5">
+      <div class="col-lg-7" data-aos="fade-right" data-aos-delay="150">
+        <div class="intro-content">
+          <span class="eyebrow">Hello there</span>
+          <h2 class="headline">{{ copy.about_intro_headline }}</h2>
+          <p class="lead">{{ copy.about_intro_body }}</p>
+
+          <div class="cta-group">
+            <a href="#portfolio" class="btn-ghost">
+              View My Work <i class="bi bi-arrow-up-right"></i>
+            </a>
+            <a href="{% url 'resume' %}" class="link-underline">
+              Download Resume <i class="bi bi-download"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5" data-aos="zoom-in" data-aos-delay="250">
+        <figure class="profile-figure text-center text-lg-end">
+                  <img src="{% static 'assets/img/profile/rizzler.jpg' %}"
+            alt="Profile"
+            class="img-fluid rounded-4 shadow-lg"
+            style="max-width: 1024; width: 100%; height: auto;">
+        </figure>
+      </div>
+    </div>
+
+    {# --- Skills grid (icon cards) from DB --- #}
+    <div class="mb-5">
+      <div class="row g-4">
+        {% for s in skills|slice:":4" %}
+          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+            <div class="skill-item">
+              {% if s.icon %}<i class="bi {{ s.icon }}"></i>{% endif %}
+              <h3>{{ s.name }}</h3>
+              {% if s.description %}<p>{{ s.description }}</p>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Quote from DB #}
+    {% if copy.about_quote %}
+    <blockquote class="personal-quote text-center mx-auto my-4" data-aos="fade-down" data-aos-delay="200" style="max-width: 700px;">
+        <p class="fs-5 fst-italic">“{{ copy.about_quote }}”</p>
+    </blockquote>
+    {% endif %}
+
+  </div>
+</section>
+
+{# --- Skills progress bars from DB (no visible %) --- #}
+<section id="skills" class="skills section pt-0 mt-n3">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ copy.skills_title|default:"Skills" }}</h2>
+    <p>{{ copy.skills_lead }}</p>
+  </div>
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4 skills-animation">
+      {% for s in skills %}
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+          <div class="skill-box">
+            <h3>{{ s.name }}</h3>
+            {% if s.description %}<p>{{ s.description }}</p>{% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">No skills yet. Add some in the admin.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock content %}
