@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Contact – FolioOne{% endblock %}
+{% block body_class %}contact-page{% endblock %}
+
+{% block content %}
+<section id="contact" class="contact section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Contact</h2>
+    <p>Replace this with your real contact info or a Django form.</p>
+  </div>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <form method="post" action="{% url 'contact' %}" class="row g-3">
+      {% csrf_token %}
+      <div class="col-md-6">
+        <label class="form-label">Name</label>
+        <input name="name" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Message</label>
+        <textarea name="message" class="form-control" rows="5" required></textarea>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">Send</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

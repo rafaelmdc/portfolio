@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Services – FolioOne{% endblock %}
+{% block body_class %}services-page{% endblock %}
+
+{% block content %}
+<section id="services" class="services section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Services</h2>
+    <p>Use this page to list what you offer.</p>
+  </div>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="p-4 border rounded-3 h-100">
+          <h3>Custom Web Development</h3>
+          <p>Short description of your service.</p>
+          <a href="{% url 'service_details' %}" class="service-link">
+            <span>Learn More</span> <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-4 border rounded-3 h-100">
+          <h3>Mobile App Solutions</h3>
+          <p>Another service you provide.</p>
+          <a href="{% url 'service_details' %}" class="service-link">
+            <span>Learn More</span> <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

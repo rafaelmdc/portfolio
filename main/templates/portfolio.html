@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Portfolio – FolioOne{% endblock %}
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block content %}
+<section id="portfolio" class="portfolio section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Portfolio</h2>
+    <p>Sample items; replace with your real projects.</p>
+  </div>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="h5">Project One</h3>
+            <p>Short description of a project.</p>
+            <a href="{% url 'portfolio_details' %}" class="stretched-link">Details</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="h5">Project Two</h3>
+            <p>Another short description.</p>
+            <a href="{% url 'portfolio_details' %}" class="stretched-link">Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!-- folio1 -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block body_class %}index-page{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4 align-items-center">
+
+      <!-- Left: text -->
+      <div class="col-lg-6 order-2 order-lg-1">
+        <div class="hero-content">
+          <h1 data-aos="fade-up" data-aos-delay="200">
+            Hello, I'm <span class="highlight">Rafael Correia</span>
+          </h1>
+
+          <!-- typed.js uses this .typed + data-typed-items -->
+          <h2 data-aos="fade-up" data-aos-delay="300">
+            Creative <span class="typed"
+            data-typed-items="Computational Biologist, Data Storyteller, Scientific Illustrator"></span>
+          </h2>
+
+          <p class="mt-3" data-aos="fade-up" data-aos-delay="400">
+            I’m passionate about exploring the intersection between <strong>biology</strong> and <strong>data</strong>.
+            My work focuses on <strong>bioinformatics pipelines</strong>, using existing software or
+            <em>de&nbsp;novo</em> scripts.
+            I enjoy turning biological questions into <strong>reproducible, data-driven insights</strong>, and I aim to create
+            <strong>uncomplicated, well-documented software</strong> that <strong>eases biology research</strong>.
+          </p>
+
+          <div class="hero-actions mt-4" data-aos="fade-up" data-aos-delay="500">
+            <a href="{% url 'portfolio' %}" class="btn btn-primary me-2">View My Work</a>
+            <a href="{% url 'contact' %}" class="btn btn-outline">Get In Touch</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: image with effects -->
+      <div class="col-lg-6 order-1 order-lg-2 text-center" data-aos="zoom-in" data-aos-delay="250">
+        <!-- Use any image that exists in your assets; this one is present in the template pack -->
+        <img src="{% static 'assets/img/profile/rizzler.jpg' %}"
+            alt="Profile"
+            class="img-fluid rounded-4 shadow-lg"
+            style="max-width: 1024; width: 100%; height: auto;">
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

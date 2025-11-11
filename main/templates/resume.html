@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resume – FolioOne{% endblock %}
+{% block body_class %}resume-page{% endblock %}
+
+{% block content %}
+<section id="resume" class="resume section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Resume</h2>
+    <p class="lead mb-0">
+      I’m passionate about exploring the intersection between <strong>biology</strong> and <strong>data</strong>. I build
+      <strong>bioinformatics pipelines</strong> (with existing tools or <em>de&nbsp;novo</em> scripts) to turn biological questions
+      into <strong>reproducible, data-driven insights</strong>.
+    </p>
+  </div>
+  <!-- /Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-5">
+
+      <!-- Education -->
+      <div class="col-lg-6">
+        <div class="resume-item" data-aos="fade-up">
+          <h3 class="resume-title">Education</h3>
+
+          <div class="resume-content">
+            {% if educations %}
+              {% for edu in educations %}
+                <article class="education-item">
+                  <h4>{{ edu.title }}</h4>
+                  <h5 class="resume-year">
+                    <span class="year-range">{{ edu.start_year }} – {{ edu.end_year|default:"Present" }}</span></h5>
+
+                  <p class="institution"><em>{{ edu.institution }}                    {% if edu.location %}
+                      <span class=" location">· {{ edu.location }}</span>
+                    {% endif %}</em></p>
+                  {% if edu.blurb %}
+                    <p>{{ edu.blurb|linebreaksbr }}</p>
+                  {% endif %}
+                </article>
+              {% endfor %}
+            {% else %}
+              <p class="text-body-secondary">No education entries yet.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <!-- /Education -->
+
+      <!-- Experience -->
+      <div class="col-lg-6">
+        <div class="resume-item" data-aos="fade-up" data-aos-delay="100">
+          <h3 class="resume-title">Professional Experience</h3>
+
+          <div class="resume-content">
+            {% if experiences %}
+              {% for exp in experiences %}
+                <article class="experience-item">
+                  <h4>{{ exp.role }}</h4>
+                  <h5>
+                    {{ exp.start_year }} – {{ exp.end_year|default:"Present" }}
+                  </h5>
+                  <p class="company"><em>{{ exp.company }} {% if exp.location %} · <span class="text-body-secondary">{{ exp.location }}</span>{% endif %}</em></p>
+
+                  {% if exp.blurb %}
+                    <p>{{ exp.blurb|linebreaksbr }}</p>
+                  {% endif %}
+
+                  {% if exp.bullets.all %}
+                    {% if exp.bullets.all|length %}
+                      <ul>
+                        {% for b in exp.bullets.all %}
+                          <li>{{ b.text }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  {% endif %}
+                </article>
+              {% endfor %}
+            {% else %}
+              <p class="text-body-secondary">No experience entries yet.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <!-- /Experience -->
+
+    </div>
+  </div>
+
+</section>
+{% endblock %}
