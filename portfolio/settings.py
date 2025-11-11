@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "main",
+    'ckeditor',
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +123,31 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# images uploaded via ImageField
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# where uploads go inside MEDIA_ROOT
+CKEDITOR_UPLOAD_PATH = "ckeditor/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+
+# optional toolbar + paste cleanup
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "Custom",
+        "toolbar_Custom": [
+            ["Format","Bold","Italic","Underline","Strike","Blockquote","CodeSnippet"],
+            ["NumberedList","BulletedList","Outdent","Indent"],
+            ["Link","Unlink","Image","Table"],
+            ["RemoveFormat","Source","Maximize"],
+        ],
+        "extraPlugins": ",".join(["uploadimage","codesnippet","justify","autogrow"]),
+        "removePlugins": "resize",
+        "forcePasteAsPlainText": True,
+        "autoGrow_minHeight": 300,
+        "height": 320,
+        "tabSpaces": 2,
+        "image_prefillDimensions": False,   # let CSS control width
+    }
+}

@@ -42,10 +42,11 @@
       <!-- Right: image with effects -->
       <div class="col-lg-6 order-1 order-lg-2 text-center" data-aos="zoom-in" data-aos-delay="250">
         <!-- Use any image that exists in your assets; this one is present in the template pack -->
-        <img src="{% static 'assets/img/profile/rizzler.jpg' %}"
-            alt="Profile"
-            class="img-fluid rounded-4 shadow-lg"
-            style="max-width: 1024; width: 100%; height: auto;">
+                    {% if assets.home_profile %}
+                        <img src="{{ assets.home_profile }}" alt="Home photo" class="img-fluid rounded-4 shadow-lg" style="max-width: 1024; width: 100%; height: auto;">
+                    {% else %}
+                        <img src="{% static 'assets/img/profile/rizzler.jpg' %}" alt="Profile placeholder" class="img-fluid profile-photo">
+                    {% endif %}
       </div>
 
     </div>

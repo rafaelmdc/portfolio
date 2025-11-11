@@ -36,10 +36,13 @@
 
       <div class="col-lg-5" data-aos="zoom-in" data-aos-delay="250">
         <figure class="profile-figure text-center text-lg-end">
-                  <img src="{% static 'assets/img/profile/rizzler.jpg' %}"
-            alt="Profile"
-            class="img-fluid rounded-4 shadow-lg"
-            style="max-width: 1024; width: 100%; height: auto;">
+                <figure class="profile-figure text-center text-lg-end">
+                    {% if assets.about_profile %}
+                        <img src="{{ assets.about_profile }}" alt="Profile photo" class="img-fluid rounded-4 shadow-lg" style="max-width: 1024; width: 100%; height: auto;">
+                    {% else %}
+                        <img src="{% static 'assets/img/profile/profile-square-placeholder.webp' %}" alt="Profile placeholder" class="img-fluid profile-photo">
+                    {% endif %}
+                </figure>
         </figure>
       </div>
     </div>

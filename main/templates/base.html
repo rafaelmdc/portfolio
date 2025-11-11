@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="{{ theme|default:'dark' }}">
 
 <head>
   <meta charset="utf-8">
@@ -8,6 +8,40 @@
   <title>{% block title %}FolioOne{% endblock %}</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
+
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0e12">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+
+  <style>
+    /* 1) Minimal dark palette so first paint isn't white */
+    :root[data-bs-theme="dark"]{
+      --bs-body-bg:#0b0e12; 
+      --bs-body-color:#e6e6e6;
+    }
+    html, body{
+      background-color:var(--bs-body-bg);
+      color:var(--bs-body-color);
+    }
+
+    /* 2) Kill common white flashes even without main.css */
+    #preloader{ background:#0b0e12 !important; }          /* or display:none to test */
+    .header.light-background{ background:transparent !important; }
+    .section, .container, .main, .footer{ background:transparent !important; }
+
+    /* Optional: no transitions during first paint */
+    html.preload *, html.preload *::before, html.preload *::after{ transition:none !important; }
+  </style>
+  <script>
+    // SSR should set this, but as a fallback pick system preference immediately
+    (function(){
+      var saved = document.cookie.match(/(?:^|; )theme=(dark|light)/)?.[1];
+      var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.classList.add('preload');
+      window.addEventListener('load', function(){ document.documentElement.classList.remove('preload'); }, {once:true});
+    })();
+  </script>
 
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
@@ -52,12 +86,10 @@
           <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
           <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
           <li><a href="{% url 'resume' %}" class="{% if request.resolver_match.url_name == 'resume' %}active{% endif %}">Resume</a></li>
-          <!-- <li><a href="{% url 'services' %}" class="{% if request.resolver_match.url_name == 'services' %}active{% endif %}">Services</a></li> -->
           <li><a href="{% url 'portfolio' %}" class="{% if request.resolver_match.url_name == 'portfolio' %}active{% endif %}">Portfolio</a></li>
           <li class="dropdown">
             <a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="{% url 'starter' %}">Starter Page</a></li>
               <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                 <ul>
                   <li><a href="#">Deep Dropdown 1</a></li>
