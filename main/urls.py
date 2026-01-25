@@ -10,7 +10,6 @@ urlpatterns = [
     path("resume/", views.resume, name="resume"),
     path("portfolio/", views.portfolio, name="portfolio"),
     path("portfolio/<slug:slug>/", portfolio_detail, name="portfolio_detail"),
-    path("ckeditor/", include("ckeditor_uploader.urls")),
     path("contact/", views.contact, name="contact"),
 ]
 

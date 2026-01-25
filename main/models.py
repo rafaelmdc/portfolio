@@ -2,7 +2,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
-from ckeditor_uploader.fields import RichTextUploadingField
+from django_ckeditor_5.fields import CKEditor5Field
+
 import os, uuid
 
 
@@ -201,7 +202,7 @@ class PortfolioItem(Timestamped):
     external_url = models.URLField(blank=True)
 
     # detail content (CKEditor stores raw HTML + allows uploads)
-    body_html = RichTextUploadingField(blank=True)
+    body_html = CKEditor5Field("Body", config_name="default")
 
     order = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
