@@ -2,7 +2,7 @@ from PIL import Image, UnidentifiedImageError
 from django.core.exceptions import ValidationError
 
 # maximum upload size in megabytes
-MAX_IMAGE_UPLOAD_MB = 5
+MAX_IMAGE_UPLOAD_MB = 10
 
 
 def validate_image_file(file):
