@@ -45,7 +45,7 @@ class BlogIndexPage(RoutablePageMixin, Page):
     subpage_types = ["cms.BlogPage"]
 
     # Optional: limit in admin what can be added under index
-    parent_page_types = ["wagtailcore.Page"]
+    parent_page_types = ["cms.HomePage"]
 
     def get_posts(self):
         return (
@@ -284,3 +284,119 @@ class BlogPage(Page):
 
     class Meta:
         verbose_name = "Blog post"
+
+
+# ----------------------------
+# Portfolio (Wagtail)
+# ----------------------------
+from wagtail.snippets.models import register_snippet
+
+
+class PortfolioPageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        "cms.PortfolioProjectPage",
+        related_name="tagged_items",
+        on_delete=models.CASCADE,
+    )
+
+
+class PortfolioIndexPage(RoutablePageMixin, Page):
+    max_count = 1
+    subpage_types = ["cms.PortfolioProjectPage"]
+    parent_page_types = ["cms.HomePage"]
+
+    intro = models.CharField(max_length=250, blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+    ]
+
+    def get_projects(self):
+        return (
+            PortfolioProjectPage.objects.child_of(self)
+            .live()
+            .public()
+            .order_by("-first_published_at")
+        )
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        qs = self.get_projects()
+
+        tag = request.GET.get("tag")
+        if tag:
+            qs = qs.filter(tags__slug=tag)
+
+        context["projects"] = qs
+        context["active_tag"] = tag
+        return context
+
+    @route(r"^tag/(?P<tag_slug>[-\w]+)/$")
+    def projects_by_tag(self, request, tag_slug, *args, **kwargs):
+        # same listing view, but prettier URL
+        context = self.get_context(request)
+        context["projects"] = self.get_projects().filter(tags__slug=tag_slug)
+        context["active_tag"] = tag_slug
+        return render(request, "cms/portfolio_index_page.html", context)
+
+
+class PortfolioProjectPage(Page):
+    parent_page_types = ["cms.PortfolioIndexPage"]
+    subpage_types = []
+
+    subtitle = models.CharField(max_length=160, blank=True)
+
+    cover_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
+    external_url = models.URLField(blank=True)
+    github_url = models.URLField(blank=True)
+
+    tags = ClusterTaggableManager(through=PortfolioPageTag, blank=True)
+
+    body = StreamField(
+        [
+            ("heading", blocks.CharBlock(form_classname="title", icon="title")),
+            ("paragraph", blocks.RichTextBlock(features=["bold", "italic", "link", "ol", "ul"])),
+            ("image", ImageChooserBlock()),
+            ("embed", EmbedBlock(icon="media")),
+            ("code", blocks.RawHTMLBlock(icon="code", help_text="Paste highlighted HTML if needed.")),
+        ],
+        blank=True,
+        use_json_field=True,
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("subtitle"),
+        FieldPanel("cover_image"),
+        MultiFieldPanel(
+            [
+                FieldPanel("external_url"),
+                FieldPanel("github_url"),
+            ],
+            heading="Links",
+        ),
+        FieldPanel("tags"),
+        FieldPanel("body"),
+    ]
+
+
+# homepage
+class HomePage(Page):
+    max_count = 1
+    subpage_types = ["cms.BlogIndexPage", "cms.PortfolioIndexPage"]
+
+    intro = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Optional short intro text for the homepage",
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+    ]

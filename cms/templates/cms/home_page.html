@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  {% if page.intro %}
+    <p class="text-muted">{{ page.intro }}</p>
+  {% endif %}
+
+  {# You can leave this empty for now #}
+</div>
+{% endblock %}

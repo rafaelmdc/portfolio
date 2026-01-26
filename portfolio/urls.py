@@ -23,13 +23,13 @@ from wagtail.documents import urls as wagtaildocs_urls
 from wagtail import urls as wagtail_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("", include("main.urls")),
 
     # Wagtail admin
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
 
-    # Wagtail frontend ONLY for blog
-    path("blog/", include(wagtail_urls)),
+    # Wagtail frontend (blog + portfolio + any other Wagtail pages)
+    path("", include(wagtail_urls)),
 ]

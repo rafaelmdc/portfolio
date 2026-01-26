@@ -1,4 +1,6 @@
 {% load static %}
+{% load wagtailcore_tags %}
+
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="{{ theme|default:'dark' }}">
 
@@ -83,15 +85,59 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
-          <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
-          <li><a href="{% url 'resume' %}" class="{% if request.resolver_match.url_name == 'resume' %}active{% endif %}">Resume</a></li>
-          <li><a href="{% url 'portfolio' %}" class="{% if request.resolver_match.url_name == 'portfolio' %}active{% endif %}">Portfolio</a></li>
-          <li><a href="/blog/" class="{% if request.path|slice:':6' == '/blog/' %}active{% endif %}">Blog</a></li>
-          <li><a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a></li>
+
+          <!-- Home (Django view) -->
+          <li>
+            <a href="{% url 'home' %}"
+              class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+              Home
+            </a>
+          </li>
+
+          <!-- About (Django view) -->
+          <li>
+            <a href="{% url 'about' %}"
+              class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+              About
+            </a>
+          </li>
+
+          <!-- Resume (Django view) -->
+          <li>
+            <a href="{% url 'resume' %}"
+              class="{% if request.resolver_match.url_name == 'resume' %}active{% endif %}">
+              Resume
+            </a>
+          </li>
+
+          <!-- Portfolio (Wagtail page) -->
+          <li>
+            <a href="/portfolio/"
+              class="{% if request.path|slice:':10' == '/portfolio' %}active{% endif %}">
+              Portfolio
+            </a>
+          </li>
+
+          <!-- Blog (Wagtail page) -->
+          <li>
+            <a href="/blog/"
+              class="{% if request.path|slice:':6' == '/blog/' %}active{% endif %}">
+              Blog
+            </a>
+          </li>
+
+          <!-- Contact (Django view) -->
+          <li>
+            <a href="{% url 'contact' %}"
+              class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">
+              Contact
+            </a>
+          </li>
+
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+
 
       <div class="header-social-links">
         <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>

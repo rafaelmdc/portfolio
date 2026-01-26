@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 980px;">
+
+  <div class="mb-4">
+    <h1 class="mb-1">{{ page.title }}</h1>
+    {% if page.subtitle %}<p class="text-muted mb-3">{{ page.subtitle }}</p>{% endif %}
+
+    {% if page.cover_image %}
+      <div class="mb-4">
+        {% image page.cover_image width-1400 class="img-fluid rounded-4 border" %}
+      </div>
+    {% endif %}
+
+    {% if page.external_url or page.github_url %}
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        {% if page.external_url %}
+          <a class="btn btn-sm btn-outline-light" href="{{ page.external_url }}" target="_blank" rel="noopener">Live</a>
+        {% endif %}
+        {% if page.github_url %}
+          <a class="btn btn-sm btn-outline-light" href="{{ page.github_url }}" target="_blank" rel="noopener">GitHub</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if page.tags.all %}
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        {% for t in page.tags.all %}
+          <a class="badge text-bg-light border text-decoration-none"
+             href="{% pageurl page.get_parent %}tag/{{ t.slug }}/">#{{ t.slug }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="blog-content">
+    {% for block in page.body %}
+      {% include_block block %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="mb-4">
+    <h1 class="mb-1">{{ page.title }}</h1>
+    {% if page.intro %}<p class="text-muted mb-0">{{ page.intro }}</p>{% endif %}
+  </div>
+
+  {% if active_tag %}
+    <div class="mb-4">
+      <span class="badge text-bg-light border">Filtered</span>
+      <span class="text-muted ms-2">tag: <strong>#{{ active_tag }}</strong></span>
+      <a class="text-decoration-none ms-2" href="{{ page.url }}">Clear</a>
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    {% for proj in projects %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <a href="{{ proj.url }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+            {% if proj.cover_image %}
+              {% image proj.cover_image fill-800x500 class="img-fluid" %}
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title mb-1">{{ proj.title }}</h5>
+              {% if proj.subtitle %}
+                <p class="text-muted mb-2">{{ proj.subtitle }}</p>
+              {% endif %}
+
+              {% if proj.tags.all %}
+                <div class="d-flex flex-wrap gap-2">
+                  {% for t in proj.tags.all %}
+                    <span class="badge text-bg-light border">#{{ t.slug }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <p class="text-muted">No projects yet.</p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
