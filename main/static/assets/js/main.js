@@ -34,6 +34,49 @@ console.log('main.js loaded');
 (function() {
   "use strict";
 
+   /**
+   * Highlight current page in nav menu (multi-page safe)
+   */
+  const setActiveNavLink = () => {
+    const navLinks = document.querySelectorAll('#navmenu a[href]');
+    if (!navLinks.length) return;
+
+    const currentPath = window.location.pathname.replace(/\/+$/, '');
+
+    navLinks.forEach(a => a.classList.remove('active'));
+
+    let bestMatch = null;
+    let bestLen = -1;
+
+    navLinks.forEach(a => {
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#')) return;
+
+      let linkPath;
+      try {
+        linkPath = new URL(href, window.location.origin)
+          .pathname.replace(/\/+$/, '');
+      } catch {
+        return;
+      }
+
+      if (
+        currentPath === linkPath ||
+        (linkPath && currentPath.startsWith(linkPath + '/'))
+      ) {
+        if (linkPath.length > bestLen) {
+          bestMatch = a;
+          bestLen = linkPath.length;
+        }
+      }
+    });
+
+    if (bestMatch) bestMatch.classList.add('active');
+  };
+
+  window.addEventListener('DOMContentLoaded', setActiveNavLink);
+  window.addEventListener('load', setActiveNavLink);
+  
   /**
    * Apply .scrolled class to the body as the page is scrolled down
    */

@@ -2921,34 +2921,38 @@ section.skills {
     position: fixed !important;
     inset: 0 !important;
     z-index: 99990 !important;
-    background: rgba(0,0,0,.65) !important;
+    background: rgba(0,0,0,.75) !important;
+
+
   }
 
   /* the menu panel (THIS is the important part: fixed box with real height) */
   body.mobile-nav-active nav#navmenu > ul {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
 
-    position: fixed !important;
-    top: 72px !important;
-    left: 16px !important;
-    right: 16px !important;
-    bottom: 16px !important;
+  position: fixed !important;
+  top: 72px !important;
+  right: 16px !important;
+  bottom: 16px !important;
 
-    /* kill any inherited "inset: 60px ..." from the template */
-    inset: auto !important;
+  width: min(360px, calc(100vw - 32px)) !important;
 
-    margin: 0 !important;
-    padding: 14px !important;
-    border-radius: 16px !important;
+  /* kill any inherited "inset" from template */
+  left: auto !important;
+  inset: auto !important;
 
-    background: rgba(12,16,22,.95) !important;
-    border: 1px solid rgba(255,255,255,.10) !important;
-    backdrop-filter: blur(10px);
+  margin: 0 !important;
+  padding: 14px !important;
+  border-radius: 16px !important;
 
-    overflow: auto !important;
-  }
+  background: rgba(12,16,22,.95) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(10px);
+
+  overflow: auto !important;
+}
 
   body.mobile-nav-active nav#navmenu > ul > li {
     position: static !important;
@@ -2964,5 +2968,25 @@ section.skills {
     color: #fff !important;
     background: rgba(255,255,255,.06) !important;
     border: 1px solid rgba(255,255,255,.08) !important;
+
+    transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
   }
+
+   body.mobile-nav-active nav#navmenu > ul > li > a:hover {
+    background: rgba(255,255,255,.12) !important;
+    transform: translateX(2px);
+  }
+
+  nav#navmenu a.active {
+    background: rgba(0,180,255,.18) !important;
+    border-color: rgba(0,180,255,.35) !important;
+  }
+
+}
+
+/* Active link style inside mobile menu */
+nav#navmenu a.active {
+  background: rgba(0,180,255,.18) !important;
+  border: 1px solid rgba(0,180,255,.35) !important;
+  color: #fff !important;
 }
