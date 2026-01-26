@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="mb-4">
+    <h1 class="mb-1">{{ page.title }}</h1>
+    <p class="text-muted mb-0">Writing, notes, projects, and updates.</p>
+
+    {% if filtered_tag_slug %}
+      <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+        <span class="badge text-bg-light border">Filtered</span>
+        <span class="text-muted">
+          tag: <strong>#{{ filtered_tag_slug }}</strong>
+        </span>
+        <a href="{{ page.url }}" class="text-decoration-none ms-1">Clear</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {# ================= TAG FILTER UI (PASTE HERE) ================= #}
+{% if all_tags %}
+  <div class="mt-4 p-3 p-md-4 rounded-4 border"
+       style="background: rgba(255,255,255,0.03);">
+
+    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge text-bg-light border">Filter by tag</span>
+
+        {% if filtered_tag_slug %}
+          <span class="text-muted">Active: <strong>#{{ filtered_tag_slug }}</strong></span>
+          <a href="{{ page.url }}" class="text-decoration-none ms-1">Clear</a>
+        {% else %}
+          <span class="text-muted">Pick a label</span>
+        {% endif %}
+      </div>
+
+      <div class="d-flex gap-2" style="min-width: 260px;">
+        <input
+          id="tagSearch"
+          type="search"
+          class="form-control form-control-sm"
+          placeholder="Search tags…"
+        />
+
+        <select
+          id="tagSelect"
+          class="form-select form-select-sm"
+        >
+          <option value="">All tags</option>
+          {% for name, slug in all_tags %}
+            <option value="{{ slug }}" {% if filtered_tag_slug == slug %}selected{% endif %}>
+              {{ name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div id="tagChips" class="d-flex flex-wrap gap-2 mt-3">
+      {% for name, slug in all_tags %}
+        <a
+          href="{{ page.url }}tag/{{ slug }}/"
+          class="tag-chip badge text-bg-dark border text-decoration-none"
+          data-name="{{ name|lower }}"
+          data-slug="{{ slug|lower }}"
+          style="padding:.55rem .7rem; border-radius:999px;"
+        >
+          #{{ name }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <div id="tagNoResults" class="text-muted mt-3" style="display:none;">
+      No tags match that search.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const search = document.getElementById("tagSearch");
+      const select = document.getElementById("tagSelect");
+      const chipsWrap = document.getElementById("tagChips");
+      const noResults = document.getElementById("tagNoResults");
+      if (!search || !select || !chipsWrap) return;
+
+      const chips = Array.from(chipsWrap.querySelectorAll(".tag-chip"));
+
+      function applyFilter(q) {
+        const query = (q || "").trim().toLowerCase();
+        let shown = 0;
+
+        chips.forEach(el => {
+          const ok =
+            !query ||
+            el.dataset.name.includes(query) ||
+            el.dataset.slug.includes(query);
+
+          el.style.display = ok ? "" : "none";
+          if (ok) shown++;
+        });
+
+        noResults.style.display = shown ? "none" : "";
+      }
+
+      search.addEventListener("input", () => applyFilter(search.value));
+
+      select.addEventListener("change", () => {
+        const slug = select.value;
+        window.location.href = slug
+          ? "{{ page.url }}tag/" + slug + "/"
+          : "{{ page.url }}";
+      });
+
+      applyFilter("");
+    })();
+  </script>
+{% endif %}
+{# ================= END TAG FILTER UI ================= #}
+
+  {# Featured block chosen in Python as `featured_post` #}
+  {% if featured_post %}
+    {% with featured=featured_post.specific %}
+      <div class="p-4 p-md-5 mb-5 rounded-4 border position-relative"
+           style="background: rgba(255,255,255,0.03);">
+        <div class="row g-4 align-items-center">
+
+          {% if featured.hero_image %}
+            <div class="col-12 col-md-5">
+              {% image featured.hero_image fill-800x520 class="img-fluid rounded-4" %}
+            </div>
+            <div class="col-12 col-md-7">
+          {% else %}
+            <div class="col-12">
+          {% endif %}
+
+            <div class="d-flex gap-2 align-items-center mb-2">
+              {% if featured.featured %}
+                <span class="badge bg-warning text-dark">Featured</span>
+              {% else %}
+                <span class="badge bg-secondary">Latest</span>
+              {% endif %}
+              <span class="text-muted">{{ featured.date|date:"M j, Y" }}</span>
+              {% if featured.reading_time_minutes %}
+                <span class="text-muted">• {{ featured.reading_time_minutes }} min</span>
+              {% endif %}
+            </div>
+
+            <h2 class="mb-2">
+              <a class="text-decoration-none" href="{{ featured.url }}">{{ featured.title }}</a>
+            </h2>
+
+            {% if featured.intro %}
+              <p class="mb-3 text-muted">{{ featured.intro }}</p>
+            {% endif %}
+
+            {% if featured.tags.all %}
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                {% for tag in featured.tags.all %}
+                  <a href="{{ page.url }}tag/{{ tag.slug }}/"
+                     class="badge text-bg-dark border text-decoration-none">
+                    {{ tag }}
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <a href="{{ featured.url }}" class="btn btn-sm btn-outline-light">
+              Continue reading →
+            </a>
+
+          </div>
+        </div>
+      </div>
+    {% endwith %}
+
+    <hr class="my-5 opacity-25">
+  {% endif %}
+
+  {# Posts list (paginator Page object is expected, but loop works for QuerySets too) #}
+  {% if posts %}
+    <div class="row g-4">
+      {% for post in posts %}
+        {% with p=post.specific %}
+          <div class="col-12 col-md-6 col-lg-4">
+
+            <div class="h-100 rounded-4 border overflow-hidden position-relative"
+                 style="background: rgba(0,0,0,0.15);">
+
+              {% if p.hero_image %}
+                {% image p.hero_image fill-700x420 class="img-fluid" %}
+              {% endif %}
+
+              <div class="p-4">
+
+                <p class="text-muted mb-2">
+                  {{ p.date|date:"M j, Y" }}
+                  {% if p.reading_time_minutes %}
+                    • {{ p.reading_time_minutes }} min
+                  {% endif %}
+                </p>
+
+                <h5 class="mb-2">
+                  <a href="{{ p.url }}" class="text-decoration-none">
+                    {{ p.title }}
+                  </a>
+                </h5>
+
+                {% if p.intro %}
+                  <p class="mb-3 text-muted">{{ p.intro|truncatechars:120 }}</p>
+                {% endif %}
+
+                {% if p.tags.all %}
+                  <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% for tag in p.tags.all|slice:":3" %}
+                      <a href="{{ page.url }}tag/{{ tag.slug }}/"
+                         class="badge text-bg-dark border text-decoration-none">
+                        {{ tag }}
+                      </a>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                <a href="{{ p.url }}" class="btn btn-sm btn-outline-light">
+                  Read →
+                </a>
+
+              </div>
+            </div>
+
+          </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+
+    {# Pagination controls (only shows if posts is a paginator Page) #}
+    {% if posts.paginator %}
+      <nav class="mt-5" aria-label="Blog pagination">
+        <ul class="pagination pagination-sm justify-content-center">
+
+          {% if posts.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ posts.previous_page_number }}">← Prev</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">← Prev</span></li>
+          {% endif %}
+
+          <li class="page-item disabled">
+            <span class="page-link">
+              Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+            </span>
+          </li>
+
+          {% if posts.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ posts.next_page_number }}">Next →</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Next →</span></li>
+          {% endif %}
+
+        </ul>
+      </nav>
+    {% endif %}
+
+  {% else %}
+    {% if filtered_tag_slug %}
+      <p class="text-muted">
+        No posts found for <strong>#{{ filtered_tag_slug }}</strong>.
+        <a href="{{ page.url }}" class="text-decoration-none">Show all</a>
+      </p>
+    {% else %}
+      <p class="text-muted">No posts yet.</p>
+    {% endif %}
+  {% endif %}
+
+</div>
+{% endblock %}

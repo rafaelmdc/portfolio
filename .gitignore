@@ -1,1 +1,78 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test / coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+coverage.xml
+
+# Mypy / Pyright
+.mypy_cache/
+.pyright/
+
+# ======================
+# Django
+# ======================
+# Django static & media
+staticfiles/
 media/
+
+# Django secrets & env
+.env
+.env.*
+!.env.example
+
+# SQLite (dev only)
+db.sqlite3
+db.sqlite3-journal
+
+# Django translations
+*.mo
+
+# ======================
+# Logs
+# ======================
+*.log
+
+# ======================
+# OS / Editor junk
+# ======================
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# PyCharm / IntelliJ
+.idea/
+
+# Vim
+*.swp
+*.swo
+
+# ======================
+# Docker
+# ======================
+*.pid
+docker-data/

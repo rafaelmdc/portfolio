@@ -1,0 +1,11 @@
+{% load wagtailimages_tags %}
+<div class="my-4">
+  {% if value.title %}<h3 class="mb-3">{{ value.title }}</h3>{% endif %}
+  <div class="row g-3">
+    {% for img in value.images %}
+      <div class="col-6 col-md-{{ 12|divisibleby:value.columns|yesno:'6,4' }}">
+        {% image img fill-900x650 class="img-fluid rounded-4 border" %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

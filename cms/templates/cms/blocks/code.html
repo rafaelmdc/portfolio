@@ -1,0 +1,6 @@
+<div class="my-4">
+  {% if value.title %}
+    <div class="text-muted mb-2" style="font-size:.95rem;">{{ value.title }}</div>
+  {% endif %}
+  <pre><code class="language-{{ value.language }}">{{ value.code }}</code></pre>
+</div>

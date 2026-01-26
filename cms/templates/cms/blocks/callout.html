@@ -1,0 +1,10 @@
+{% load wagtailcore_tags %}
+
+<div class="sf-callout sf-{{ value.style }}">
+  {% if value.title %}
+    <div class="sf-callout-title">{{ value.title }}</div>
+  {% endif %}
+  <div class="sf-callout-body">
+    {{ value.text|richtext }}
+  </div>
+</div>

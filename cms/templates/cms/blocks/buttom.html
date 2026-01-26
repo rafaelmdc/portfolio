@@ -1,0 +1,7 @@
+{% if value.variant == "primary" %}
+  <a class="btn btn-primary my-3" href="{{ value.url }}" target="_blank" rel="noopener">{{ value.text }}</a>
+{% elif value.variant == "link" %}
+  <a class="my-3 d-inline-block text-decoration-none" href="{{ value.url }}" target="_blank" rel="noopener">{{ value.text }} →</a>
+{% else %}
+  <a class="btn btn-outline-light my-3" href="{{ value.url }}" target="_blank" rel="noopener">{{ value.text }}</a>
+{% endif %}

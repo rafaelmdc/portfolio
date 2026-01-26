@@ -1,43 +1,41 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
-    container_name: portfolio-db
+    container_name: ${DB_CONTAINER_NAME:-portfolio-db}
     environment:
-      POSTGRES_DB: portfolio
-      POSTGRES_USER: portfolio
-      POSTGRES_PASSWORD: portfolio_pw_change_me
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio_pw_change_me}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-portfolio} -d ${POSTGRES_DB:-portfolio}"]
       interval: 2s
       timeout: 2s
       retries: 30
 
   web:
     build: .
-    container_name: portfolio-web
+    container_name: ${WEB_CONTAINER_NAME:-portfolio-web}
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DJANGO_DEBUG: "1"
-      DJANGO_SECRET_KEY: "dev-secret-change-me"
-      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-1}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-secret-change-me}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
 
-      POSTGRES_DB: portfolio
-      POSTGRES_USER: portfolio
-      POSTGRES_PASSWORD: portfolio_pw_change_me
-      POSTGRES_HOST: db
-      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio_pw_change_me}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
 
-      IP: "0.0.0.0"
-      PORT: "8000"
+      IP: ${IP:-0.0.0.0}
+      PORT: ${PORT:-8000}
 
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:8000"
 
     volumes:
       - media:/app/media

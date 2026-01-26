@@ -1,0 +1,34 @@
+{% load wagtailimages_tags %}
+
+{% with img=value.image %}
+  {% if value.alignment == "full" %}
+    <figure class="sf-figure sf-full">
+      {% image img width-2000 class="img-fluid rounded-4" %}
+      {% if value.caption %}<figcaption>{{ value.caption }}</figcaption>{% endif %}
+    </figure>
+
+  {% elif value.alignment == "wide" %}
+    <figure class="sf-figure sf-wide">
+      {% image img width-1600 class="img-fluid rounded-4" %}
+      {% if value.caption %}<figcaption>{{ value.caption }}</figcaption>{% endif %}
+    </figure>
+
+  {% elif value.alignment == "left" %}
+    <figure class="sf-figure sf-float-left">
+      {% image img width-900 class="img-fluid rounded-4" %}
+      {% if value.caption %}<figcaption>{{ value.caption }}</figcaption>{% endif %}
+    </figure>
+
+  {% elif value.alignment == "right" %}
+    <figure class="sf-figure sf-float-right">
+      {% image img width-900 class="img-fluid rounded-4" %}
+      {% if value.caption %}<figcaption>{{ value.caption }}</figcaption>{% endif %}
+    </figure>
+
+  {% else %}
+    <figure class="sf-figure">
+      {% image img width-1400 class="img-fluid rounded-4" %}
+      {% if value.caption %}<figcaption>{{ value.caption }}</figcaption>{% endif %}
+    </figure>
+  {% endif %}
+{% endwith %}
