@@ -162,65 +162,7 @@ class Skill(Timestamped):
 
 
 # ---------- portfolio ----------
-class PortfolioCategory(Timestamped):
-    name = models.CharField(max_length=60, unique=True)
-    slug = models.SlugField(max_length=60, unique=True, blank=True)
-    order = models.PositiveIntegerField(default=0)
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ("order", "name")
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-
-class PortfolioItem(Timestamped):
-    title = models.CharField(max_length=140)
-    slug = models.SlugField(max_length=160, unique=True, blank=True)
-    subtitle = models.CharField(max_length=160, blank=True)
-
-    # many categories = tags
-    categories = models.ManyToManyField(
-        PortfolioCategory, related_name="items", blank=True
-    )
-
-    # images
-    image = models.ImageField(upload_to=upload_portfolio_img)  # grid thumbnail
-    hero = models.ImageField(
-        upload_to=upload_portfolio_img, blank=True, null=True
-    )  # detail header
-    lightbox_image = models.ImageField(
-        upload_to=upload_portfolio_img, blank=True, null=True
-    )
-
-    external_url = models.URLField(blank=True)
-
-    # detail content (CKEditor stores raw HTML + allows uploads)
-    body_html = CKEditor5Field("Body", config_name="default")
-
-    order = models.PositiveIntegerField(default=0)
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ("order", "id")
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)[:160] or uuid.uuid4().hex[:12]
-        super().save(*args, **kwargs)
-
-    def lightbox_url(self):
-        return (self.lightbox_image or self.image).url
-
-    def __str__(self):
-        return self.title
-
+# BACKWARDS COMPATIBLE DO NOT REMOVE
 def portfolio_upload_to(instance, filename):
     """
     Backwards-compat function required by migration 0005.

@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Education, Experience, Skill
-from .models import PortfolioCategory, PortfolioItem
 from .models import SiteCopy, SiteAsset
 import markdown as md, bleach
 

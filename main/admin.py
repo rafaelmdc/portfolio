@@ -1,8 +1,7 @@
 from django.contrib import admin
 from .models import (
     Education, Experience, ExperienceBullet,
-    Skill, PortfolioCategory, PortfolioItem,
-    SiteCopy, SiteAsset,
+    Skill, SiteCopy, SiteAsset,
 )
 
 
@@ -64,31 +63,3 @@ class SkillAdmin(admin.ModelAdmin):
     search_fields = ("name", "description")
     list_filter = ("active",)
     ordering = ("order", "name")
-
-
-# ---------------- Portfolio ----------------
-@admin.register(PortfolioCategory)
-class PortfolioCategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "order", "active")
-    list_editable = ("order", "active")
-    prepopulated_fields = {"slug": ("name",)}
-    ordering = ("order", "name")
-
-
-@admin.register(PortfolioItem)
-class PortfolioItemAdmin(admin.ModelAdmin):
-    list_display = ("title", "order", "active", "updated_at")
-    list_editable = ("order", "active")
-    list_filter = ("active", "categories")
-    search_fields = ("title", "subtitle", "body_html")
-    filter_horizontal = ("categories",)
-    prepopulated_fields = {"slug": ("title",)}
-    ordering = ("order", "title")
-
-    # Show CKEditor field and media/image fields in a sensible order
-    fields = (
-        "title", "slug", "subtitle", "categories",
-        "image", "hero", "lightbox_image", "external_url",
-        "body_html",
-        "order", "active",
-    )
