@@ -2,9 +2,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
-from django_ckeditor_5.fields import CKEditor5Field
 
 import os, uuid
+from .validators import validate_image_file
 
 
 # ---------- helpers ----------
@@ -120,7 +120,7 @@ class SiteAsset(Timestamped):
     ]
 
     key = models.CharField(max_length=64, choices=ASSET_KEYS, db_index=True)
-    image = models.ImageField(upload_to=site_upload_to)
+    image = models.ImageField(upload_to=site_upload_to, validators=[validate_image_file])
     alt_text = models.CharField(max_length=160, blank=True)
     active = models.BooleanField(default=True)
 

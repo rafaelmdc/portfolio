@@ -207,3 +207,8 @@ STORAGES = {
 # Wagtail settings
 WAGTAIL_SITE_NAME = "test"
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
+
+# Security: prevent browsers from MIME-sniffing responses
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# Enable the browser XSS filter header (helps older browsers)
+SECURE_BROWSER_XSS_FILTER = True

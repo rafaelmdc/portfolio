@@ -2,7 +2,6 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 from main import views
-from main.views import portfolio_detail
 
 urlpatterns = [
     path("", views.index, name="home"),
