@@ -16,19 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$9y!uft6c%-3xkgle@tn*2d!pw9z74rhqb+f7^u&g2tcuco)2$'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     "main",
     "django_ckeditor_5",
     # Wagtail
@@ -96,7 +84,6 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")]
 
 DATABASES = {
     "default": {
@@ -157,30 +144,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# where uploads go inside MEDIA_ROOT
-CKEDITOR_UPLOAD_PATH = "ckeditor/"
-CKEDITOR_IMAGE_BACKEND = "pillow"
-
-# optional toolbar + paste cleanup
-CKEDITOR_CONFIGS = {
-    "default": {
-        "toolbar": "Custom",
-        "toolbar_Custom": [
-            ["Format","Bold","Italic","Underline","Strike","Blockquote","CodeSnippet"],
-            ["NumberedList","BulletedList","Outdent","Indent"],
-            ["Link","Unlink","Image","Table"],
-            ["RemoveFormat","Source","Maximize"],
-        ],
-        "extraPlugins": ",".join(["uploadimage","codesnippet","justify","autogrow"]),
-        "removePlugins": "resize",
-        "forcePasteAsPlainText": True,
-        "autoGrow_minHeight": 300,
-        "height": 320,
-        "tabSpaces": 2,
-        "image_prefillDimensions": False,   # let CSS control width
-    }
-}
-
 # CKEditor 5 configuration
 CKEDITOR_5_CONFIGS = {
     "default": {
@@ -212,3 +175,15 @@ WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 # Enable the browser XSS filter header (helps older browsers)
 SECURE_BROWSER_XSS_FILTER = True
+
+#
+def env_list(name: str, default: str = ""):
+    return [x.strip() for x in os.getenv(name, default).split(",") if x.strip()]
+
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS")
+
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "")
+
+# If you're behind an ingress that terminates TLS (very common)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
