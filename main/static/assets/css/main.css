@@ -2990,3 +2990,70 @@ nav#navmenu a.active {
   border: 1px solid rgba(0,180,255,.35) !important;
   color: #fff !important;
 }
+
+/* Header spacing */
+#header .container{
+  min-height: 64px;
+}
+
+/* Brand */
+#header .brand-name{
+  font-family: var(--heading-font);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: .35px;
+  opacity: .9;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Make brand a bit dimmer than menu */
+#header .brand-name{ color: rgba(230,230,230,.85); }
+:root[data-bs-theme="light"] #header .brand-name{ color: rgba(20,20,20,.75); }
+
+/* Mobile: keep it compact so it doesn't fight the hamburger */
+@media (max-width: 992px){
+  #header .brand-name{ font-size: 13px; }
+}
+
+
+/*--------------------------------------------------------------
+#paint 
+*/
+
+html, body {
+  min-height: 100%;
+  background-color: var(--background-color);
+}
+body {
+  background-color: var(--background-color);
+}
+
+.main{
+  position: relative;
+  flex: 1 0 auto;
+}
+
+/* purely visual fade, no height contribution */
+.main::after{
+  content:"";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: min(18vh, 160px);
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(11,14,18,0) 0%,
+    rgba(11,14,18,0.6) 70%,
+    rgba(11,14,18,1) 100%
+  );
+}
+
+/* Full-page hero centering */
+.index-page #hero {
+  min-height: calc(100vh - var(--header-height, 80px));
+  display: flex;
+  align-items: center;
+}

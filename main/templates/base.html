@@ -29,10 +29,27 @@
     /* 2) Kill common white flashes even without main.css */
     #preloader{ background:#0b0e12 !important; }          /* or display:none to test */
     .header.light-background{ background:transparent !important; }
-    .section, .container, .main, .footer{ background:transparent !important; }
 
     /* Optional: no transitions during first paint */
     html.preload *, html.preload *::before, html.preload *::after{ transition:none !important; }
+    html, body { height: 100%; }
+
+    body{
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main{
+      flex: 1 0 auto;           /* main grows to fill leftover space */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Footer stays after main, not floating up */
+    .footer{
+      margin-top: auto;
+    }
   </style>
   <script>
     // SSR should set this, but as a fallback pick system preference immediately
@@ -73,7 +90,7 @@
 <body class="{% block body_class %}{% endblock %}">
 
   <!-- ======= Header / Navbar ======= -->
-    <header id="header" class="header d-flex align-items-center light-background sticky-top">
+    <header id="header" class="header d-flex align-items-center light-background sticky-top" style="--header-height: 80px;">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
       <nav id="navmenu" class="navmenu">
@@ -146,12 +163,24 @@
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
-      <div class="social-links d-flex justify-content-center">
-        <a href="#"><i class="bi bi-twitter-x"></i></a>
-        <a href="#"><i class="bi bi-facebook"></i></a>
-        <a href="#"><i class="bi bi-instagram"></i></a>
-        <a href="#"><i class="bi bi-linkedin"></i></a>
+      <div class="social-links d-flex justify-content-center gap-3">
+        <a href="https://github.com/rafaelmdc" target="_blank" rel="noopener" aria-label="GitHub">
+          <i class="bi bi-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/rafael-alexandre-correia-2b8a33213/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <i class="bi bi-linkedin"></i>
+        </a>
+        <a href="mailto:rafaelmdcorreia@gmail.com" aria-label="Email">
+          <i class="bi bi-envelope"></i>
+        </a>
       </div>
+
+      <div class="text-center small text-body-secondary mt-3">
+        © {% now "Y" %} Rafael Correia · Built with Django + Wagtail
+      </div>
+    </div>
+    <div class="text-center small text-body-secondary mt-2">
+      Always happy to talk about research, code, or collaboration!
     </div>
   </footer>
 

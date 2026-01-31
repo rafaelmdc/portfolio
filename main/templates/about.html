@@ -24,11 +24,11 @@
           <p class="lead">{{ copy.about_intro_body }}</p>
 
           <div class="cta-group">
-            <a href="#portfolio" class="btn-ghost">
+            <a href="{% url 'resume' %}" class="btn-ghost">
               View My Work <i class="bi bi-arrow-up-right"></i>
             </a>
             <a href="{% url 'resume' %}" class="link-underline">
-              Download Resume <i class="bi bi-download"></i>
+              Download Resume (PDF not generated)<i class="bi bi-download"></i>
             </a>
           </div>
         </div>
@@ -36,13 +36,21 @@
 
       <div class="col-lg-5" data-aos="zoom-in" data-aos-delay="250">
         <figure class="profile-figure text-center text-lg-end">
-                <figure class="profile-figure text-center text-lg-end">
-                    {% if assets.about_profile %}
-                        <img src="{{ assets.about_profile }}" alt="Profile photo" class="img-fluid rounded-4 shadow-lg" style="max-width: 1024; width: 100%; height: auto;">
-                    {% else %}
-                        <img src="{% static 'assets/img/profile/profile-square-placeholder.webp' %}" alt="Profile placeholder" class="img-fluid profile-photo">
-                    {% endif %}
-                </figure>
+          {% if assets.about_profile %}
+            <img
+              src="{{ assets.about_profile }}"
+              alt="Profile photo"
+              class="img-fluid rounded-4 shadow-lg"
+              style="max-width: 1024px; width: 100%; height: auto;"
+            >
+          {% else %}
+            <img
+              src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><rect width='100%25' height='100%25' fill='%23111827'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23cbd5e1' font-family='Arial' font-size='42'>Profile image</text></svg>"
+              alt="Profile placeholder"
+              class="img-fluid rounded-4 shadow-lg"
+              style="max-width: 1024px; width: 100%; height: auto;"
+            >
+          {% endif %}
         </figure>
       </div>
     </div>
@@ -64,15 +72,15 @@
 
     {# Quote from DB #}
     {% if copy.about_quote %}
-    <blockquote class="personal-quote text-center mx-auto my-4" data-aos="fade-down" data-aos-delay="200" style="max-width: 700px;">
+      <blockquote class="personal-quote text-center mx-auto my-4" data-aos="fade-down" data-aos-delay="200" style="max-width: 700px;">
         <p class="fs-5 fst-italic">“{{ copy.about_quote }}”</p>
-    </blockquote>
+      </blockquote>
     {% endif %}
 
   </div>
 </section>
 
-{# --- Skills progress bars from DB (no visible %) --- #}
+{# --- Skills progress cards from DB --- #}
 <section id="skills" class="skills section pt-0 mt-n3">
   <div class="container section-title" data-aos="fade-up">
     <h2>{{ copy.skills_title|default:"Skills" }}</h2>

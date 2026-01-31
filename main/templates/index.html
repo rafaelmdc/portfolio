@@ -45,7 +45,11 @@
                     {% if assets.home_profile %}
                         <img src="{{ assets.home_profile }}" alt="Home photo" class="img-fluid rounded-4 shadow-lg" style="max-width: 1024; width: 100%; height: auto;">
                     {% else %}
-                        <img src="{% static 'assets/img/profile/rizzler.jpg' %}" alt="Profile placeholder" class="img-fluid profile-photo">
+                      <img
+                        src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><rect width='100%25' height='100%25' fill='%23111827'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23cbd5e1' font-family='Arial' font-size='42'>Profile image</text></svg>"
+                        alt="Profile placeholder"
+                        class="img-fluid profile-photo"
+                      >
                     {% endif %}
       </div>
 
