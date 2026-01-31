@@ -9,4 +9,4 @@ docker-compose.yml
 Dockerfile
 .dockerignore
 .gitignore
-.git
+nginx/
