@@ -170,6 +170,7 @@ class BlogPage(Page):
                     ],
                     icon="image",
                     label="Image",
+                    template="cms/blocks/image.html",
                 ),
             ),
             ("quote", blocks.BlockQuoteBlock(icon="openquote")),

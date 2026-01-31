@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Pillow often needs these libs
+# System deps (Pillow etc.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libjpeg62-turbo-dev \
@@ -17,9 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-# Default bind values (overridable via env)
-ENV IP=0.0.0.0 \
-    PORT=8000
+# Default internal bind (compose/.env overrides these)
+ENV APP_HOST=0.0.0.0 \
+    APP_PORT=8000
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn portfolio.wsgi:application --bind ${IP}:${PORT}"]
-
+CMD ["sh", "-lc", "set -e; python manage.py migrate; python manage.py collectstatic --noinput; exec gunicorn portfolio.wsgi:application --bind ${APP_HOST}:${APP_PORT}"]
