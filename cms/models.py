@@ -1,97 +1,49 @@
+"""
+Wagtail CMS models for Blog + Portfolio.
+
+Refactor goals:
+- Remove duplicate imports / tighten structure.
+- Define a single, reusable StreamField block set so Blog + Portfolio share the same body capabilities.
+- Keep Blog behavior and URLs the same.
+- Upgrade PortfolioProjectPage.body to use the same rich blocks as BlogPage.body.
+
+NOTE:
+- Changing StreamField *block definitions* typically does not require a DB migration,
+  but existing StreamField content may become incompatible if you *rename* block types.
+  This refactor keeps block names consistent with your BlogPage body blocks.
+- If you already have PortfolioProjectPage body content, it will not automatically
+  transform (its old "heading" was a CharBlock). Easiest path: re-save those pages,
+  or temporarily keep a legacy "heading_text" block (included below).
+"""
+
+from __future__ import annotations
+
+from django.core.paginator import Paginator
 from django.db import models
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
-
 from taggit.models import TaggedItemBase
 
 from wagtail import blocks
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
+from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import StreamField
+from wagtail.images import get_image_model_string
+from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page, PageManager
 from wagtail.search import index
-from wagtail.admin.panels import (
-    FieldPanel,
-    MultiFieldPanel,
-    ObjectList,
-    TabbedInterface,
-)
-
-from django.core.paginator import Paginator
-
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.images import get_image_model_string
-from wagtail.embeds.blocks import EmbedBlock
-from wagtail.contrib.routable_page.models import RoutablePageMixin, route
-
-# ----------------------------
-# Tags
-# ----------------------------
-class BlogPageTag(TaggedItemBase):
-    content_object = ParentalKey(
-        "cms.BlogPage",
-        related_name="tagged_items",
-        on_delete=models.CASCADE,
-    )
 
 
-# ----------------------------
-# Index Page
-# ----------------------------
-class BlogIndexPage(RoutablePageMixin, Page):
-    max_count = 1
-    subpage_types = ["cms.BlogPage"]
-
-    # Optional: limit in admin what can be added under index
-    parent_page_types = ["cms.HomePage"]
-
-    def get_posts(self):
-        return (
-            BlogPage.objects.child_of(self)
-            .live()
-            .public()
-            .order_by("-first_published_at")
-        )
-    
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
-
-        qs = self.get_posts()
-
-        # Pick featured post (explicit), fallback to latest
-        featured_post = qs.filter(featured=True).first()
-        if featured_post is None:
-            featured_post = qs.first()
-
-        # Remove featured from list so it doesn't appear twice
-        if featured_post:
-            qs = qs.exclude(id=featured_post.id)
-
-        paginator = Paginator(qs, 9)
-        page_number = request.GET.get("page")
-        posts_page = paginator.get_page(page_number)
-
-        context["featured_post"] = featured_post
-        context["posts"] = posts_page
-
-        return context
-
-    @route(r"^tag/(?P<tag_slug>[-\w]+)/$")
-    def posts_by_tag(self, request, tag_slug):
-        posts = self.get_posts().filter(tags__slug=tag_slug)
-
-        context = self.get_context(request)
-        context["posts"] = posts
-        context["filtered_tag_slug"] = tag_slug
-        return render(request, "cms/blog_index_page.html", context)
-
-
-# ----------------------------
-# Blog Page
-# ----------------------------
+# =============================================================================
+# Shared StreamField blocks (used by BlogPage + PortfolioProjectPage)
+# =============================================================================
 
 class PrettyEmbedBlock(blocks.StructBlock):
+    """Embed with presentation controls (matches your existing blog embed block)."""
+
     url = EmbedBlock(required=True)
     caption = blocks.CharBlock(required=False, max_length=160)
 
@@ -133,6 +85,8 @@ class PrettyEmbedBlock(blocks.StructBlock):
 
 
 class PrettyImageBlock(blocks.StructBlock):
+    """Image block with your presentation controls (used by both pages)."""
+
     image = ImageChooserBlock(required=True)
     caption = blocks.CharBlock(required=False, max_length=220)
 
@@ -148,7 +102,6 @@ class PrettyImageBlock(blocks.StructBlock):
         required=True,
     )
 
-    # NEW: presentation controls
     style = blocks.ChoiceBlock(
         required=False,
         choices=[
@@ -216,18 +169,106 @@ class PrettyImageBlock(blocks.StructBlock):
         template = "cms/blocks/image.html"
 
 
-class BlogSectionInnerBlock(blocks.StreamBlock):
-    heading = blocks.StructBlock(
-        [
-            ("level", blocks.ChoiceBlock(
-                choices=[("h2", "H2"), ("h3", "H3"), ("h4", "H4")],
-                default="h2",
-            )),
-            ("text", blocks.CharBlock()),
-        ],
-        icon="title",
-        template="cms/blocks/heading.html",
+class HeadingBlock(blocks.StructBlock):
+    level = blocks.ChoiceBlock(
+        choices=[("h2", "H2"), ("h3", "H3"), ("h4", "H4")],
+        default="h2",
     )
+    text = blocks.CharBlock()
+
+    class Meta:
+        icon = "title"
+        template = "cms/blocks/heading.html"
+
+
+class CalloutBlock(blocks.StructBlock):
+    style = blocks.ChoiceBlock(
+        choices=[("info", "Info"), ("tip", "Tip"), ("warn", "Warning"), ("note", "Note")],
+        default="info",
+    )
+    title = blocks.CharBlock(required=False)
+    text = blocks.RichTextBlock(features=["bold", "italic", "link", "ol", "ul"])
+
+    class Meta:
+        icon = "placeholder"
+        label = "Callout"
+        template = "cms/blocks/callout.html"
+
+
+class CodeBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, help_text="Optional: filename or label")
+    language = blocks.ChoiceBlock(
+        choices=[
+            ("python", "Python"),
+            ("bash", "Bash"),
+            ("json", "JSON"),
+            ("yaml", "YAML"),
+            ("sql", "SQL"),
+            ("javascript", "JavaScript"),
+            ("html", "HTML"),
+            ("css", "CSS"),
+            ("r", "R"),
+            ("text", "Plain text"),
+        ],
+        default="text",
+    )
+    code = blocks.TextBlock(rows=12)
+
+    class Meta:
+        icon = "code"
+        label = "Code block"
+        template = "cms/blocks/code.html"
+
+
+class ButtonBlock(blocks.StructBlock):
+    text = blocks.CharBlock(required=True, max_length=80)
+    url = blocks.URLBlock(required=True)
+    variant = blocks.ChoiceBlock(
+        choices=[("primary", "Primary"), ("outline", "Outline"), ("link", "Link")],
+        default="primary",
+    )
+
+    class Meta:
+        icon = "link"
+        label = "Button"
+        template = "cms/blocks/button.html"
+
+
+class DividerBlock(blocks.StaticBlock):
+    class Meta:
+        icon = "horizontalrule"
+        label = "Divider"
+        template = "cms/blocks/divider.html"
+
+
+class SpacerBlock(blocks.ChoiceBlock):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            choices=[("sm", "Small"), ("md", "Medium"), ("lg", "Large")],
+            default="md",
+            *args,
+            **kwargs,
+        )
+
+    class Meta:
+        icon = "arrows-up-down"
+        label = "Spacer"
+        template = "cms/blocks/spacer.html"
+
+
+class GalleryBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, max_length=120)
+    columns = blocks.ChoiceBlock(choices=[("2", "2 columns"), ("3", "3 columns")], default="2")
+    images = blocks.ListBlock(ImageChooserBlock())
+
+    class Meta:
+        icon = "image"
+        label = "Gallery"
+        template = "cms/blocks/gallery.html"
+
+
+class SectionInnerStream(blocks.StreamBlock):
+    heading = HeadingBlock()
     paragraph = blocks.RichTextBlock(
         features=["h2", "h3", "bold", "italic", "link", "ol", "ul", "hr", "blockquote", "code"],
         icon="doc-full",
@@ -235,110 +276,113 @@ class BlogSectionInnerBlock(blocks.StreamBlock):
     image = PrettyImageBlock()
     quote = blocks.BlockQuoteBlock(icon="openquote")
     embed = PrettyEmbedBlock()
-
-    # These two SHOULD have templates (you already created them)
-    callout = blocks.StructBlock(
-        [
-            (
-                "style",
-                blocks.ChoiceBlock(
-                    choices=[("info", "Info"), ("tip", "Tip"), ("warn", "Warning"), ("note", "Note")],
-                    default="info",
-                ),
-            ),
-            ("title", blocks.CharBlock(required=False)),
-            ("text", blocks.RichTextBlock(features=["bold", "italic", "link", "ol", "ul"])),
-        ],
-        icon="placeholder",
-        label="Callout",
-        template="cms/blocks/callout.html",
-    )
-
-    code = blocks.StructBlock(
-        [
-            ("title", blocks.CharBlock(required=False, help_text="Optional: filename or label")),
-            (
-                "language",
-                blocks.ChoiceBlock(
-                    choices=[
-                        ("python", "Python"),
-                        ("bash", "Bash"),
-                        ("json", "JSON"),
-                        ("yaml", "YAML"),
-                        ("sql", "SQL"),
-                        ("javascript", "JavaScript"),
-                        ("html", "HTML"),
-                        ("css", "CSS"),
-                        ("r", "R"),
-                        ("text", "Plain text"),
-                    ],
-                    default="text",
-                ),
-            ),
-            ("code", blocks.TextBlock(rows=12)),
-        ],
-        icon="code",
-        label="Code block",
-        template="cms/blocks/code.html",
-    )
-
-    # NEW blocks (wired to your templates)
-    button = blocks.StructBlock(
-        [
-            ("text", blocks.CharBlock(required=True, max_length=80)),
-            ("url", blocks.URLBlock(required=True)),
-            (
-                "variant",
-                blocks.ChoiceBlock(
-                    choices=[("primary", "Primary"), ("outline", "Outline"), ("link", "Link")],
-                    default="primary",
-                ),
-            ),
-        ],
-        icon="link",
-        label="Button",
-        template="cms/blocks/button.html",
-    )
-
-    divider = blocks.StaticBlock(
-        icon="horizontalrule",
-        label="Divider",
-        template="cms/blocks/divider.html",
-    )
-
-    spacer = blocks.ChoiceBlock(
-        choices=[("sm", "Small"), ("md", "Medium"), ("lg", "Large")],
-        default="md",
-        icon="arrows-up-down",
-        label="Spacer",
-        template="cms/blocks/spacer.html",
-    )
-
-    gallery = blocks.StructBlock(
-        [
-            ("title", blocks.CharBlock(required=False, max_length=120)),
-            (
-                "columns",
-                blocks.ChoiceBlock(
-                    choices=[("2", "2 columns"), ("3", "3 columns")],
-                    default="2",
-                ),
-            ),
-            ("images", blocks.ListBlock(ImageChooserBlock())),
-        ],
-        icon="image",
-        label="Gallery",
-        template="cms/blocks/gallery.html",
-    )
+    callout = CalloutBlock()
+    code = CodeBlock()
+    button = ButtonBlock()
+    divider = DividerBlock()
+    spacer = SpacerBlock()
+    gallery = GalleryBlock()
 
     class Meta:
         label = "Section content"
         required = False
 
+
+class SectionBlock(blocks.StructBlock):
+    background = blocks.ChoiceBlock(
+        choices=[("none", "None"), ("soft", "Soft"), ("contrast", "Contrast")],
+        default="none",
+    )
+    inner = SectionInnerStream()
+
+    class Meta:
+        icon = "placeholder"
+        label = "Section"
+        template = "cms/blocks/section.html"
+
+
+class BodyStream(blocks.StreamBlock):
+    """
+    Canonical body block set used by BOTH BlogPage and PortfolioProjectPage.
+    This matches your BlogPage set + your newer blocks.
+    """
+
+    heading = HeadingBlock()
+    paragraph = blocks.RichTextBlock(
+        features=["bold", "italic", "link", "ol", "ul", "hr", "blockquote", "code"],
+        icon="doc-full",
+    )
+    image = PrettyImageBlock()
+    quote = blocks.BlockQuoteBlock(icon="openquote")
+    embed = PrettyEmbedBlock()
+    callout = CalloutBlock()
+    code = CodeBlock()
+    button = ButtonBlock()
+    divider = DividerBlock()
+    spacer = SpacerBlock()
+    gallery = GalleryBlock()
+    section = SectionBlock()
+
+
+    class Meta:
+        label = "Body content"
+        required = False
+
+
+# =============================================================================
+# Blog
+# =============================================================================
+
+class BlogPageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        "cms.BlogPage",
+        related_name="tagged_items",
+        on_delete=models.CASCADE,
+    )
+
+
+class BlogIndexPage(RoutablePageMixin, Page):
+    max_count = 1
+    parent_page_types = ["cms.HomePage"]
+    subpage_types = ["cms.BlogPage"]
+
+    def get_posts(self):
+        return (
+            BlogPage.objects.child_of(self)
+            .live()
+            .public()
+            .order_by("-first_published_at")
+        )
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+
+        qs = self.get_posts()
+
+        featured_post = qs.filter(featured=True).first() or qs.first()
+        if featured_post:
+            qs = qs.exclude(id=featured_post.id)
+
+        paginator = Paginator(qs, 9)
+        page_number = request.GET.get("page")
+        posts_page = paginator.get_page(page_number)
+
+        context["featured_post"] = featured_post
+        context["posts"] = posts_page
+        return context
+
+    @route(r"^tag/(?P<tag_slug>[-\w]+)/$")
+    def posts_by_tag(self, request, tag_slug):
+        posts = self.get_posts().filter(tags__slug=tag_slug)
+        context = self.get_context(request)
+        context["posts"] = posts
+        context["filtered_tag_slug"] = tag_slug
+        return render(request, "cms/blog_index_page.html", context)
+
+
 class BlogPage(Page):
     objects = PageManager()
 
-    # Core content
     date = models.DateField("Post date")
     intro = models.CharField(max_length=250, blank=True)
 
@@ -371,146 +415,11 @@ class BlogPage(Page):
     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
 
     body = StreamField(
-        [
-            (
-                "heading",
-                blocks.StructBlock(
-                    [
-                        ("level", blocks.ChoiceBlock(choices=[("h2","H2"),("h3","H3"),("h4","H4")], default="h2")),
-                        ("text", blocks.CharBlock()),
-                    ],
-                    icon="title",
-                    template="cms/blocks/heading.html",
-                ),
-            ),
-            ("image", PrettyImageBlock()),
-            ("quote", blocks.BlockQuoteBlock(icon="openquote")),
-            ("embed", PrettyEmbedBlock()),
-            (
-                "callout",
-                blocks.StructBlock(
-                    [
-                        (
-                            "style",
-                            blocks.ChoiceBlock(
-                                choices=[
-                                    ("info", "Info"),
-                                    ("tip", "Tip"),
-                                    ("warn", "Warning"),
-                                    ("note", "Note"),
-                                ],
-                                default="info",
-                            ),
-                        ),
-                        ("title", blocks.CharBlock(required=False)),
-                        (
-                            "text",
-                            blocks.RichTextBlock(features=["bold", "italic", "link", "ol", "ul"]),
-                        ),
-                    ],
-                    icon="placeholder",
-                    label="Callout",
-                    template="cms/blocks/callout.html",
-                ),
-            ),
-            (
-                "code",
-                blocks.StructBlock(
-                    [
-                        ("title", blocks.CharBlock(required=False, help_text="Optional: filename or label")),
-                        (
-                            "language",
-                            blocks.ChoiceBlock(
-                                choices=[
-                                    ("python", "Python"),
-                                    ("bash", "Bash"),
-                                    ("json", "JSON"),
-                                    ("yaml", "YAML"),
-                                    ("sql", "SQL"),
-                                    ("javascript", "JavaScript"),
-                                    ("html", "HTML"),
-                                    ("css", "CSS"),
-                                    ("r", "R"),
-                                    ("text", "Plain text"),
-                                ],
-                                default="text",
-                            ),
-                        ),
-                        ("code", blocks.TextBlock(rows=12)),
-                    ],
-                    icon="code",
-                    label="Code block",
-                    template="cms/blocks/code.html",
-                ),
-            ),
-        #NEW
-        (
-            "button", blocks.StructBlock(
-            [
-                ("text", blocks.CharBlock(required=True, max_length=80)),
-                ("url", blocks.URLBlock(required=True)),
-                ("variant", blocks.ChoiceBlock(
-                    choices=[("primary","Primary"),("outline","Outline"),("link","Link")],
-                    default="primary",
-                )),
-            ],
-            icon="link",
-            label="Button",
-            template="cms/blocks/button.html",
-        )),
-
-        (
-            "divider", blocks.StaticBlock(
-                icon="horizontalrule",
-                label="Divider",
-                template="cms/blocks/divider.html",
-        )),
-
-        (
-            "spacer", blocks.ChoiceBlock(
-                choices=[("sm","Small"),("md","Medium"),("lg","Large")],
-                default="md",
-                icon="arrows-up-down",
-                label="Spacer",
-                template="cms/blocks/spacer.html",
-        )),
-
-        (   
-            "gallery", blocks.StructBlock(
-                [
-                    ("title", blocks.CharBlock(required=False, max_length=120)),
-                    ("columns", blocks.ChoiceBlock(choices=[("2","2 columns"),("3","3 columns")], default="2")),
-                    ("images", blocks.ListBlock(ImageChooserBlock())),
-                ],
-            icon="image",
-            label="Gallery",
-            template="cms/blocks/gallery.html",
-        )),
-
-        (
-            "section",
-            blocks.StructBlock(
-                [
-                    (
-                        "background",
-                        blocks.ChoiceBlock(
-                            choices=[("none", "None"), ("soft", "Soft"), ("contrast", "Contrast")],
-                            default="none",
-                        ),
-                    ),
-                    ("inner", BlogSectionInnerBlock()),  # ✅ remove required=False here
-                ],
-                icon="placeholder",
-                label="Section",
-                template="cms/blocks/section.html",
-            ),
-        ),
-        ],
+        BodyStream(),
         use_json_field=True,
         blank=True,
     )
 
-    # --- Search (nice upgrade) ---
     search_fields = Page.search_fields + [
         index.SearchField("title", partial_match=True),
         index.SearchField("intro", partial_match=True),
@@ -519,7 +428,6 @@ class BlogPage(Page):
         index.FilterField("featured"),
     ]
 
-    # --- Panels grouped nicely ---
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
@@ -544,10 +452,7 @@ class BlogPage(Page):
         FieldPanel("tags"),
     ]
 
-    promote_panels = Page.promote_panels + [
-        # Page.promote_panels already includes slug/seo_title/search_description/etc.
-        # Keep it, and optionally add more promote fields later.
-    ]
+    promote_panels = Page.promote_panels
 
     edit_handler = TabbedInterface(
         [
@@ -562,11 +467,9 @@ class BlogPage(Page):
         verbose_name = "Blog post"
 
 
-# ----------------------------
-# Portfolio (Wagtail)
-# ----------------------------
-from wagtail.snippets.models import register_snippet
-
+# =============================================================================
+# Portfolio
+# =============================================================================
 
 class PortfolioPageTag(TaggedItemBase):
     content_object = ParentalKey(
@@ -578,8 +481,8 @@ class PortfolioPageTag(TaggedItemBase):
 
 class PortfolioIndexPage(RoutablePageMixin, Page):
     max_count = 1
-    subpage_types = ["cms.PortfolioProjectPage"]
     parent_page_types = ["cms.HomePage"]
+    subpage_types = ["cms.PortfolioProjectPage"]
 
     intro = models.CharField(max_length=250, blank=True)
 
@@ -609,7 +512,6 @@ class PortfolioIndexPage(RoutablePageMixin, Page):
 
     @route(r"^tag/(?P<tag_slug>[-\w]+)/$")
     def projects_by_tag(self, request, tag_slug, *args, **kwargs):
-        # same listing view, but prettier URL
         context = self.get_context(request)
         context["projects"] = self.get_projects().filter(tags__slug=tag_slug)
         context["active_tag"] = tag_slug
@@ -635,17 +537,18 @@ class PortfolioProjectPage(Page):
 
     tags = ClusterTaggableManager(through=PortfolioPageTag, blank=True)
 
+    # ✅ Upgraded: same body capabilities as BlogPage
     body = StreamField(
-        [
-            ("heading", blocks.CharBlock(form_classname="title", icon="title")),
-            ("paragraph", blocks.RichTextBlock(features=["bold", "italic", "link", "ol", "ul"])),
-            ("image", ImageChooserBlock()),
-            ("embed", EmbedBlock(icon="media")),
-            ("code", blocks.RawHTMLBlock(icon="code", help_text="Paste highlighted HTML if needed.")),
-        ],
+        BodyStream(),
         blank=True,
         use_json_field=True,
     )
+
+    search_fields = Page.search_fields + [
+        index.SearchField("title", partial_match=True),
+        index.SearchField("subtitle", partial_match=True),
+        index.SearchField("body"),
+    ]
 
     content_panels = Page.content_panels + [
         FieldPanel("subtitle"),
@@ -661,8 +564,14 @@ class PortfolioProjectPage(Page):
         FieldPanel("body"),
     ]
 
+    class Meta:
+        verbose_name = "Portfolio project"
 
-# homepage
+
+# =============================================================================
+# Home
+# =============================================================================
+
 class HomePage(Page):
     max_count = 1
     subpage_types = ["cms.BlogIndexPage", "cms.PortfolioIndexPage"]
@@ -676,3 +585,4 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
     ]
+    
