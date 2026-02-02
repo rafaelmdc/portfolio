@@ -1,0 +1,16 @@
+{# value.url is an EmbedValue because models.py uses EmbedBlock #}
+
+<div class="embed-block embed-block--{{ value.width|default:'md' }}
+            embed-block--{{ value.align|default:'center' }}
+            embed-block--{{ value.style|default:'card' }}">
+
+  <div class="embed-block__inner">
+    <div class="embed-block__ratio">
+      {{ value.url }}
+    </div>
+
+    {% if value.caption %}
+      <div class="embed-block__caption">{{ value.caption }}</div>
+    {% endif %}
+  </div>
+</div>

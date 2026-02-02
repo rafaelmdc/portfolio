@@ -3057,3 +3057,209 @@ body {
   display: flex;
   align-items: center;
 }
+
+/* ====== Pretty Embeds ====== */
+.embed-block {
+  margin: 1.25rem 0;
+}
+
+.embed-block__inner {
+  width: 100%;
+}
+
+/* alignment */
+.embed-block--center .embed-block__inner { margin-left: auto; margin-right: auto; }
+.embed-block--left   .embed-block__inner { margin-right: auto; }
+.embed-block--right  .embed-block__inner { margin-left: auto; }
+
+/* widths */
+.embed-block--sm .embed-block__inner   { max-width: 420px; }
+.embed-block--md .embed-block__inner   { max-width: 640px; }
+.embed-block--lg .embed-block__inner   { max-width: 900px; }
+.embed-block--full .embed-block__inner { max-width: 100%; }
+
+/* panel style */
+.embed-block--panel .embed-block__inner {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* responsive 16:9 box */
+.embed-block__ratio {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Wagtail embed output is typically an iframe */
+.embed-block__ratio iframe,
+.embed-block__ratio object,
+.embed-block__ratio embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* caption */
+.embed-block__caption {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+
+/* =========================
+   StreamField Images (corrected)
+   ========================= */
+
+/* ---- Base ---- */
+.sf-figure {
+  margin: 1.25rem 0;
+}
+
+.sf-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Optional: keep captions tight later */
+.sf-figure figcaption {
+  margin-top: .5rem;
+  opacity: .85;
+  font-size: .95rem;
+}
+
+/* =========================
+   Sizing (ONLY sizing — no alignment here)
+   ========================= */
+.sf-mw-sm   { max-width: 520px; }
+.sf-mw-md   { max-width: 760px; }
+.sf-mw-lg   { max-width: 1040px; }
+.sf-mw-xl   { max-width: 1200px; }
+.sf-mw-none { max-width: none; }
+
+/* Full width should not be capped */
+.sf-full.sf-mw-sm,
+.sf-full.sf-mw-md,
+.sf-full.sf-mw-lg,
+.sf-full.sf-mw-xl { max-width: none; }
+
+/* (Optional) Wide should also ignore caps (uncomment if you want wide to always be wide)
+.sf-wide.sf-mw-sm,
+.sf-wide.sf-mw-md,
+.sf-wide.sf-mw-lg,
+.sf-wide.sf-mw-xl { max-width: none; }
+*/
+
+/* =========================
+   Alignment / Layout
+   ========================= */
+
+/* Default: center any non-floated, non-full, non-wide figure (so max-width caps center nicely) */
+.sf-figure:not(.sf-float-left):not(.sf-float-right):not(.sf-full):not(.sf-wide) {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Wide / Full (you already have classes from template) */
+.sf-wide { width: 100%; }
+.sf-full { width: 100%; max-width: none; }
+
+/* Floats for wrap */
+.sf-float-left  { float: left;  margin: 0 1.25rem 1rem 0; }
+.sf-float-right { float: right; margin: 0 0 1rem 1.25rem; }
+
+/* Clear floats so following content doesn't slip beside them unexpectedly */
+.sf-figure.sf-float-left,
+.sf-figure.sf-float-right {
+  display: block;
+}
+
+/* =========================
+   Styles
+   ========================= */
+
+/* plain: basically nothing */
+.sf-style-plain { background: none; padding: 0; border: 0; }
+
+/* soft: subtle background block behind image */
+.sf-style-soft {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* card: stronger surface + shadow */
+.sf-style-card {
+  padding: 0.9rem;
+  border-radius: 0.9rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.30);
+}
+
+/* frame: thin border frame, no fill */
+.sf-style-frame {
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: transparent;
+}
+
+/* Clip backgrounds nicely for padded styles */
+.sf-style-soft,
+.sf-style-card,
+.sf-style-frame { overflow: hidden; }
+
+/* Make image corners follow the style container */
+.sf-style-soft img,
+.sf-style-card img,
+.sf-style-frame img {
+  border-radius: 0.55rem;
+}
+
+/* =========================
+   Radius
+   ========================= */
+
+/* Radius presets on wrapper */
+.sf-radius-none { border-radius: 0; }
+.sf-radius-sm   { border-radius: .5rem; }
+.sf-radius-md   { border-radius: .85rem; }
+.sf-radius-lg   { border-radius: 1.25rem; }
+
+/* Image follows wrapper radius */
+.sf-radius-none img { border-radius: 0; }
+.sf-radius-sm img   { border-radius: .35rem; }
+.sf-radius-md img   { border-radius: .65rem; }
+.sf-radius-lg img   { border-radius: 1rem; }
+
+/* =========================
+   Shadow
+   ========================= */
+
+/* Shadow presets on wrapper */
+.sf-shadow-none { box-shadow: none; }
+.sf-shadow-sm   { box-shadow: 0 10px 28px rgba(0,0,0,0.22); }
+.sf-shadow-soft { box-shadow: 0 18px 60px rgba(0,0,0,0.28); }
+
+/* If style is plain, shadow should still look OK */
+.sf-style-plain.sf-shadow-sm,
+.sf-style-plain.sf-shadow-soft {
+  background: transparent;
+}
+
+/* =========================
+   Clickable image link
+   ========================= */
+.sf-img-link { display: block; }
+.sf-img-link:hover img { filter: brightness(1.03); }

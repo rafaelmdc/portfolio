@@ -25,7 +25,6 @@ from wagtail.images import get_image_model_string
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 
-
 # ----------------------------
 # Tags
 # ----------------------------
@@ -91,6 +90,251 @@ class BlogIndexPage(RoutablePageMixin, Page):
 # ----------------------------
 # Blog Page
 # ----------------------------
+
+class PrettyEmbedBlock(blocks.StructBlock):
+    url = EmbedBlock(required=True)
+    caption = blocks.CharBlock(required=False, max_length=160)
+
+    width = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("sm", "Small"),
+            ("md", "Medium"),
+            ("lg", "Large"),
+            ("full", "Full width"),
+        ],
+        default="md",
+    )
+
+    align = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("center", "Center"),
+            ("left", "Left"),
+            ("right", "Right"),
+        ],
+        default="center",
+    )
+
+    style = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("plain", "Plain"),
+            ("card", "Card"),
+            ("soft", "Soft panel"),
+        ],
+        default="card",
+    )
+
+    class Meta:
+        icon = "media"
+        label = "Embed"
+        template = "cms/blocks/embed.html"
+
+
+class PrettyImageBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    caption = blocks.CharBlock(required=False, max_length=220)
+
+    alignment = blocks.ChoiceBlock(
+        choices=[
+            ("center", "Center"),
+            ("wide", "Wide"),
+            ("full", "Full width"),
+            ("left", "Left (wrap)"),
+            ("right", "Right (wrap)"),
+        ],
+        default="center",
+        required=True,
+    )
+
+    # NEW: presentation controls
+    style = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("plain", "Plain"),
+            ("card", "Card"),
+            ("soft", "Soft panel"),
+            ("frame", "Framed"),
+        ],
+        default="plain",
+    )
+
+    max_width = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("sm", "Small"),
+            ("md", "Medium"),
+            ("lg", "Large"),
+            ("xl", "Extra large"),
+            ("none", "No cap"),
+        ],
+        default="lg",
+        help_text="Caps the rendered width (helpful for centered images).",
+    )
+
+    radius = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("none", "None"),
+            ("sm", "Small"),
+            ("md", "Medium"),
+            ("lg", "Large"),
+        ],
+        default="lg",
+    )
+
+    shadow = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("none", "None"),
+            ("sm", "Soft"),
+            ("md", "Medium"),
+        ],
+        default="sm",
+    )
+
+    aspect = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("auto", "Original"),
+            ("16x9", "16:9"),
+            ("4x3", "4:3"),
+            ("1x1", "1:1"),
+        ],
+        default="auto",
+        help_text="Optional crop/aspect (uses Wagtail renditions).",
+    )
+
+    link_url = blocks.URLBlock(required=False, help_text="Optional: make image clickable.")
+    open_in_new = blocks.BooleanBlock(required=False, default=False)
+    alt_override = blocks.CharBlock(required=False, max_length=160, help_text="Optional: override alt text.")
+
+    class Meta:
+        icon = "image"
+        label = "Image"
+        template = "cms/blocks/image.html"
+
+
+class BlogSectionInnerBlock(blocks.StreamBlock):
+    heading = blocks.StructBlock(
+        [
+            ("level", blocks.ChoiceBlock(
+                choices=[("h2", "H2"), ("h3", "H3"), ("h4", "H4")],
+                default="h2",
+            )),
+            ("text", blocks.CharBlock()),
+        ],
+        icon="title",
+        template="cms/blocks/heading.html",
+    )
+    paragraph = blocks.RichTextBlock(
+        features=["h2", "h3", "bold", "italic", "link", "ol", "ul", "hr", "blockquote", "code"],
+        icon="doc-full",
+    )
+    image = PrettyImageBlock()
+    quote = blocks.BlockQuoteBlock(icon="openquote")
+    embed = PrettyEmbedBlock()
+
+    # These two SHOULD have templates (you already created them)
+    callout = blocks.StructBlock(
+        [
+            (
+                "style",
+                blocks.ChoiceBlock(
+                    choices=[("info", "Info"), ("tip", "Tip"), ("warn", "Warning"), ("note", "Note")],
+                    default="info",
+                ),
+            ),
+            ("title", blocks.CharBlock(required=False)),
+            ("text", blocks.RichTextBlock(features=["bold", "italic", "link", "ol", "ul"])),
+        ],
+        icon="placeholder",
+        label="Callout",
+        template="cms/blocks/callout.html",
+    )
+
+    code = blocks.StructBlock(
+        [
+            ("title", blocks.CharBlock(required=False, help_text="Optional: filename or label")),
+            (
+                "language",
+                blocks.ChoiceBlock(
+                    choices=[
+                        ("python", "Python"),
+                        ("bash", "Bash"),
+                        ("json", "JSON"),
+                        ("yaml", "YAML"),
+                        ("sql", "SQL"),
+                        ("javascript", "JavaScript"),
+                        ("html", "HTML"),
+                        ("css", "CSS"),
+                        ("r", "R"),
+                        ("text", "Plain text"),
+                    ],
+                    default="text",
+                ),
+            ),
+            ("code", blocks.TextBlock(rows=12)),
+        ],
+        icon="code",
+        label="Code block",
+        template="cms/blocks/code.html",
+    )
+
+    # NEW blocks (wired to your templates)
+    button = blocks.StructBlock(
+        [
+            ("text", blocks.CharBlock(required=True, max_length=80)),
+            ("url", blocks.URLBlock(required=True)),
+            (
+                "variant",
+                blocks.ChoiceBlock(
+                    choices=[("primary", "Primary"), ("outline", "Outline"), ("link", "Link")],
+                    default="primary",
+                ),
+            ),
+        ],
+        icon="link",
+        label="Button",
+        template="cms/blocks/button.html",
+    )
+
+    divider = blocks.StaticBlock(
+        icon="horizontalrule",
+        label="Divider",
+        template="cms/blocks/divider.html",
+    )
+
+    spacer = blocks.ChoiceBlock(
+        choices=[("sm", "Small"), ("md", "Medium"), ("lg", "Large")],
+        default="md",
+        icon="arrows-up-down",
+        label="Spacer",
+        template="cms/blocks/spacer.html",
+    )
+
+    gallery = blocks.StructBlock(
+        [
+            ("title", blocks.CharBlock(required=False, max_length=120)),
+            (
+                "columns",
+                blocks.ChoiceBlock(
+                    choices=[("2", "2 columns"), ("3", "3 columns")],
+                    default="2",
+                ),
+            ),
+            ("images", blocks.ListBlock(ImageChooserBlock())),
+        ],
+        icon="image",
+        label="Gallery",
+        template="cms/blocks/gallery.html",
+    )
+
+    class Meta:
+        label = "Section content"
+        required = False
+
 class BlogPage(Page):
     objects = PageManager()
 
@@ -128,53 +372,20 @@ class BlogPage(Page):
 
     body = StreamField(
         [
-            ("heading", blocks.CharBlock(form_classname="title", icon="title")),
             (
-                "paragraph",
-                blocks.RichTextBlock(
-                    features=[
-                        "h2",
-                        "h3",
-                        "bold",
-                        "italic",
-                        "link",
-                        "ol",
-                        "ul",
-                        "hr",
-                        "blockquote",
-                        "code",
-                    ],
-                    icon="doc-full",
-                ),
-            ),
-            (
-                "image",
+                "heading",
                 blocks.StructBlock(
                     [
-                        ("image", ImageChooserBlock(required=True)),
-                        ("caption", blocks.CharBlock(required=False)),
-                        (
-                            "alignment",
-                            blocks.ChoiceBlock(
-                                choices=[
-                                    ("center", "Center"),
-                                    ("wide", "Wide"),
-                                    ("full", "Full width"),
-                                    ("left", "Left (wrap)"),
-                                    ("right", "Right (wrap)"),
-                                ],
-                                default="center",
-                                required=True,
-                            ),
-                        ),
+                        ("level", blocks.ChoiceBlock(choices=[("h2","H2"),("h3","H3"),("h4","H4")], default="h2")),
+                        ("text", blocks.CharBlock()),
                     ],
-                    icon="image",
-                    label="Image",
-                    template="cms/blocks/image.html",
+                    icon="title",
+                    template="cms/blocks/heading.html",
                 ),
             ),
+            ("image", PrettyImageBlock()),
             ("quote", blocks.BlockQuoteBlock(icon="openquote")),
-            ("embed", EmbedBlock(icon="media")),
+            ("embed", PrettyEmbedBlock()),
             (
                 "callout",
                 blocks.StructBlock(
@@ -199,6 +410,7 @@ class BlogPage(Page):
                     ],
                     icon="placeholder",
                     label="Callout",
+                    template="cms/blocks/callout.html",
                 ),
             ),
             (
@@ -228,8 +440,71 @@ class BlogPage(Page):
                     ],
                     icon="code",
                     label="Code block",
+                    template="cms/blocks/code.html",
                 ),
             ),
+        #NEW
+        (
+            "button", blocks.StructBlock(
+            [
+                ("text", blocks.CharBlock(required=True, max_length=80)),
+                ("url", blocks.URLBlock(required=True)),
+                ("variant", blocks.ChoiceBlock(
+                    choices=[("primary","Primary"),("outline","Outline"),("link","Link")],
+                    default="primary",
+                )),
+            ],
+            icon="link",
+            label="Button",
+            template="cms/blocks/button.html",
+        )),
+
+        (
+            "divider", blocks.StaticBlock(
+                icon="horizontalrule",
+                label="Divider",
+                template="cms/blocks/divider.html",
+        )),
+
+        (
+            "spacer", blocks.ChoiceBlock(
+                choices=[("sm","Small"),("md","Medium"),("lg","Large")],
+                default="md",
+                icon="arrows-up-down",
+                label="Spacer",
+                template="cms/blocks/spacer.html",
+        )),
+
+        (   
+            "gallery", blocks.StructBlock(
+                [
+                    ("title", blocks.CharBlock(required=False, max_length=120)),
+                    ("columns", blocks.ChoiceBlock(choices=[("2","2 columns"),("3","3 columns")], default="2")),
+                    ("images", blocks.ListBlock(ImageChooserBlock())),
+                ],
+            icon="image",
+            label="Gallery",
+            template="cms/blocks/gallery.html",
+        )),
+
+        (
+            "section",
+            blocks.StructBlock(
+                [
+                    (
+                        "background",
+                        blocks.ChoiceBlock(
+                            choices=[("none", "None"), ("soft", "Soft"), ("contrast", "Contrast")],
+                            default="none",
+                        ),
+                    ),
+                    ("inner", BlogSectionInnerBlock()),  # ✅ remove required=False here
+                ],
+                icon="placeholder",
+                label="Section",
+                template="cms/blocks/section.html",
+            ),
+        ),
         ],
         use_json_field=True,
         blank=True,
