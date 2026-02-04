@@ -1,13 +1,111 @@
 {% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {% block title %}{{ page.title }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  {% if page.intro %}
-    <p class="text-muted">{{ page.intro }}</p>
-  {% endif %}
 
-  {# You can leave this empty for now #}
+<style>
+  .blog-article{ max-width: 920px; }
+  .blog-title{ letter-spacing:-.02em; line-height:1.15; }
+  .blog-content{ font-size:1.06rem; line-height:1.85; }
+
+  .blog-content h2{ margin-top:2rem; margin-bottom:.75rem; line-height:1.25; }
+  .blog-content h3{ margin-top:1.6rem; margin-bottom:.6rem; line-height:1.25; }
+  .blog-content p{ margin-bottom:1.1rem; }
+
+  .blog-content a{ text-decoration:underline; text-underline-offset:3px; }
+
+  .blog-content ul,.blog-content ol{ padding-left:1.25rem; margin-bottom:1.1rem; }
+
+  .blog-content blockquote{
+    margin:1.5rem 0; padding:1rem 1.25rem;
+    border-left:4px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.04);
+    border-radius:12px;
+  }
+
+  .blog-content pre{
+    padding:1rem 1.15rem; border-radius:14px;
+    background:rgba(0,0,0,.35);
+    border:1px solid rgba(255,255,255,.10);
+    overflow-x:auto; margin:1.25rem 0;
+  }
+  .blog-content code{
+    padding:.15rem .35rem; border-radius:8px;
+    background:rgba(0,0,0,.25);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .blog-divider{ opacity:.18; }
+
+  /* StreamField image presentation helpers */
+  .sf-figure{ margin: 1.25rem 0; }
+  .sf-figure figcaption{ margin-top:.6rem; font-size:.95rem; opacity:.7; }
+  .sf-wide{ width: 100%; }
+  @media (min-width: 992px){
+    .sf-wide{ width: 110%; margin-left: -5%; }
+    .sf-full{ width: 100vw; margin-left: calc(50% - 50vw); }
+  }
+  .sf-float-left{ float:left; width: 42%; margin: .4rem 1.25rem .8rem 0; }
+  .sf-float-right{ float:right; width: 42%; margin: .4rem 0 .8rem 1.25rem; }
+  @media (max-width: 768px){
+    .sf-float-left, .sf-float-right{ float:none; width:100%; margin: 1rem 0; }
+  }
+
+  /* Callout block */
+  .sf-callout{
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04);
+    border-radius:16px;
+    padding: 1rem 1.1rem;
+    margin: 1.25rem 0;
+  }
+  .sf-callout .sf-callout-title{ font-weight:600; margin-bottom:.35rem; }
+  .sf-callout.sf-info{ border-left: 4px solid rgba(13,110,253,.6); }
+  .sf-callout.sf-tip{ border-left: 4px solid rgba(25,135,84,.6); }
+  .sf-callout.sf-warn{ border-left: 4px solid rgba(255,193,7,.6); }
+  .sf-callout.sf-note{ border-left: 4px solid rgba(173,181,189,.6); }
+</style>
+
+<div class="container py-5 blog-article">
+
+  <div class="mb-4">
+    <h1 class="mb-1 blog-title">{{ page.title }}</h1>
+    {% if page.subtitle %}<p class="text-muted mb-3">{{ page.subtitle }}</p>{% endif %}
+
+    {% if page.cover_image %}
+      <div class="mb-4">
+        {% image page.cover_image width-1400 class="img-fluid rounded-4 border" %}
+      </div>
+    {% endif %}
+
+    {% if page.external_url or page.github_url %}
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        {% if page.external_url %}
+          <a class="btn btn-sm btn-outline-light" href="{{ page.external_url }}" target="_blank" rel="noopener">Live</a>
+        {% endif %}
+        {% if page.github_url %}
+          <a class="btn btn-sm btn-outline-light" href="{{ page.github_url }}" target="_blank" rel="noopener">GitHub</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if page.tags.all %}
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        {% for t in page.tags.all %}
+          <a class="badge text-bg-light border text-decoration-none"
+             href="{% pageurl page.get_parent %}tag/{{ t.slug }}/">#{{ t.slug }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="blog-content">
+    {% for block in page.body %}
+      {% include_block block %}
+    {% endfor %}
+  </div>
+
 </div>
 {% endblock %}

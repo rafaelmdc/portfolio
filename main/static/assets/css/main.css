@@ -3263,3 +3263,30 @@ body {
    ========================= */
 .sf-img-link { display: block; }
 .sf-img-link:hover img { filter: brightness(1.03); }
+
+
+/* =========================
+   StreamField Callouts
+   ========================= */
+
+
+.sf-callout{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  margin: 1.25rem 0;
+}
+
+
+.sf-callout .sf-callout-title{
+  font-weight: 600;
+  margin-bottom: .35rem;
+}
+
+
+/* Variants */
+.sf-callout.sf-info { border-left: 4px solid rgba(13,110,253,.6); }
+.sf-callout.sf-tip  { border-left: 4px solid rgba(25,135,84,.6); }
+.sf-callout.sf-warn { border-left: 4px solid rgba(255,193,7,.6); }
+.sf-callout.sf-note { border-left: 4px solid rgba(173,181,189,.6); }
