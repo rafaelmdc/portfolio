@@ -1,0 +1,48 @@
+{% load wagtailcore_tags %}
+
+{% with n=value.documents|length %}
+<div class="sf-pdfs">
+  {% if value.title %}
+    <div class="sf-pdfs-title">{{ value.title }}</div>
+  {% endif %}
+  {% if value.description %}
+    <div class="sf-pdfs-desc">{{ value.description }}</div>
+  {% endif %}
+
+  {# center the row for 1/2/3 so cards form a centered cluster #}
+  <div class="row g-3 {% if n <= 3 %}justify-content-center{% endif %}">
+    {% for item in value.documents %}
+      <div class="
+        {% if n == 1 %}col-12 col-md-8 col-lg-6
+        {% elif n == 2 %}col-12 col-md-6 col-lg-5
+        {% elif n == 3 %}col-12 col-md-6 col-lg-4
+        {% else %}col-12 col-md-6 col-lg-3
+        {% endif %}
+      ">
+        <div class="sf-pdf-card">
+          <div class="sf-pdf-name">{{ item.document.title }}</div>
+
+          <div class="d-flex flex-wrap gap-2 mt-2">
+            <a class="btn btn-sm btn-outline-light"
+               href="{{ item.document.url }}"
+               download
+               {% if item.open_in_new %}target="_blank" rel="noopener"{% endif %}>
+              {{ item.label|default:"Download PDF" }}
+            </a>
+
+            <a class="btn btn-sm btn-link text-decoration-none"
+               href="{{ item.document.url }}"
+               {% if item.open_in_new %}target="_blank" rel="noopener"{% endif %}>
+              View
+            </a>
+          </div>
+
+          {% if item.note %}
+            <div class="sf-pdf-note">{{ item.note }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endwith %}

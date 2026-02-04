@@ -1,21 +1,3 @@
-"""
-Wagtail CMS models for Blog + Portfolio.
-
-Refactor goals:
-- Remove duplicate imports / tighten structure.
-- Define a single, reusable StreamField block set so Blog + Portfolio share the same body capabilities.
-- Keep Blog behavior and URLs the same.
-- Upgrade PortfolioProjectPage.body to use the same rich blocks as BlogPage.body.
-
-NOTE:
-- Changing StreamField *block definitions* typically does not require a DB migration,
-  but existing StreamField content may become incompatible if you *rename* block types.
-  This refactor keeps block names consistent with your BlogPage body blocks.
-- If you already have PortfolioProjectPage body content, it will not automatically
-  transform (its old "heading" was a CharBlock). Easiest path: re-save those pages,
-  or temporarily keep a legacy "heading_text" block (included below).
-"""
-
 from __future__ import annotations
 
 from django.core.paginator import Paginator
@@ -35,7 +17,7 @@ from wagtail.images import get_image_model_string
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page, PageManager
 from wagtail.search import index
-
+from wagtail.documents.blocks import DocumentChooserBlock
 
 # =============================================================================
 # Shared StreamField blocks (used by BlogPage + PortfolioProjectPage)
@@ -266,7 +248,33 @@ class GalleryBlock(blocks.StructBlock):
         label = "Gallery"
         template = "cms/blocks/gallery.html"
 
+class PdfItemBlock(blocks.StructBlock):
+    document = DocumentChooserBlock(required=True)
+    label = blocks.CharBlock(required=False, max_length=60, help_text="Optional button label (e.g. Poster, PDF, Report)")
+    note = blocks.CharBlock(required=False, max_length=120, help_text="Optional small text under the button")
+    open_in_new = blocks.BooleanBlock(required=False, default=True)
 
+    class Meta:
+        icon = "doc-full-inverse"
+        label = "PDF"
+
+
+class PdfDownloadsBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, max_length=80)
+    description = blocks.CharBlock(required=False, max_length=180)
+
+    documents = blocks.ListBlock(
+        PdfItemBlock(),
+        min_num=1,
+        max_num=4,
+        help_text="Add 1–4 PDFs (e.g. poster, report, appendix, slides).",
+    )
+
+    class Meta:
+        icon = "doc-full-inverse"
+        label = "PDF downloads"
+        template = "cms/blocks/pdf_downloads.html"
+        
 class SectionInnerStream(blocks.StreamBlock):
     heading = HeadingBlock()
     paragraph = blocks.RichTextBlock(
@@ -282,6 +290,7 @@ class SectionInnerStream(blocks.StreamBlock):
     divider = DividerBlock()
     spacer = SpacerBlock()
     gallery = GalleryBlock()
+    pdfs = PdfDownloadsBlock()
 
     class Meta:
         label = "Section content"
@@ -299,7 +308,6 @@ class SectionBlock(blocks.StructBlock):
         icon = "placeholder"
         label = "Section"
         template = "cms/blocks/section.html"
-
 
 class BodyStream(blocks.StreamBlock):
     """
@@ -322,6 +330,7 @@ class BodyStream(blocks.StreamBlock):
     spacer = SpacerBlock()
     gallery = GalleryBlock()
     section = SectionBlock()
+    pdfs = PdfDownloadsBlock()
 
 
     class Meta:
