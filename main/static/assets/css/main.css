@@ -3343,3 +3343,61 @@ body {
   font-size: .95rem;
   opacity: .7;
 }
+
+/* StreamField Button block */
+.sf-btnwrap{
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.sf-btn{
+  border-radius: 999px;
+  padding: .62rem 1.05rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+/* Primary */
+.sf-btn-primary{
+  /* keep Bootstrap primary colors, just soften the border */
+  border-color: rgba(255,255,255,.10);
+}
+
+/* Outline */
+.sf-btn-outline{
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.04);
+}
+
+/* Link variant (still centered, looks intentional) */
+.sf-btnlink{
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem .2rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-underline-offset: 4px;
+  border-bottom: 1px solid rgba(255,255,255,.22);
+  opacity: .92;
+}
+.sf-btnlink:hover{
+  opacity: 1;
+  border-bottom-color: rgba(255,255,255,.35);
+}
+
+/* Arrow micro-interaction */
+.sf-btn-arrow{
+  display: inline-block;
+  transform: translateY(-.5px);
+  opacity: .85;
+}
+.sf-btn:hover .sf-btn-arrow,
+.sf-btnlink:hover .sf-btn-arrow{
+  transform: translate(3px, -0.5px);
+  opacity: 1;
+}

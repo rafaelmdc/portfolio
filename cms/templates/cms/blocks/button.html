@@ -1,7 +1,22 @@
-{% if value.variant == "primary" %}
-  <a class="btn btn-primary my-3" href="{{ value.url }}" target="_blank" rel="noopener">{{ value.text }}</a>
-{% elif value.variant == "link" %}
-  <a class="my-3 d-inline-block text-decoration-none" href="{{ value.url }}" target="_blank" rel="noopener">{{ value.text }} →</a>
-{% else %}
-  <a class="btn btn-outline-light my-3" href="{{ value.url }}" target="_blank" rel="noopener">{{ value.text }}</a>
-{% endif %}
+{% load wagtailcore_tags %}
+
+<div class="sf-btnwrap">
+  {% if value.variant == "primary" %}
+    <a class="btn sf-btn sf-btn-primary"
+       href="{{ value.url }}" target="_blank" rel="noopener">
+      {{ value.text }} <span class="sf-btn-arrow">→</span>
+    </a>
+
+  {% elif value.variant == "link" %}
+    <a class="sf-btnlink"
+       href="{{ value.url }}" target="_blank" rel="noopener">
+      {{ value.text }} <span class="sf-btn-arrow">→</span>
+    </a>
+
+  {% else %}
+    <a class="btn sf-btn sf-btn-outline"
+       href="{{ value.url }}" target="_blank" rel="noopener">
+      {{ value.text }} <span class="sf-btn-arrow">→</span>
+    </a>
+  {% endif %}
+</div>
