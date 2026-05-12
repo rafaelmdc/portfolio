@@ -194,6 +194,15 @@ class CodeBlock(blocks.StructBlock):
         ],
         default="text",
     )
+    style = blocks.ChoiceBlock(
+        choices=[
+            ("default", "Default"),
+            ("card", "Card (elevated)"),
+            ("terminal", "Terminal"),
+        ],
+        default="default",
+        required=False,
+    )
     code = blocks.TextBlock(rows=12)
 
     class Meta:

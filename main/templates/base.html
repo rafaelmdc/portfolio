@@ -81,6 +81,7 @@
   <script src="{% static 'assets/vendor/typed.js/typed.umd.js' %}"></script>
   <!-- Main CSS File -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
 
   {% block head_extra %}{% endblock %}
   {% block extra_css %}{% endblock %}
