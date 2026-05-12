@@ -1,7 +1,9 @@
 {% load wagtailimages_tags %}
 
 {% if value and value.image %}
-  {% image value.image width-1800 as r %}
+  {% image value.image width-600  as sm %}
+  {% image value.image width-1200 as md %}
+  {% image value.image width-1800 as lg %}
 
   {% with pct=value.width_pct|default:100 %}
   <figure class="sf-figure
@@ -12,23 +14,25 @@
     {% if value.alignment == 'full' %}sf-full{% endif %}
     {% if value.alignment == 'left' %}sf-float-left{% endif %}
     {% if value.alignment == 'right' %}sf-float-right{% endif %}
-  "{% if value.alignment != 'full' and value.alignment != 'wide' %} style="{% if value.alignment == 'left' or value.alignment == 'right' %}width:{% else %}max-width:{% endif %} {{ pct }}%;"{% endif %}>
+  "{% if value.alignment != 'full' and value.alignment != 'wide' %} style="--sf-w: {{ pct }}%;"{% endif %}>
 
     {% if value.link_url %}
       <a href="{{ value.link_url }}"
          class="sf-img-link"
          {% if value.open_in_new %}target="_blank" rel="noopener"{% endif %}>
     {% else %}
-      <a href="{{ r.url }}"
+      <a href="{{ lg.url }}"
          class="sf-img-link glightbox"
          data-type="image"
          data-title="{{ value.caption|default:value.image.title }}">
     {% endif %}
 
       <img
-        src="{{ r.url }}"
-        width="{{ r.width }}"
-        height="{{ r.height }}"
+        src="{{ lg.url }}"
+        srcset="{{ sm.url }} 600w, {{ md.url }} 1200w, {{ lg.url }} 1800w"
+        sizes="{% if value.alignment == 'full' or value.alignment == 'wide' %}100vw{% else %}(max-width: 767px) 100vw, {{ pct }}vw{% endif %}"
+        width="{{ lg.width }}"
+        height="{{ lg.height }}"
         class="img-fluid"
         alt="{{ value.alt_override|default:value.image.title }}"
         loading="lazy"

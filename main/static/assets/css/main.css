@@ -1962,24 +1962,40 @@ body {
    Alignment / Layout
    ========================= */
 
-/* Default: center any non-floated, non-full, non-wide figure (so max-width caps center nicely) */
+/* Centered figures: use --sf-w custom property set via inline style by the template */
 .sf-figure:not(.sf-float-left):not(.sf-float-right):not(.sf-full):not(.sf-wide) {
+  max-width: var(--sf-w, 100%);
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Wide / Full (you already have classes from template) */
+/* Float figures use --sf-w as their width (default 42% if unset) */
+.sf-figure.sf-float-left  { float: left;  width: var(--sf-w, 42%); margin: 0 1.25rem 1rem 0; }
+.sf-figure.sf-float-right { float: right; width: var(--sf-w, 42%); margin: 0 0 1rem 1.25rem; }
+
+/* Wide / Full */
 .sf-wide { width: 100%; }
 .sf-full { width: 100%; max-width: none; }
 
-/* Floats for wrap */
-.sf-float-left  { float: left;  margin: 0 1.25rem 1rem 0; }
-.sf-float-right { float: right; margin: 0 0 1rem 1.25rem; }
+/* Gallery block */
+.gallery-block {
+  max-width: var(--sf-w, 100%);
+  margin-inline: auto;
+}
 
-/* Clear floats so following content doesn't slip beside them unexpectedly */
-.sf-figure.sf-float-left,
-.sf-figure.sf-float-right {
-  display: block;
+/* Mobile: collapse all width constraints — override the inline custom property */
+@media (max-width: 767px) {
+  .sf-figure,
+  .gallery-block {
+    --sf-w: 100% !important;
+  }
+
+  .sf-figure.sf-float-left,
+  .sf-figure.sf-float-right {
+    float: none;
+    width: 100%;
+    margin: 1rem 0;
+  }
 }
 
 /* =========================
@@ -2101,6 +2117,30 @@ body {
 
 .sf-heading-anchor:hover {
   color: var(--accent-color);
+}
+
+/* On touch devices there's no hover — keep anchor faintly visible */
+@media (hover: none) {
+  .sf-heading-anchor { opacity: 0.3; }
+}
+
+
+/* =========================
+   Rich text mobile fixes
+   ========================= */
+
+/* Tables from Wagtail RichTextBlock overflow on mobile — scroll them instead */
+.rich-text table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Inline code / pre in rich text */
+.rich-text pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 

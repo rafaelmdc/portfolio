@@ -1,7 +1,7 @@
 {% load wagtailimages_tags %}
 
 {% with pct=value.width_pct|default:100 %}
-<div class="gallery-block my-4" style="max-width: {{ pct }}%; margin-inline: auto;">
+<div class="gallery-block my-4" style="--sf-w: {{ pct }}%;">
   {% if value.title %}<h3 class="gallery-block__title mb-3">{{ value.title }}</h3>{% endif %}
 
   <div class="carousel slide gallery-carousel"
@@ -19,14 +19,19 @@
 
     <div class="carousel-inner">
       {% for img in value.images %}
-        {% image img fill-1600x900 as r %}
-        {% image img width-2400 as full_r %}
+        {% image img fill-800x450  as sm_r %}
+        {% image img fill-1600x900 as r    %}
+        {% image img width-2400    as full_r %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}">
           <a href="{{ full_r.url }}"
              class="glightbox d-block"
              data-type="image"
              data-title="{{ img.title }}">
-            <img src="{{ r.url }}" width="{{ r.width }}" height="{{ r.height }}"
+            <img src="{{ r.url }}"
+                 srcset="{{ sm_r.url }} 800w, {{ r.url }} 1600w"
+                 sizes="(max-width: 767px) 100vw, {{ pct }}vw"
+                 width="{{ r.width }}"
+                 height="{{ r.height }}"
                  class="d-block w-100 gallery-slide__img"
                  alt="{{ img.title }}"
                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
@@ -57,7 +62,6 @@
   if (!el) return;
   var id = 'gc-' + Math.random().toString(36).slice(2, 9);
   el.id = id;
-  // Wire carousel controls
   el.querySelectorAll('.carousel-indicators button').forEach(function (btn, i) {
     btn.setAttribute('data-bs-target', '#' + id);
     btn.setAttribute('data-bs-slide-to', String(i));
@@ -66,7 +70,6 @@
   var next = el.querySelector('.carousel-control-next');
   if (prev) { prev.setAttribute('data-bs-target', '#' + id); prev.setAttribute('data-bs-slide', 'prev'); }
   if (next) { next.setAttribute('data-bs-target', '#' + id); next.setAttribute('data-bs-slide', 'next'); }
-  // Group all images into a single GLightbox gallery
   el.querySelectorAll('.glightbox').forEach(function (a) {
     a.setAttribute('data-gallery', id);
   });
