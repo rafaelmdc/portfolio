@@ -7,7 +7,5 @@ Pillow==10.4.0
 beautifulsoup4==4.12.3
 markdown2==2.4.13
 bleach==6.1.0
-Markdown==3.7
-django-markdownx==4.0.7
 whitenoise==6.7.0
 wagtail>=6.0,<7.0

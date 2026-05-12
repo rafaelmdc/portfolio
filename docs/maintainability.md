@@ -4,29 +4,10 @@ Honest notes on the current state of the codebase — things to keep in mind whe
 
 ---
 
-## Known Issues / Tech Debt
-
-### Duplicate block definitions
-`cms/blocks.py` has a comment referencing a "legacy" duplicate. If there are two copies of the block registry (or an old import), consolidate them. Any block defined twice will cause confusion when adding new blocks.
-
-### Legacy templates in `main/`
-Several templates exist that appear to be from before Wagtail was added:
-- `portfolio.html` / `portfolio_detail.html` — portfolio listing/detail that's now handled by `PortfolioIndexPage` / `PortfolioProjectPage`
-- `services.html` — skills/services page that may be unused
-
-Before deleting these, confirm no URL route points to them (search `urls.py` and views for the template names).
-
-### Two Markdown libraries in requirements
-Both `Markdown` and `markdown2` are installed. The `|markdownify` template tag uses `markdown2`. The `Markdown` package and `django-markdownx` may be unused — check imports before removing.
-
-### `WAGTAIL_SITE_NAME = "test"` in settings
-Still set to `"test"`. Should be updated to the real site name.
-
-### `WAGTAILADMIN_BASE_URL = "http://localhost:8000"`
-Should point to the production domain. Affects email links sent from Wagtail (page revision notifications, etc.).
+## Open Items
 
 ### Single-settings file
-There is one `settings.py` with no dev/prod split. Currently `DEBUG` is controlled by an env var (`DJANGO_DEBUG`), which works but means you have to be careful about which settings apply only in dev. If the project grows, consider splitting into `settings/base.py`, `settings/dev.py`, `settings/prod.py`.
+There is one `settings.py` with no dev/prod split. Currently `DEBUG` is controlled by an env var (`DJANGO_DEBUG`), which works fine for a small project. If the project grows, consider splitting into `settings/base.py`, `settings/dev.py`, `settings/prod.py`.
 
 ---
 
@@ -41,7 +22,7 @@ There is one `settings.py` with no dev/prod split. Currently `DEBUG` is controll
 
 ### Adding a new StreamField block
 1. Define the block class in `cms/blocks.py`
-2. Add it to `BlogPage.body` and/or `PortfolioProjectPage.body` stream definitions
+2. Add it to `BlogBodyStreamBlock` and/or `PortfolioProjectPage.body` stream definitions in `cms/models.py`
 3. Create a block template in `cms/templates/cms/blocks/`
 4. Run `makemigrations` + `migrate` (StreamField schema changes need migrations)
 

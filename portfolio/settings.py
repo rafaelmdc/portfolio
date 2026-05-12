@@ -168,8 +168,8 @@ STORAGES = {
 }
 
 # Wagtail settings
-WAGTAIL_SITE_NAME = "test"
-WAGTAILADMIN_BASE_URL = "http://localhost:8000"
+WAGTAIL_SITE_NAME = "Portfolio"
+WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
 
 # Security: prevent browsers from MIME-sniffing responses
 SECURE_CONTENT_TYPE_NOSNIFF = True
