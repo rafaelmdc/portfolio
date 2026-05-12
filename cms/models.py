@@ -249,7 +249,25 @@ class SpacerBlock(blocks.ChoiceBlock):
 
 class GalleryBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=False, max_length=120)
-    columns = blocks.ChoiceBlock(choices=[("2", "2 columns"), ("3", "3 columns")], default="2")
+    layout = blocks.ChoiceBlock(
+        choices=[
+            ("carousel", "Carousel"),
+            ("grid", "Grid"),
+        ],
+        default="carousel",
+        required=False,
+    )
+    columns = blocks.ChoiceBlock(
+        choices=[("2", "2 columns"), ("3", "3 columns")],
+        default="3",
+        required=False,
+        help_text="Only applies to Grid layout.",
+    )
+    autoplay = blocks.BooleanBlock(
+        required=False,
+        default=True,
+        help_text="Auto-advance slides (carousel only).",
+    )
     images = blocks.ListBlock(ImageChooserBlock())
 
     class Meta:

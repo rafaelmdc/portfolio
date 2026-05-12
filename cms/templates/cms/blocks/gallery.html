@@ -1,11 +1,58 @@
 {% load wagtailimages_tags %}
-<div class="my-4">
-  {% if value.title %}<h3 class="mb-3">{{ value.title }}</h3>{% endif %}
-  <div class="row g-3">
-    {% for img in value.images %}
-      <div class="col-6 col-md-{{ 12|divisibleby:value.columns|yesno:'6,4' }}">
-        {% image img fill-900x650 class="img-fluid rounded-4 border" %}
-      </div>
-    {% endfor %}
+
+{% if value.layout == 'grid' %}
+
+  <div class="gallery-block gallery-block--grid my-4">
+    {% if value.title %}<h3 class="gallery-block__title mb-3">{{ value.title }}</h3>{% endif %}
+    <div class="row g-3">
+      {% for img in value.images %}
+        <div class="col-6 {% if value.columns == '3' %}col-md-4{% else %}col-md-6{% endif %}">
+          {% image img fill-900x650 class="img-fluid rounded-3 w-100" style="object-fit:cover;" %}
+        </div>
+      {% endfor %}
+    </div>
   </div>
-</div>
+
+{% else %}
+
+  <div class="gallery-block gallery-block--carousel my-4">
+    {% if value.title %}<h3 class="gallery-block__title mb-3">{{ value.title }}</h3>{% endif %}
+    <div class="swiper gallery-swiper">
+      <div class="swiper-wrapper">
+        {% for img in value.images %}
+          <div class="swiper-slide">
+            {% image img fill-1400x800 as r %}
+            <img src="{{ r.url }}" width="{{ r.width }}" height="{{ r.height }}"
+                 class="gallery-slide__img" alt="{{ img.title }}" loading="lazy">
+          </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var container = document.currentScript.previousElementSibling;
+      var swiperEl = container.querySelector('.gallery-swiper');
+      if (!swiperEl || typeof Swiper === 'undefined') return;
+      new Swiper(swiperEl, {
+        loop: true,
+        {% if value.autoplay %}
+        autoplay: { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true },
+        {% endif %}
+        pagination: { el: swiperEl.querySelector('.swiper-pagination'), clickable: true },
+        navigation: {
+          nextEl: swiperEl.querySelector('.swiper-button-next'),
+          prevEl: swiperEl.querySelector('.swiper-button-prev'),
+        },
+        slidesPerView: 1,
+        spaceBetween: 0,
+        grabCursor: true,
+      });
+    })();
+  </script>
+
+{% endif %}
