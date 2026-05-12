@@ -25,12 +25,16 @@
         width="{{ r.width }}"
         height="{{ r.height }}"
         class="img-fluid"
-        alt=""
+        alt="{{ value.alt_override|default:value.image.title }}"
         loading="lazy"
       >
 
     {% if value.link_url %}
       </a>
+    {% endif %}
+
+    {% if value.caption %}
+      <figcaption class="sf-caption">{{ value.caption }}</figcaption>
     {% endif %}
 
   </figure>
