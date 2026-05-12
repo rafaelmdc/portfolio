@@ -10,6 +10,7 @@ from wagtail.contrib.sitemaps import Sitemap as WagtailSitemap
 
 from django.conf import settings
 from main.sitemaps import StaticViewSitemap
+from cms.feeds import BlogRssFeed, BlogAtomFeed
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -25,6 +26,8 @@ urlpatterns = [
 
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+    path("blog/feed/", BlogRssFeed(), name="blog-rss"),
+    path("blog/feed/atom/", BlogAtomFeed(), name="blog-atom"),
 
     # Wagtail catch-all LAST
     path("", include(wagtail_urls)),
