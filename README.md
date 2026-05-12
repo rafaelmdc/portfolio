@@ -21,7 +21,7 @@ Personal portfolio site built with Django 5.2 and Wagtail 6. Manages CV data (ed
 ```bash
 cp .env.example .env
 # edit .env with your local values
-docker compose up
+docker compose -f docker-compose.dev.yml up
 ```
 
 The app will be available at `http://localhost`. Wagtail admin at `/cms/`, Django admin at `/admin/`.
@@ -29,17 +29,32 @@ The app will be available at `http://localhost`. Wagtail admin at `/cms/`, Djang
 On first run, create a superuser:
 
 ```bash
-docker compose exec web python manage.py createsuperuser
+docker compose -f docker-compose.dev.yml exec web python manage.py createsuperuser
 ```
 
 To run without Docker (requires a local PostgreSQL instance):
 
 ```bash
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py collectstatic --noinput
+python manage.py migrate        # uses portfolio.settings.dev by default
 python manage.py runserver
 ```
+
+## Production (VPS / Docker Compose)
+
+```bash
+cp .env.prod.example .env.prod
+# fill in real values — never commit .env.prod
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Key differences from dev:
+- No code volume mount — code is baked into the image
+- Uses `portfolio.settings.prod` (requires `DJANGO_SECRET_KEY`, errors loudly if missing)
+- `restart: unless-stopped` on all services
+- WhiteNoise compressed static file storage
+
+For Kubernetes, TLS is terminated by Cloudflare + the cluster ingress; the app only needs to expose HTTP internally.
 
 ## Environment Variables
 
