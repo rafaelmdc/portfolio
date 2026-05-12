@@ -4,7 +4,7 @@ DC    := docker compose -f docker-compose.dev.yml
 MANAGE := $(DC) exec web python manage.py
 
 .PHONY: build push release \
-        dev-up dev-down dev-logs dev-shell dev-restart \
+        dev-up dev-up-build dev-up-d dev-down dev-logs dev-shell dev-restart \
         migrate migrations shell dbshell \
         createsuperuser \
         prod-up prod-down prod-logs
@@ -22,6 +22,9 @@ release: push
 # ── Dev environment ─────────────────────────────────────────────
 dev-up:
 	$(DC) up
+
+dev-up-build:
+	$(DC) up --build
 
 dev-up-d:
 	$(DC) up -d

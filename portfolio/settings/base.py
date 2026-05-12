@@ -102,6 +102,11 @@ CKEDITOR_5_UPLOAD_PATH = "uploads/ckeditor/"
 WAGTAIL_SITE_NAME = "Portfolio"
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
 
+# Optional: ORCID public profile ID (e.g. "0000-0001-2345-6789")
+ORCID_ID             = os.environ.get("ORCID_ID", "")
+# Your name as it appears in ORCID author lists — bolded in the PDF CV
+ORCID_HIGHLIGHT_NAME = os.environ.get("ORCID_HIGHLIGHT_NAME", "")
+
 
 def env_list(name: str, default: str = "") -> list[str]:
     return [x.strip() for x in os.getenv(name, default).split(",") if x.strip()]

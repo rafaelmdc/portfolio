@@ -10,7 +10,11 @@
 
   <!-- Section Title -->
   <div class="container section-title" data-aos="fade-up">
-    <h2>Resume</h2>
+    <h2>Resume
+      <a href="{% url 'resume-pdf' %}" class="btn btn-sm btn-outline-secondary ms-3 align-middle" style="font-size:.75rem;vertical-align:middle;">
+        <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+      </a>
+    </h2>
     <p class="lead mb-0">
       I’m passionate about exploring the intersection between <strong>biology</strong> and <strong>data</strong>. I build
       <strong>bioinformatics pipelines</strong> (with existing tools or <em>de&nbsp;novo</em> scripts) to turn biological questions
@@ -91,6 +95,36 @@
 
     </div>
   </div>
+
+  {% if pub_groups %}
+  <div class="container mt-5" data-aos="fade-up" data-aos-delay="200">
+    <div class="resume-item">
+      <h3 class="resume-title">Publications</h3>
+
+      {% for group in pub_groups %}
+        <h4 class="resume-pub-type mt-4">{{ group.label }}</h4>
+        <ol class="resume-pub-list" reversed>
+          {% for pub in group.items %}
+            <li class="resume-pub-item">
+              <span class="pub-authors">{{ pub.authors_display|safe }}</span>
+              ({{ pub.year }}).
+              <span class="pub-title">{{ pub.title }}</span>.
+              <em class="pub-venue">{{ pub.venue }}</em>.
+              {% if pub.link %}
+                <a href="{{ pub.link }}" class="pub-doi" target="_blank" rel="noopener">
+                  {% if pub.doi %}doi:{{ pub.doi }}{% else %}link{% endif %}
+                </a>
+              {% endif %}
+              {% if pub.citation_count %}
+                <span class="pub-cites">{{ pub.citation_count }} citation{{ pub.citation_count|pluralize }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 
 </section>
 {% endblock %}

@@ -1287,6 +1287,49 @@ section:last-of-type,
   padding-bottom: 0;
 }
 
+/* Publications */
+.resume-pub-type {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--heading-color);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-color), transparent 80%);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.resume-pub-list {
+  padding-left: 1.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.resume-pub-item {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  color: var(--default-color);
+}
+
+.resume-pub-item .pub-title {
+  font-weight: 500;
+}
+
+.resume-pub-item .pub-venue {
+  color: var(--heading-color);
+}
+
+.resume-pub-item .pub-doi {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  margin-left: 0.25rem;
+}
+
+.resume-pub-item .pub-cites {
+  font-size: 0.75rem;
+  color: var(--default-color);
+  opacity: 0.6;
+  margin-left: 0.5rem;
+}
+
 .resume .skill-item {
   margin-bottom: 2rem;
 }
