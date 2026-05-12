@@ -95,17 +95,12 @@ class PrettyImageBlock(blocks.StructBlock):
         default="plain",
     )
 
-    max_width = blocks.ChoiceBlock(
+    width_pct = blocks.IntegerBlock(
         required=False,
-        choices=[
-            ("sm", "Small"),
-            ("md", "Medium"),
-            ("lg", "Large"),
-            ("xl", "Extra large"),
-            ("none", "No cap"),
-        ],
-        default="lg",
-        help_text="Caps the rendered width (helpful for centered images).",
+        default=100,
+        min_value=20,
+        max_value=100,
+        help_text="Width as % of content column (20–100). Ignored for Full/Wide alignment.",
     )
 
     radius = blocks.ChoiceBlock(
@@ -249,24 +244,17 @@ class SpacerBlock(blocks.ChoiceBlock):
 
 class GalleryBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=False, max_length=120)
-    layout = blocks.ChoiceBlock(
-        choices=[
-            ("carousel", "Carousel"),
-            ("grid", "Grid"),
-        ],
-        default="carousel",
+    width_pct = blocks.IntegerBlock(
         required=False,
-    )
-    columns = blocks.ChoiceBlock(
-        choices=[("2", "2 columns"), ("3", "3 columns")],
-        default="3",
-        required=False,
-        help_text="Only applies to Grid layout.",
+        default=100,
+        min_value=20,
+        max_value=100,
+        help_text="Width as % of content column (20–100).",
     )
     autoplay = blocks.BooleanBlock(
         required=False,
         default=True,
-        help_text="Auto-advance slides (carousel only).",
+        help_text="Auto-advance slides every 4 seconds.",
     )
     images = blocks.ListBlock(ImageChooserBlock())
 

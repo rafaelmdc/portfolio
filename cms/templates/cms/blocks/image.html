@@ -3,6 +3,7 @@
 {% if value and value.image %}
   {% image value.image width-1800 as r %}
 
+  {% with pct=value.width_pct|default:100 %}
   <figure class="sf-figure
     sf-style-{{ value.style|default:'plain' }}
     sf-radius-{{ value.radius|default:'md' }}
@@ -11,13 +12,17 @@
     {% if value.alignment == 'full' %}sf-full{% endif %}
     {% if value.alignment == 'left' %}sf-float-left{% endif %}
     {% if value.alignment == 'right' %}sf-float-right{% endif %}
-    sf-mw-{{ value.max_width|default:'lg' }}
-  ">
+  "{% if value.alignment != 'full' and value.alignment != 'wide' %} style="{% if value.alignment == 'left' or value.alignment == 'right' %}width:{% else %}max-width:{% endif %} {{ pct }}%;"{% endif %}>
 
     {% if value.link_url %}
       <a href="{{ value.link_url }}"
          class="sf-img-link"
          {% if value.open_in_new %}target="_blank" rel="noopener"{% endif %}>
+    {% else %}
+      <a href="{{ r.url }}"
+         class="sf-img-link glightbox"
+         data-type="image"
+         data-title="{{ value.caption|default:value.image.title }}">
     {% endif %}
 
       <img
@@ -29,13 +34,12 @@
         loading="lazy"
       >
 
-    {% if value.link_url %}
-      </a>
-    {% endif %}
+    </a>
 
     {% if value.caption %}
       <figcaption class="sf-caption">{{ value.caption }}</figcaption>
     {% endif %}
 
   </figure>
+  {% endwith %}
 {% endif %}

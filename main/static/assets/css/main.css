@@ -1877,55 +1877,67 @@ body {
   font-weight: 600;
 }
 
-/* Carousel */
-.gallery-block--carousel .gallery-swiper {
+.gallery-carousel {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.25);
 }
 
-.gallery-block--carousel .swiper-slide {
-  line-height: 0;
+/* Lock container height so transitions never cause a resize */
+.gallery-carousel .carousel-inner {
+  aspect-ratio: 16 / 9;
+}
+
+.gallery-carousel .carousel-item {
+  height: 100%;
 }
 
 .gallery-slide__img {
   width: 100%;
-  height: 420px;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
 
 @media (max-width: 768px) {
-  .gallery-slide__img { height: 240px; }
+  .gallery-carousel .carousel-inner { aspect-ratio: 4 / 3; }
 }
 
-.gallery-block--carousel .swiper-button-prev,
-.gallery-block--carousel .swiper-button-next {
-  color: #fff;
-  background: rgba(0,0,0,0.45);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  backdrop-filter: blur(4px);
-  transition: background 0.2s;
-}
-.gallery-block--carousel .swiper-button-prev:hover,
-.gallery-block--carousel .swiper-button-next:hover {
-  background: rgba(0,0,0,0.7);
-}
-.gallery-block--carousel .swiper-button-prev::after,
-.gallery-block--carousel .swiper-button-next::after {
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.gallery-block--carousel .swiper-pagination-bullet {
-  background: rgba(255,255,255,0.5);
+/* Darken Bootstrap's default control backgrounds for legibility on photos */
+.gallery-carousel .carousel-control-prev,
+.gallery-carousel .carousel-control-next {
+  width: 48px;
   opacity: 1;
 }
-.gallery-block--carousel .swiper-pagination-bullet-active {
-  background: #fff;
+
+.gallery-carousel .carousel-control-prev-icon,
+.gallery-carousel .carousel-control-next-icon {
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0,0,0,0.45);
+  border-radius: 50%;
+  background-size: 55%;
+  backdrop-filter: blur(4px);
+  transition: background-color 0.2s;
+}
+
+.gallery-carousel .carousel-control-prev:hover .carousel-control-prev-icon,
+.gallery-carousel .carousel-control-next:hover .carousel-control-next-icon {
+  background-color: rgba(0,0,0,0.72);
+}
+
+.gallery-carousel .carousel-indicators [data-bs-target] {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.gallery-carousel .carousel-indicators .active {
+  opacity: 1;
 }
 
 /* ---- Base ---- */
@@ -1945,28 +1957,6 @@ body {
   opacity: .85;
   font-size: .95rem;
 }
-
-/* =========================
-   Sizing (ONLY sizing — no alignment here)
-   ========================= */
-.sf-mw-sm   { max-width: 520px; }
-.sf-mw-md   { max-width: 760px; }
-.sf-mw-lg   { max-width: 1040px; }
-.sf-mw-xl   { max-width: 1200px; }
-.sf-mw-none { max-width: none; }
-
-/* Full width should not be capped */
-.sf-full.sf-mw-sm,
-.sf-full.sf-mw-md,
-.sf-full.sf-mw-lg,
-.sf-full.sf-mw-xl { max-width: none; }
-
-/* (Optional) Wide should also ignore caps (uncomment if you want wide to always be wide)
-.sf-wide.sf-mw-sm,
-.sf-wide.sf-mw-md,
-.sf-wide.sf-mw-lg,
-.sf-wide.sf-mw-xl { max-width: none; }
-*/
 
 /* =========================
    Alignment / Layout
@@ -2068,18 +2058,57 @@ body {
 }
 
 /* =========================
-   Clickable image link
+   Clickable image link / lightbox
    ========================= */
 .sf-img-link { display: block; }
-.sf-img-link:hover img { filter: brightness(1.03); }
+.sf-img-link:hover img {
+  filter: brightness(0.9);
+  transition: filter 0.2s;
+}
+/* Zoom cursor for lightbox links, pointer for external links */
+.sf-img-link.glightbox { cursor: zoom-in; }
+.sf-img-link[target="_blank"] { cursor: pointer; }
+.sf-img-link[target="_blank"]:hover img { filter: none; }
+
+/* Gallery slide lightbox hint */
+.gallery-carousel .carousel-item a.glightbox { cursor: zoom-in; display: block; }
+.gallery-carousel .carousel-item a.glightbox:hover .gallery-slide__img {
+  filter: brightness(0.88);
+  transition: filter 0.2s;
+}
+
+
+/* =========================
+   Heading anchors
+   ========================= */
+.sf-heading { position: relative; }
+
+.sf-heading-anchor {
+  margin-left: 0.45rem;
+  font-size: 0.72em;
+  font-weight: 400;
+  color: rgba(255,255,255,0.28);
+  text-decoration: none;
+  opacity: 0;
+  vertical-align: middle;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.sf-heading:hover .sf-heading-anchor,
+.sf-heading-anchor:focus {
+  opacity: 1;
+}
+
+.sf-heading-anchor:hover {
+  color: var(--accent-color);
+}
 
 
 /* =========================
    StreamField Callouts
    ========================= */
 
-
-.sf-callout{
+.sf-callout {
   border: 1px solid rgba(255,255,255,.12);
   background: rgba(255,255,255,.04);
   border-radius: 16px;
@@ -2087,11 +2116,20 @@ body {
   margin: 1.25rem 0;
 }
 
-
-.sf-callout .sf-callout-title{
+.sf-callout .sf-callout-title {
   font-weight: 600;
   margin-bottom: .35rem;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
 }
+
+.sf-callout-icon { flex-shrink: 0; font-size: 0.95em; }
+
+.sf-callout.sf-info .sf-callout-icon  { color: rgba(96,165,250,.9); }
+.sf-callout.sf-tip  .sf-callout-icon  { color: rgba(52,211,153,.9); }
+.sf-callout.sf-warn .sf-callout-icon  { color: rgba(251,191,36,.9); }
+.sf-callout.sf-note .sf-callout-icon  { color: rgba(148,163,184,.9); }
 
 
 /* Variants */

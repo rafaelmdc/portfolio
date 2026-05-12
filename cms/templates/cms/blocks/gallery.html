@@ -1,58 +1,74 @@
 {% load wagtailimages_tags %}
 
-{% if value.layout == 'grid' %}
+{% with pct=value.width_pct|default:100 %}
+<div class="gallery-block my-4" style="max-width: {{ pct }}%; margin-inline: auto;">
+  {% if value.title %}<h3 class="gallery-block__title mb-3">{{ value.title }}</h3>{% endif %}
 
-  <div class="gallery-block gallery-block--grid my-4">
-    {% if value.title %}<h3 class="gallery-block__title mb-3">{{ value.title }}</h3>{% endif %}
-    <div class="row g-3">
+  <div class="carousel slide gallery-carousel"
+       {% if value.autoplay %}data-bs-ride="carousel" data-bs-interval="4000"{% endif %}>
+
+    {% if value.images|length > 1 %}
+    <div class="carousel-indicators">
       {% for img in value.images %}
-        <div class="col-6 {% if value.columns == '3' %}col-md-4{% else %}col-md-6{% endif %}">
-          {% image img fill-900x650 class="img-fluid rounded-3 w-100" style="object-fit:cover;" %}
+        <button type="button"
+                {% if forloop.first %}class="active" aria-current="true"{% endif %}
+                aria-label="Slide {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="carousel-inner">
+      {% for img in value.images %}
+        {% image img fill-1600x900 as r %}
+        {% image img width-2400 as full_r %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <a href="{{ full_r.url }}"
+             class="glightbox d-block"
+             data-type="image"
+             data-title="{{ img.title }}">
+            <img src="{{ r.url }}" width="{{ r.width }}" height="{{ r.height }}"
+                 class="d-block w-100 gallery-slide__img"
+                 alt="{{ img.title }}"
+                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+          </a>
         </div>
       {% endfor %}
     </div>
+
+    {% if value.images|length > 1 %}
+    <button class="carousel-control-prev" type="button">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+    {% endif %}
   </div>
+</div>
+{% endwith %}
 
-{% else %}
-
-  <div class="gallery-block gallery-block--carousel my-4">
-    {% if value.title %}<h3 class="gallery-block__title mb-3">{{ value.title }}</h3>{% endif %}
-    <div class="swiper gallery-swiper">
-      <div class="swiper-wrapper">
-        {% for img in value.images %}
-          <div class="swiper-slide">
-            {% image img fill-1400x800 as r %}
-            <img src="{{ r.url }}" width="{{ r.width }}" height="{{ r.height }}"
-                 class="gallery-slide__img" alt="{{ img.title }}" loading="lazy">
-          </div>
-        {% endfor %}
-      </div>
-      <div class="swiper-pagination"></div>
-      <div class="swiper-button-prev"></div>
-      <div class="swiper-button-next"></div>
-    </div>
-  </div>
-
-  <script>
-    (function () {
-      var container = document.currentScript.previousElementSibling;
-      var swiperEl = container.querySelector('.gallery-swiper');
-      if (!swiperEl || typeof Swiper === 'undefined') return;
-      new Swiper(swiperEl, {
-        loop: true,
-        {% if value.autoplay %}
-        autoplay: { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true },
-        {% endif %}
-        pagination: { el: swiperEl.querySelector('.swiper-pagination'), clickable: true },
-        navigation: {
-          nextEl: swiperEl.querySelector('.swiper-button-next'),
-          prevEl: swiperEl.querySelector('.swiper-button-prev'),
-        },
-        slidesPerView: 1,
-        spaceBetween: 0,
-        grabCursor: true,
-      });
-    })();
-  </script>
-
-{% endif %}
+<script>
+(function () {
+  var script = document.currentScript;
+  var block = script.previousElementSibling;
+  var el = block.querySelector('.gallery-carousel');
+  if (!el) return;
+  var id = 'gc-' + Math.random().toString(36).slice(2, 9);
+  el.id = id;
+  // Wire carousel controls
+  el.querySelectorAll('.carousel-indicators button').forEach(function (btn, i) {
+    btn.setAttribute('data-bs-target', '#' + id);
+    btn.setAttribute('data-bs-slide-to', String(i));
+  });
+  var prev = el.querySelector('.carousel-control-prev');
+  var next = el.querySelector('.carousel-control-next');
+  if (prev) { prev.setAttribute('data-bs-target', '#' + id); prev.setAttribute('data-bs-slide', 'prev'); }
+  if (next) { next.setAttribute('data-bs-target', '#' + id); next.setAttribute('data-bs-slide', 'next'); }
+  // Group all images into a single GLightbox gallery
+  el.querySelectorAll('.glightbox').forEach(function (a) {
+    a.setAttribute('data-gallery', id);
+  });
+})();
+</script>

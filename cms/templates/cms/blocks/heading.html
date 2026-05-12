@@ -1,3 +1,15 @@
-{% if value.level == 'h2' %}<h2 class="mt-4 mb-3">{{ value.text }}</h2>{% endif %}
-{% if value.level == 'h3' %}<h3 class="mt-4 mb-3">{{ value.text }}</h3>{% endif %}
-{% if value.level == 'h4' %}<h4 class="mt-4 mb-3">{{ value.text }}</h4>{% endif %}
+{% load wagtailcore_tags %}
+
+{% if value.level == 'h2' %}
+<h2 id="{{ value.text|slugify }}" class="sf-heading mt-4 mb-3">
+  {{ value.text }}<a href="#{{ value.text|slugify }}" class="sf-heading-anchor" aria-hidden="true">#</a>
+</h2>
+{% elif value.level == 'h3' %}
+<h3 id="{{ value.text|slugify }}" class="sf-heading mt-4 mb-3">
+  {{ value.text }}<a href="#{{ value.text|slugify }}" class="sf-heading-anchor" aria-hidden="true">#</a>
+</h3>
+{% elif value.level == 'h4' %}
+<h4 id="{{ value.text|slugify }}" class="sf-heading mt-4 mb-3">
+  {{ value.text }}<a href="#{{ value.text|slugify }}" class="sf-heading-anchor" aria-hidden="true">#</a>
+</h4>
+{% endif %}
