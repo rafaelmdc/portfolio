@@ -45,10 +45,10 @@ python manage.py runserver
 
 | Variable | Description |
 |---|---|
-| `DJANGO_DEBUG` | `1` for dev, `0` for production |
-| `DJANGO_SECRET_KEY` | Secret key — keep out of version control |
-| `DJANGO_ALLOWED_HOSTS` | Comma-separated allowed host names |
-| `CSRF_TRUSTED_ORIGINS` | Comma-separated trusted origins (e.g. `https://example.com`) |
+| `DJANGO_SETTINGS_MODULE` | `portfolio.settings.dev` or `portfolio.settings.prod` (Dockerfile sets prod by default) |
+| `DJANGO_SECRET_KEY` | Required in prod — keep out of version control |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated allowed host names (prod) |
+| `CSRF_TRUSTED_ORIGINS` | Comma-separated trusted origins, e.g. `https://example.com` (prod) |
 | `POSTGRES_HOST` | Database host |
 | `POSTGRES_PORT` | Database port (default `5432`) |
 | `POSTGRES_DB` | Database name |

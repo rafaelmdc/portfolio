@@ -19,6 +19,7 @@ COPY . /app/
 
 # Default internal bind (compose/.env overrides these)
 ENV APP_HOST=0.0.0.0 \
-    APP_PORT=8000
+    APP_PORT=8000 \
+    DJANGO_SETTINGS_MODULE=portfolio.settings.prod
 
 CMD ["sh", "-lc", "set -e; python manage.py migrate; python manage.py collectstatic --noinput; exec gunicorn portfolio.wsgi:application --bind ${APP_HOST}:${APP_PORT}"]

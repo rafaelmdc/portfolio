@@ -4,11 +4,6 @@ Honest notes on the current state of the codebase — things to keep in mind whe
 
 ---
 
-## Open Items
-
-### Single-settings file
-There is one `settings.py` with no dev/prod split. Currently `DEBUG` is controlled by an env var (`DJANGO_DEBUG`), which works fine for a small project. If the project grows, consider splitting into `settings/base.py`, `settings/dev.py`, `settings/prod.py`.
-
 ---
 
 ## Patterns to Follow
