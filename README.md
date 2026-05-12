@@ -40,21 +40,39 @@ python manage.py migrate        # uses portfolio.settings.dev by default
 python manage.py runserver
 ```
 
-## Production (VPS / Docker Compose)
+## Deployment
+
+### How it works
+
+Pushing to `main` triggers a GitHub Actions workflow (`.github/workflows/docker-publish.yml`) that builds the image and pushes two tags to Docker Hub:
+
+- `hydrodog11/portfolio:latest`
+- `hydrodog11/portfolio:<git-sha>` (for reproducible rollbacks)
+
+Kubernetes then pulls the updated image. TLS is terminated by Cloudflare; the app only needs to speak HTTP internally.
+
+### Required GitHub secrets
+
+Add these in **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|---|---|
+| `DOCKERHUB_USERNAME` | Your Docker Hub username |
+| `DOCKERHUB_TOKEN` | A Docker Hub access token (not your password) |
+
+### Manual build and push
+
+```bash
+make release        # build, tag with SHA + latest, push both
+```
+
+### Running prod locally (smoke test before deploy)
 
 ```bash
 cp .env.prod.example .env.prod
-# fill in real values — never commit .env.prod
-docker compose -f docker-compose.prod.yml up -d
+# fill in real values
+make prod-up        # pulls latest image from Docker Hub, starts all services
 ```
-
-Key differences from dev:
-- No code volume mount — code is baked into the image
-- Uses `portfolio.settings.prod` (requires `DJANGO_SECRET_KEY`, errors loudly if missing)
-- `restart: unless-stopped` on all services
-- WhiteNoise compressed static file storage
-
-For Kubernetes, TLS is terminated by Cloudflare + the cluster ingress; the app only needs to expose HTTP internally.
 
 ## Environment Variables
 
