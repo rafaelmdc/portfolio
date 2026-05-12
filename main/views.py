@@ -4,13 +4,13 @@ from .models import SiteCopy, SiteAsset
 
 # ---------- COPY / ASSET HELPERS ----------
 def _copy_dict():
-    copy = {}
-    for key, _label in SiteCopy.COPY_KEYS:
-        row = (SiteCopy.objects
-               .filter(key=key, active=True)
-               .order_by("-updated_at", "-id")
-               .first())
-        copy[key] = row.text if row else ""
+    rows = SiteCopy.objects.filter(active=True).order_by("-updated_at", "-id")
+    seen = set()
+    copy = {k: "" for k, _ in SiteCopy.COPY_KEYS}
+    for row in rows:
+        if row.key not in seen:
+            copy[row.key] = row.text
+            seen.add(row.key)
     return copy
 
 def _asset_url(key):

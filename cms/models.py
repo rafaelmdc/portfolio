@@ -387,6 +387,7 @@ class BlogIndexPage(RoutablePageMixin, Page):
             BlogPage.objects.child_of(self)
             .live()
             .public()
+            .prefetch_related("tagged_items__tag")
             .order_by("-first_published_at")
         )
 
@@ -419,11 +420,12 @@ class BlogIndexPage(RoutablePageMixin, Page):
 class BlogPage(Page):
     objects = PageManager()
 
-    date = models.DateField("Post date")
+    date = models.DateField("Post date", db_index=True)
     intro = models.CharField(max_length=250, blank=True)
 
     featured = models.BooleanField(
         default=False,
+        db_index=True,
         help_text="Mark as featured (useful for homepage / blog index highlights).",
     )
 
@@ -531,6 +533,7 @@ class PortfolioIndexPage(RoutablePageMixin, Page):
             PortfolioProjectPage.objects.child_of(self)
             .live()
             .public()
+            .prefetch_related("tagged_items__tag")
             .order_by("-first_published_at")
         )
 

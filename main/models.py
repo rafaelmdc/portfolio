@@ -39,6 +39,8 @@ class Education(models.Model):
 
     class Meta:
         ordering = ["order", "-start_year"]
+        verbose_name = "Education"
+        verbose_name_plural = "Education entries"
 
     def __str__(self):
         return f"{self.title} @ {self.institution}"
@@ -55,6 +57,8 @@ class Experience(models.Model):
 
     class Meta:
         ordering = ["order", "-start_year"]
+        verbose_name = "Experience"
+        verbose_name_plural = "Experience entries"
 
     def __str__(self):
         return f"{self.role} @ {self.company}"
@@ -69,6 +73,8 @@ class ExperienceBullet(models.Model):
 
     class Meta:
         ordering = ["order", "id"]
+        verbose_name = "Experience bullet"
+        verbose_name_plural = "Experience bullets"
 
     def __str__(self):
         return self.text
@@ -156,6 +162,8 @@ class Skill(Timestamped):
 
     class Meta:
         ordering = ("order", "id")
+        verbose_name = "Skill"
+        verbose_name_plural = "Skills"
 
     def __str__(self):
         return self.name

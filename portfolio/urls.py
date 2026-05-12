@@ -6,7 +6,6 @@ from wagtail.documents import urls as wagtaildocs_urls
 from wagtail import urls as wagtail_urls
 
 from django.conf import settings
-from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -15,9 +14,12 @@ urlpatterns = [
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
 
-    # Serve MEDIA in production (personal site)
-    path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
-
     # Wagtail catch-all LAST
     path("", include(wagtail_urls)),
 ]
+
+if settings.DEBUG:
+    from django.views.static import serve
+    urlpatterns += [
+        path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
+    ]
