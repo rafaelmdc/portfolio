@@ -7,9 +7,23 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>{% block title %}RDC{% endblock %}</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <title>{% block title %}Rafael Correia{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{% if page and page.search_description %}{{ page.search_description }}{% else %}Software developer &amp; researcher — portfolio, projects and writing by Rafael Correia.{% endif %}{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+  <!-- Open Graph -->
+  <meta property="og:site_name"   content="Rafael Correia">
+  <meta property="og:type"        content="{% block og_type %}website{% endblock %}">
+  <meta property="og:url"         content="{{ request.build_absolute_uri }}">
+  <meta property="og:title"       content="{% block og_title %}{% if page %}{{ page.seo_title|default:page.title }}{% else %}Rafael Correia{% endif %}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{% if page and page.search_description %}{{ page.search_description }}{% else %}Software developer &amp; researcher — portfolio, projects and writing by Rafael Correia.{% endif %}{% endblock %}">
+  <meta property="og:image"       content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'assets/img/android-chrome-512x512.png' %}{% endblock %}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="{% block twitter_title %}{% if page %}{{ page.seo_title|default:page.title }}{% else %}Rafael Correia{% endif %}{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}{% if page and page.search_description %}{{ page.search_description }}{% else %}Software developer &amp; researcher — portfolio, projects and writing by Rafael Correia.{% endif %}{% endblock %}">
+  <meta name="twitter:image"       content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'assets/img/android-chrome-512x512.png' %}{% endblock %}">
 
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0e12">

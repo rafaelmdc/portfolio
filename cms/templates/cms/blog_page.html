@@ -3,6 +3,10 @@
 
 {% block title %}{{ page.title }}{% endblock %}
 
+{% block og_type %}article{% endblock %}
+{% block og_image %}{% if page.hero_image %}{% image page.hero_image width-1200 as og_img %}{{ request.scheme }}://{{ request.get_host }}{{ og_img.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block twitter_image %}{% if page.hero_image %}{% image page.hero_image width-1200 as og_img %}{{ request.scheme }}://{{ request.get_host }}{{ og_img.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
 {% block extra_head %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 {% endblock %}
