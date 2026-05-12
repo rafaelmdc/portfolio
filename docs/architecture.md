@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a Django 5.2 + Wagtail 6 portfolio site served via Gunicorn behind Nginx. It has two distinct content systems that exist in parallel:
+This is a Django 5.2 + Wagtail 7.4 portfolio site served via Gunicorn behind Nginx. It has two distinct content systems that exist in parallel:
 
 - **`main` app** — traditional Django views and admin; manages CV data (education, experience, skills) and static site copy/assets
 - **`cms` app** — Wagtail CMS; manages blog posts and portfolio projects with a flexible block-based editor
