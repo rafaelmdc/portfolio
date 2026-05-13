@@ -1,11 +1,13 @@
-Django>=5.2,<5.3
+Django>=5.2,<6.0
 gunicorn==22.0.0
 psycopg[binary]==3.2.9
 
 django-ckeditor-5==0.2.13
 Pillow==10.4.0
-beautifulsoup4==4.12.3
+beautifulsoup4>=4.13.3
 markdown2==2.4.13
 bleach==6.1.0
 whitenoise==6.7.0
-wagtail>=6.0,<7.0
+wagtail>=7.4,<8.0
+requests>=2.32
+weasyprint>=62

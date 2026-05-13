@@ -95,17 +95,12 @@ class PrettyImageBlock(blocks.StructBlock):
         default="plain",
     )
 
-    max_width = blocks.ChoiceBlock(
+    width_pct = blocks.IntegerBlock(
         required=False,
-        choices=[
-            ("sm", "Small"),
-            ("md", "Medium"),
-            ("lg", "Large"),
-            ("xl", "Extra large"),
-            ("none", "No cap"),
-        ],
-        default="lg",
-        help_text="Caps the rendered width (helpful for centered images).",
+        default=100,
+        min_value=20,
+        max_value=100,
+        help_text="Width as % of content column (20–100). Ignored for Full/Wide alignment.",
     )
 
     radius = blocks.ChoiceBlock(
@@ -194,6 +189,15 @@ class CodeBlock(blocks.StructBlock):
         ],
         default="text",
     )
+    style = blocks.ChoiceBlock(
+        choices=[
+            ("default", "Default"),
+            ("card", "Card (elevated)"),
+            ("terminal", "Terminal"),
+        ],
+        default="default",
+        required=False,
+    )
     code = blocks.TextBlock(rows=12)
 
     class Meta:
@@ -240,7 +244,18 @@ class SpacerBlock(blocks.ChoiceBlock):
 
 class GalleryBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=False, max_length=120)
-    columns = blocks.ChoiceBlock(choices=[("2", "2 columns"), ("3", "3 columns")], default="2")
+    width_pct = blocks.IntegerBlock(
+        required=False,
+        default=100,
+        min_value=20,
+        max_value=100,
+        help_text="Width as % of content column (20–100).",
+    )
+    autoplay = blocks.BooleanBlock(
+        required=False,
+        default=True,
+        help_text="Auto-advance slides every 4 seconds.",
+    )
     images = blocks.ListBlock(ImageChooserBlock())
 
     class Meta:
@@ -360,6 +375,7 @@ class BlogIndexPage(RoutablePageMixin, Page):
             BlogPage.objects.child_of(self)
             .live()
             .public()
+            .prefetch_related("tagged_items__tag")
             .order_by("-first_published_at")
         )
 
@@ -392,11 +408,12 @@ class BlogIndexPage(RoutablePageMixin, Page):
 class BlogPage(Page):
     objects = PageManager()
 
-    date = models.DateField("Post date")
+    date = models.DateField("Post date", db_index=True)
     intro = models.CharField(max_length=250, blank=True)
 
     featured = models.BooleanField(
         default=False,
+        db_index=True,
         help_text="Mark as featured (useful for homepage / blog index highlights).",
     )
 
@@ -504,6 +521,7 @@ class PortfolioIndexPage(RoutablePageMixin, Page):
             PortfolioProjectPage.objects.child_of(self)
             .live()
             .public()
+            .prefetch_related("tagged_items__tag")
             .order_by("-first_published_at")
         )
 

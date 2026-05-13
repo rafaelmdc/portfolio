@@ -7,9 +7,23 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>{% block title %}RDC{% endblock %}</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <title>{% block title %}Rafael Correia{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{% if page and page.search_description %}{{ page.search_description }}{% else %}Software developer &amp; researcher — portfolio, projects and writing by Rafael Correia.{% endif %}{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+  <!-- Open Graph -->
+  <meta property="og:site_name"   content="Rafael Correia">
+  <meta property="og:type"        content="{% block og_type %}website{% endblock %}">
+  <meta property="og:url"         content="{{ request.build_absolute_uri }}">
+  <meta property="og:title"       content="{% block og_title %}{% if page %}{{ page.seo_title|default:page.title }}{% else %}Rafael Correia{% endif %}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{% if page and page.search_description %}{{ page.search_description }}{% else %}Software developer &amp; researcher — portfolio, projects and writing by Rafael Correia.{% endif %}{% endblock %}">
+  <meta property="og:image"       content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'assets/img/android-chrome-512x512.png' %}{% endblock %}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="{% block twitter_title %}{% if page %}{{ page.seo_title|default:page.title }}{% else %}Rafael Correia{% endif %}{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}{% if page and page.search_description %}{{ page.search_description }}{% else %}Software developer &amp; researcher — portfolio, projects and writing by Rafael Correia.{% endif %}{% endblock %}">
+  <meta name="twitter:image"       content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'assets/img/android-chrome-512x512.png' %}{% endblock %}">
 
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0e12">
@@ -62,6 +76,10 @@
     })();
   </script>
 
+  <!-- RSS autodiscovery -->
+  <link rel="alternate" type="application/rss+xml"  title="Rafael Correia — Blog" href="/blog/feed/">
+  <link rel="alternate" type="application/atom+xml" title="Rafael Correia — Blog" href="/blog/feed/atom/">
+
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
   <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
@@ -69,7 +87,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -81,6 +99,7 @@
   <script src="{% static 'assets/vendor/typed.js/typed.umd.js' %}"></script>
   <!-- Main CSS File -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
 
   {% block head_extra %}{% endblock %}
   {% block extra_css %}{% endblock %}

@@ -39,6 +39,8 @@ class Education(models.Model):
 
     class Meta:
         ordering = ["order", "-start_year"]
+        verbose_name = "Education"
+        verbose_name_plural = "Education entries"
 
     def __str__(self):
         return f"{self.title} @ {self.institution}"
@@ -55,6 +57,8 @@ class Experience(models.Model):
 
     class Meta:
         ordering = ["order", "-start_year"]
+        verbose_name = "Experience"
+        verbose_name_plural = "Experience entries"
 
     def __str__(self):
         return f"{self.role} @ {self.company}"
@@ -69,9 +73,72 @@ class ExperienceBullet(models.Model):
 
     class Meta:
         ordering = ["order", "id"]
+        verbose_name = "Experience bullet"
+        verbose_name_plural = "Experience bullets"
 
     def __str__(self):
         return self.text
+
+
+LANGUAGE_LEVEL_CHOICES = [
+    ("native",       "Native"),
+    ("fluent",       "Fluent"),
+    ("advanced",     "Advanced"),
+    ("intermediate", "Intermediate"),
+    ("basic",        "Basic"),
+]
+
+
+class Grant(models.Model):
+    title          = models.CharField(max_length=300)
+    funder         = models.CharField(max_length=200)
+    role           = models.CharField(max_length=100, blank=True, help_text="e.g. Principal Investigator, Co-Investigator.")
+    amount         = models.CharField(max_length=60, blank=True, help_text="e.g. €50,000")
+    start_year     = models.PositiveIntegerField(null=True, blank=True)
+    end_year       = models.PositiveIntegerField(null=True, blank=True)
+    description    = models.TextField(blank=True)
+    url            = models.URLField(blank=True)
+    orcid_put_code = models.CharField(max_length=50, blank=True, db_index=True)
+    order          = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-start_year", "order", "id"]
+        verbose_name = "Grant"
+        verbose_name_plural = "Grants"
+
+    def __str__(self):
+        return f"{self.title} ({self.funder})"
+
+
+class Award(models.Model):
+    title       = models.CharField(max_length=300)
+    issuer      = models.CharField(max_length=200)
+    year        = models.PositiveIntegerField(null=True, blank=True)
+    description = models.TextField(blank=True)
+    url         = models.URLField(blank=True)
+    order       = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-year", "order", "id"]
+        verbose_name = "Award / Honour"
+        verbose_name_plural = "Awards & Honours"
+
+    def __str__(self):
+        return f"{self.title} — {self.issuer}"
+
+
+class Language(models.Model):
+    name       = models.CharField(max_length=80)
+    level      = models.CharField(max_length=20, choices=LANGUAGE_LEVEL_CHOICES, default="fluent")
+    order      = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "Language"
+        verbose_name_plural = "Languages"
+
+    def __str__(self):
+        return f"{self.name} ({self.get_level_display()})"
 
 
 # ---------- site copy / assets ----------
@@ -143,6 +210,58 @@ class SiteAsset(Timestamped):
         return f"{self.get_key_display()} ({'active' if self.active else 'inactive'})"
 
 
+PUB_TYPE_CHOICES = [
+    ("journal",      "Journal Article"),
+    ("conference",   "Conference Paper"),
+    ("preprint",     "Preprint"),
+    ("thesis",       "Thesis / Dissertation"),
+    ("book_chapter", "Book Chapter"),
+    ("other",        "Other"),
+]
+
+PUB_TYPE_ORDER = ["journal", "conference", "preprint", "thesis", "book_chapter", "other"]
+
+
+class Publication(models.Model):
+    title          = models.CharField(max_length=500)
+    authors        = models.TextField(help_text="Author list as displayed, e.g. 'Correia R, Smith J, Jones A'.")
+    highlight_name = models.CharField(
+        max_length=100, blank=True,
+        help_text="Your name as it appears in authors — will be bolded in the CV.",
+    )
+    venue          = models.CharField(max_length=300, help_text="Journal or conference name.")
+    year           = models.PositiveIntegerField()
+    pub_type       = models.CharField(max_length=20, choices=PUB_TYPE_CHOICES, default="journal")
+    doi            = models.CharField(max_length=150, blank=True)
+    url            = models.URLField(blank=True)
+    abstract       = models.TextField(blank=True)
+    orcid_put_code = models.CharField(max_length=50, blank=True, db_index=True)
+    citation_count = models.IntegerField(default=0)
+    featured       = models.BooleanField(default=False)
+    order          = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-year", "order", "id"]
+        verbose_name = "Publication"
+        verbose_name_plural = "Publications"
+
+    def __str__(self):
+        return f"({self.year}) {self.title[:80]}"
+
+    @property
+    def authors_display(self):
+        """Return authors string with highlight_name wrapped in <strong>."""
+        if not self.highlight_name:
+            return self.authors
+        return self.authors.replace(self.highlight_name, f"<strong>{self.highlight_name}</strong>", 1)
+
+    @property
+    def link(self):
+        if self.doi:
+            return f"https://doi.org/{self.doi}"
+        return self.url
+
+
 class Skill(Timestamped):
     name = models.CharField(max_length=80)
     description = models.CharField(max_length=240, blank=True)
@@ -156,6 +275,8 @@ class Skill(Timestamped):
 
     class Meta:
         ordering = ("order", "id")
+        verbose_name = "Skill"
+        verbose_name_plural = "Skills"
 
     def __str__(self):
         return self.name

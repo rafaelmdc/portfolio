@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found{% endblock %}
+{% block meta_description %}The page you're looking for doesn't exist.{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center text-center" style="min-height: 60vh; gap: 1rem;">
+  <p class="text-muted mb-0" style="font-size: 6rem; line-height:1; font-weight:700; opacity:.12;">404</p>
+  <h1 class="mb-2" style="margin-top:-1.5rem;">Page not found</h1>
+  <p class="text-muted" style="max-width: 38ch;">
+    That URL doesn't exist or may have been moved.
+  </p>
+  <div class="d-flex gap-3 flex-wrap justify-content-center">
+    <a href="/" class="btn btn-sm btn-outline-light">Go home</a>
+    <a href="/blog/" class="btn btn-sm btn-outline-light">Read the blog</a>
+    <a href="/portfolio/" class="btn btn-sm btn-outline-light">See portfolio</a>
+  </div>
+</div>
+{% endblock %}

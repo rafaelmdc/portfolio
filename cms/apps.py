@@ -8,6 +8,5 @@ class CmsConfig(AppConfig):
         # import signal handlers
         try:
             from . import signals  # noqa: F401
-        except Exception:
-            # avoid breaking startup if signals fail; errors will surface in admin actions
+        except ImportError:
             pass

@@ -1,9 +1,14 @@
 {% load wagtailcore_tags %}
 
 <div class="sf-callout sf-{{ value.style }}">
-  {% if value.title %}
-    <div class="sf-callout-title">{{ value.title }}</div>
-  {% endif %}
+  <div class="sf-callout-title">
+    {% if value.style == 'info' %}<i class="bi bi-info-circle-fill sf-callout-icon"></i>
+    {% elif value.style == 'tip' %}<i class="bi bi-lightbulb-fill sf-callout-icon"></i>
+    {% elif value.style == 'warn' %}<i class="bi bi-exclamation-triangle-fill sf-callout-icon"></i>
+    {% elif value.style == 'note' %}<i class="bi bi-sticky-fill sf-callout-icon"></i>
+    {% endif %}
+    {% if value.title %}{{ value.title }}{% endif %}
+  </div>
   <div class="sf-callout-body">
     {{ value.text|richtext }}
   </div>

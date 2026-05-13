@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CV — Rafael Correia</title>
+<style>
+@page {
+  size: A4;
+  margin: 0;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 7.5pt;
+    color: #aaa;
+    padding-bottom: 6pt;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.55;
+  color: #1f1f1f;
+  background: #fff;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── Header ─────────────────────────────────────── */
+.cv-header {
+  background: #1a2e4a;
+  color: #fff;
+  padding: 26pt 30pt 22pt;
+  display: flex;
+  align-items: center;
+  gap: 22pt;
+}
+
+.cv-photo {
+  width: 68pt;
+  height: 68pt;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2pt solid rgba(255,255,255,0.35);
+  flex-shrink: 0;
+}
+
+.cv-photo-placeholder {
+  width: 68pt;
+  height: 68pt;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+.cv-header-text { flex: 1; }
+
+.cv-name {
+  font-size: 21pt;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: 3pt;
+}
+
+.cv-title {
+  font-size: 10pt;
+  font-weight: 300;
+  opacity: 0.8;
+  margin-bottom: 10pt;
+}
+
+.cv-contacts {
+  font-size: 8pt;
+  opacity: 0.85;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3pt 18pt;
+}
+
+/* ── Two-column body ─────────────────────────────── */
+.cv-body {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.cv-sidebar {
+  display: table-cell;
+  width: 31%;
+  vertical-align: top;
+  background: #f2f5f8;
+  padding: 18pt 16pt 24pt;
+  border-right: 1pt solid #dde2e8;
+}
+
+.cv-main {
+  display: table-cell;
+  width: 69%;
+  vertical-align: top;
+  padding: 18pt 24pt 24pt;
+}
+
+/* ── Section titles ──────────────────────────────── */
+.sec-title {
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #1a2e4a;
+  border-bottom: 1.5pt solid #1a2e4a;
+  padding-bottom: 3pt;
+  margin-bottom: 9pt;
+}
+
+.section { margin-bottom: 15pt; }
+
+/* ── Skills ──────────────────────────────────────── */
+.skill-list { line-height: 1.8; }
+
+.skill-tag {
+  display: inline-block;
+  background: #dae1ea;
+  color: #1a2e4a;
+  font-size: 7.5pt;
+  font-weight: 500;
+  padding: 1.5pt 6pt;
+  border-radius: 3pt;
+  margin: 1.5pt 2pt 1.5pt 0;
+}
+
+/* ── Languages ───────────────────────────────────── */
+.lang-row {
+  display: table;
+  width: 100%;
+  font-size: 8.5pt;
+  margin-bottom: 3pt;
+}
+.lang-name  { display: table-cell; font-weight: 500; }
+.lang-level { display: table-cell; text-align: right; color: #666; font-style: italic; }
+
+/* ── Experience / Education entries ─────────────── */
+.entry { margin-bottom: 11pt; page-break-inside: avoid; }
+
+.entry-row {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.entry-left  { display: table-cell; vertical-align: top; }
+.entry-right {
+  display: table-cell;
+  vertical-align: top;
+  text-align: right;
+  white-space: nowrap;
+  width: 60pt;
+  font-size: 8pt;
+  color: #666;
+  padding-top: 1pt;
+}
+
+.entry-title { font-weight: 700; font-size: 9.5pt; }
+.entry-sub   { font-size: 8.5pt; color: #555; font-style: italic; margin: 1.5pt 0 3pt; }
+
+.entry-body     { font-size: 8.5pt; color: #333; }
+.entry-body p   { margin-bottom: 2pt; }
+.entry-body ul  { padding-left: 1.1em; margin-top: 2pt; }
+.entry-body li  { margin-bottom: 1.5pt; }
+
+/* ── Publications ────────────────────────────────── */
+.pub-type { font-size: 8pt; font-weight: 600; font-style: italic; color: #555; margin: 7pt 0 3pt; }
+
+ol.pub-list        { padding-left: 1.5em; }
+.pub-list li       { font-size: 8.5pt; line-height: 1.48; margin-bottom: 5pt; page-break-inside: avoid; }
+.pub-list .pt      { font-weight: 600; }
+.pub-list .pv      { font-style: italic; }
+.pub-list .pd      { color: #555; font-size: 7.5pt; }
+.pub-list .pc      { color: #999; font-size: 7.5pt; }
+</style>
+</head>
+<body>
+
+<header class="cv-header">
+  {% if profile_image %}
+    <img src="{{ profile_image }}" class="cv-photo" alt="">
+  {% else %}
+    <div class="cv-photo-placeholder"></div>
+  {% endif %}
+  <div class="cv-header-text">
+    <div class="cv-name">Rafael Correia</div>
+    <div class="cv-title">Software Developer &amp; Researcher</div>
+    <div class="cv-contacts">
+      <span>rafaelmdcorreia@gmail.com</span>
+      <span>github.com/rafaelmdc</span>
+      <span>linkedin.com/in/rafael-alexandre-correia-2b8a33213</span>
+    </div>
+  </div>
+</header>
+
+<div class="cv-body">
+
+  <aside class="cv-sidebar">
+
+    {% if skills %}
+    <div class="section">
+      <div class="sec-title">Skills</div>
+      <div class="skill-list">
+        {% for skill in skills %}
+          <span class="skill-tag">{{ skill.name }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if languages %}
+    <div class="section">
+      <div class="sec-title">Languages</div>
+      {% for lang in languages %}
+      <div class="lang-row">
+        <span class="lang-name">{{ lang.name }}</span>
+        <span class="lang-level">{{ lang.get_level_display }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </aside>
+
+  <main class="cv-main">
+
+    {% if experiences %}
+    <div class="section">
+      <div class="sec-title">Experience</div>
+      {% for exp in experiences %}
+      <div class="entry">
+        <div class="entry-row">
+          <div class="entry-left"><span class="entry-title">{{ exp.role }}</span></div>
+          <div class="entry-right">{{ exp.start_year }}–{{ exp.end_year|default:"Present" }}</div>
+        </div>
+        <div class="entry-sub">{{ exp.company }}{% if exp.location %} &middot; {{ exp.location }}{% endif %}</div>
+        {% if exp.blurb or exp.bullets.all %}
+        <div class="entry-body">
+          {% if exp.blurb %}<p>{{ exp.blurb }}</p>{% endif %}
+          {% if exp.bullets.all %}<ul>{% for b in exp.bullets.all %}<li>{{ b.text }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if educations %}
+    <div class="section">
+      <div class="sec-title">Education</div>
+      {% for edu in educations %}
+      <div class="entry">
+        <div class="entry-row">
+          <div class="entry-left"><span class="entry-title">{{ edu.title }}</span></div>
+          <div class="entry-right">{{ edu.start_year }}–{{ edu.end_year|default:"Present" }}</div>
+        </div>
+        <div class="entry-sub">{{ edu.institution }}{% if edu.location %} &middot; {{ edu.location }}{% endif %}</div>
+        {% if edu.blurb %}<div class="entry-body"><p>{{ edu.blurb }}</p></div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if grants %}
+    <div class="section">
+      <div class="sec-title">Grants &amp; Funding</div>
+      {% for grant in grants %}
+      <div class="entry">
+        <div class="entry-row">
+          <div class="entry-left"><span class="entry-title">{{ grant.title }}</span></div>
+          <div class="entry-right">{% if grant.start_year %}{{ grant.start_year }}{% if grant.end_year %}–{{ grant.end_year }}{% endif %}{% endif %}</div>
+        </div>
+        <div class="entry-sub">{{ grant.funder }}{% if grant.role %} &middot; {{ grant.role }}{% endif %}{% if grant.amount %} &middot; {{ grant.amount }}{% endif %}</div>
+        {% if grant.description %}<div class="entry-body"><p>{{ grant.description }}</p></div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if awards %}
+    <div class="section">
+      <div class="sec-title">Awards &amp; Honours</div>
+      {% for award in awards %}
+      <div class="entry">
+        <div class="entry-row">
+          <div class="entry-left"><span class="entry-title">{{ award.title }}</span></div>
+          <div class="entry-right">{% if award.year %}{{ award.year }}{% endif %}</div>
+        </div>
+        <div class="entry-sub">{{ award.issuer }}</div>
+        {% if award.description %}<div class="entry-body"><p>{{ award.description }}</p></div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if pub_groups %}
+    <div class="section">
+      <div class="sec-title">Publications</div>
+      {% for group in pub_groups %}
+      <div class="pub-type">{{ group.label }}</div>
+      <ol class="pub-list" reversed>
+        {% for pub in group.items %}
+        <li>
+          <span>{{ pub.authors_display|safe }}</span> ({{ pub.year }}).
+          <span class="pt">{{ pub.title }}</span>.
+          <span class="pv">{{ pub.venue }}</span>.
+          {% if pub.link %}<span class="pd">{% if pub.doi %}doi:{{ pub.doi }}{% else %}link{% endif %}</span>{% endif %}
+          {% if pub.citation_count %}<span class="pc"> [{{ pub.citation_count }} cit.]</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </main>
+</div>
+
+</body>
+</html>

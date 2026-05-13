@@ -3,6 +3,34 @@
 
 {% block title %}{{ page.title }}{% endblock %}
 
+{% block og_type %}article{% endblock %}
+{% block og_image %}{% if page.hero_image %}{% image page.hero_image width-1200 as og_img %}{{ request.scheme }}://{{ request.get_host }}{{ og_img.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block twitter_image %}{% if page.hero_image %}{% image page.hero_image width-1200 as og_img %}{{ request.scheme }}://{{ request.get_host }}{{ og_img.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    document.querySelectorAll('.code-block pre code').forEach(function(el) {
+      hljs.highlightElement(el);
+    });
+    function copyCode(btn) {
+      var code = btn.closest('.code-block').querySelector('code');
+      navigator.clipboard.writeText(code.innerText).then(function() {
+        btn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.innerHTML = '<i class="bi bi-clipboard"></i>';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+{% endblock %}
+
 {% block content %}
 <style>
   .blog-article{ max-width: 920px; }
@@ -22,18 +50,6 @@
     border-left:4px solid rgba(255,255,255,.18);
     background:rgba(255,255,255,.04);
     border-radius:12px;
-  }
-
-  .blog-content pre{
-    padding:1rem 1.15rem; border-radius:14px;
-    background:rgba(0,0,0,.35);
-    border:1px solid rgba(255,255,255,.10);
-    overflow-x:auto; margin:1.25rem 0;
-  }
-  .blog-content code{
-    padding:.15rem .35rem; border-radius:8px;
-    background:rgba(0,0,0,.25);
-    border:1px solid rgba(255,255,255,.08);
   }
 
   .blog-divider{ opacity:.18; }

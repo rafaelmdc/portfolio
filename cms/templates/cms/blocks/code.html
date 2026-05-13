@@ -1,6 +1,17 @@
-<div class="my-4">
-  {% if value.title %}
-    <div class="text-muted mb-2" style="font-size:.95rem;">{{ value.title }}</div>
-  {% endif %}
-  <pre><code class="language-{{ value.language }}">{{ value.code }}</code></pre>
+<div class="code-block code-block--{{ value.style|default:'default' }} my-4">
+  <div class="code-block__header">
+    <div class="code-block__meta">
+      {% if value.style == 'terminal' %}
+        <span class="code-block__dots">
+          <span></span><span></span><span></span>
+        </span>
+      {% endif %}
+      <span class="code-block__lang">{{ value.language }}</span>
+      {% if value.title %}<span class="code-block__title">{{ value.title }}</span>{% endif %}
+    </div>
+    <button class="code-block__copy" onclick="copyCode(this)" title="Copy code">
+      <i class="bi bi-clipboard"></i>
+    </button>
+  </div>
+  <pre class="code-block__pre"><code class="language-{{ value.language }}">{{ value.code }}</code></pre>
 </div>
