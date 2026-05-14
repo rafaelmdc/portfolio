@@ -33,8 +33,7 @@ urlpatterns = [
     path("", include(wagtail_urls)),
 ]
 
-if settings.DEBUG:
-    from django.views.static import serve
-    urlpatterns += [
-        path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
-    ]
+from django.views.static import serve
+urlpatterns += [
+    path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
+]
