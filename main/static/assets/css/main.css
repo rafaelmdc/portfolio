@@ -1994,11 +1994,11 @@ body {
   height: auto;
 }
 
-/* Optional: keep captions tight later */
 .sf-figure figcaption {
-  margin-top: .5rem;
+  margin-top: .6rem;
   opacity: .85;
   font-size: .95rem;
+  line-height: 1.65;
 }
 
 /* =========================
@@ -2135,6 +2135,17 @@ body {
   filter: brightness(0.88);
   transition: filter 0.2s;
 }
+
+/* =========================
+   Blog / portfolio content
+   ========================= */
+
+/* Paragraph block alignment (fallback justify + explicit overrides) */
+.blog-content .rich-text p                 { text-align: justify; }
+.blog-content .rich-text.sf-para-left    p { text-align: left; }
+.blog-content .rich-text.sf-para-center  p { text-align: center; }
+.blog-content .rich-text.sf-para-right   p { text-align: right; }
+.blog-content .rich-text.sf-para-justify p { text-align: justify; }
 
 
 /* =========================
