@@ -35,13 +35,13 @@ def _convert_reverse(blocks):
 def migrate_forward(apps, schema_editor):
     with schema_editor.connection.cursor() as cursor:
         for table in ('cms_blogpage', 'cms_portfolioprojectpage'):
-            cursor.execute(f"SELECT id, body FROM {table}")  # noqa: S608
+            cursor.execute(f"SELECT page_ptr_id, body FROM {table}")  # noqa: S608
             for page_id, body in cursor.fetchall():
                 if not body or not isinstance(body, list):
                     continue
                 if _convert_forward(body):
                     cursor.execute(
-                        f"UPDATE {table} SET body = %s::jsonb WHERE id = %s",  # noqa: S608
+                        f"UPDATE {table} SET body = %s::jsonb WHERE page_ptr_id = %s",  # noqa: S608
                         [json.dumps(body), page_id],
                     )
 
@@ -49,13 +49,13 @@ def migrate_forward(apps, schema_editor):
 def migrate_reverse(apps, schema_editor):
     with schema_editor.connection.cursor() as cursor:
         for table in ('cms_blogpage', 'cms_portfolioprojectpage'):
-            cursor.execute(f"SELECT id, body FROM {table}")  # noqa: S608
+            cursor.execute(f"SELECT page_ptr_id, body FROM {table}")  # noqa: S608
             for page_id, body in cursor.fetchall():
                 if not body or not isinstance(body, list):
                     continue
                 if _convert_reverse(body):
                     cursor.execute(
-                        f"UPDATE {table} SET body = %s::jsonb WHERE id = %s",  # noqa: S608
+                        f"UPDATE {table} SET body = %s::jsonb WHERE page_ptr_id = %s",  # noqa: S608
                         [json.dumps(body), page_id],
                     )
 

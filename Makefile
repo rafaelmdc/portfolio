@@ -7,6 +7,7 @@ MANAGE := $(DC) exec web python manage.py
         dev-up dev-up-build dev-up-d dev-down dev-logs dev-shell dev-restart \
         migrate migrations shell dbshell \
         createsuperuser \
+        cv-test-pdf \
         prod-up prod-down prod-logs
 
 # ── Docker image ────────────────────────────────────────────────
@@ -56,6 +57,10 @@ dbshell:
 
 createsuperuser:
 	$(MANAGE) createsuperuser
+
+cv-test-pdf:
+	$(MANAGE) gen_test_cv --output /app/test_cv.pdf
+	@echo "→ test_cv.pdf written to repo root"
 
 # ── Production ──────────────────────────────────────────────────
 prod-up:
