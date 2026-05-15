@@ -10,12 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libjpeg62-turbo-dev \
     zlib1g-dev \
-    libpango-1.0-0 \
-    libpangoft2-1.0-0 \
-    libcairo2 \
     libffi-dev \
     shared-mime-info \
     fonts-liberation \
+    texlive-xetex \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/

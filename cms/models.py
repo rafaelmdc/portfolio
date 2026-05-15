@@ -27,7 +27,7 @@ class PrettyEmbedBlock(blocks.StructBlock):
     """Embed with presentation controls (matches your existing blog embed block)."""
 
     url = EmbedBlock(required=True)
-    caption = blocks.CharBlock(required=False, max_length=160)
+    caption = blocks.TextBlock(required=False, rows=4)
 
     width = blocks.ChoiceBlock(
         required=False,
@@ -70,7 +70,7 @@ class PrettyImageBlock(blocks.StructBlock):
     """Image block with your presentation controls (used by both pages)."""
 
     image = ImageChooserBlock(required=True)
-    caption = blocks.CharBlock(required=False, max_length=220)
+    caption = blocks.TextBlock(required=False, rows=4)
 
     alignment = blocks.ChoiceBlock(
         choices=[
@@ -156,6 +156,26 @@ class HeadingBlock(blocks.StructBlock):
     class Meta:
         icon = "title"
         template = "cms/blocks/heading.html"
+
+
+class AlignedParagraphBlock(blocks.StructBlock):
+    text = blocks.RichTextBlock(
+        features=["bold", "italic", "link", "ol", "ul", "hr", "blockquote", "code"],
+    )
+    alignment = blocks.ChoiceBlock(
+        choices=[
+            ("justify", "Justified"),
+            ("left", "Left"),
+            ("center", "Center"),
+            ("right", "Right"),
+        ],
+        default="justify",
+    )
+
+    class Meta:
+        icon = "doc-full"
+        label = "Paragraph (aligned)"
+        template = "cms/blocks/aligned_paragraph.html"
 
 
 class CalloutBlock(blocks.StructBlock):
@@ -292,10 +312,7 @@ class PdfDownloadsBlock(blocks.StructBlock):
         
 class SectionInnerStream(blocks.StreamBlock):
     heading = HeadingBlock()
-    paragraph = blocks.RichTextBlock(
-        features=["h2", "h3", "bold", "italic", "link", "ol", "ul", "hr", "blockquote", "code"],
-        icon="doc-full",
-    )
+    paragraph = AlignedParagraphBlock()
     image = PrettyImageBlock()
     quote = blocks.BlockQuoteBlock(icon="openquote")
     embed = PrettyEmbedBlock()
@@ -331,10 +348,7 @@ class BodyStream(blocks.StreamBlock):
     """
 
     heading = HeadingBlock()
-    paragraph = blocks.RichTextBlock(
-        features=["bold", "italic", "link", "ol", "ul", "hr", "blockquote", "code"],
-        icon="doc-full",
-    )
+    paragraph = AlignedParagraphBlock()
     image = PrettyImageBlock()
     quote = blocks.BlockQuoteBlock(icon="openquote")
     embed = PrettyEmbedBlock()

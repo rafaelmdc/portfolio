@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from django.template.loader import render_to_string
 from .models import Education, Experience, Skill, Publication, PUB_TYPE_CHOICES, PUB_TYPE_ORDER
 from .models import Grant, Award, Language
 from .models import SiteCopy, SiteAsset
@@ -57,7 +56,7 @@ def _resume_context():
         for key in PUB_TYPE_ORDER:
             group = [p for p in pubs if p.pub_type == key]
             if group:
-                pub_groups.append({"label": label_map[key], "items": group})
+                pub_groups.append({"label": label_map[key], "pubs": group})
     return {
         "educations":  Education.objects.all(),
         "experiences": Experience.objects.prefetch_related("bullets").all(),
@@ -65,39 +64,37 @@ def _resume_context():
     }
 
 
-def _profile_image_data_uri():
-    """Return a base64 data URI for the home profile image, or empty string."""
-    import base64, mimetypes
-    row = (SiteAsset.objects
-           .filter(key="home_profile", active=True)
-           .order_by("-updated_at", "-id")
-           .first())
-    if not row:
-        return ""
-    try:
-        mime = mimetypes.guess_type(row.image.name)[0] or "image/jpeg"
-        with row.image.open("rb") as f:
-            data = base64.b64encode(f.read()).decode()
-        return f"data:{mime};base64,{data}"
-    except Exception:
-        return ""
-
-
 def resume_pdf(request):
-    try:
-        from weasyprint import HTML
-    except ImportError:
-        return HttpResponse("WeasyPrint is not installed.", status=503, content_type="text/plain")
+    import mimetypes
+    from main.cv_pdf import render_cv_pdf
 
     ctx = _resume_context()
-    ctx["profile_image"] = _profile_image_data_uri()
-    ctx["skills"]     = Skill.objects.filter(active=True).order_by("order", "id")
-    ctx["grants"]     = Grant.objects.all()
-    ctx["awards"]     = Award.objects.all()
-    ctx["languages"]  = Language.objects.all()
+    ctx["name"]      = "Rafael Correia"
+    ctx["title"]     = "Software Developer & Researcher"
+    ctx["email"]     = "rafaelmdcorreia@gmail.com"
+    ctx["github"]    = "github.com/rafaelmdc"
+    ctx["linkedin"]  = "linkedin.com/in/rafael-alexandre-correia-2b8a33213"
+    ctx["skills"]    = Skill.objects.filter(active=True).order_by("order", "id")
+    ctx["grants"]    = Grant.objects.all()
+    ctx["awards"]    = Award.objects.all()
+    ctx["languages"] = Language.objects.all()
 
-    html = render_to_string("resume_pdf.html", ctx, request=request)
-    pdf  = HTML(string=html).write_pdf()
+    img_bytes, img_mime = None, None
+    row = (SiteAsset.objects.filter(key="home_profile", active=True)
+           .order_by("-updated_at", "-id").first())
+    if row:
+        try:
+            img_mime = mimetypes.guess_type(row.image.name)[0] or "image/jpeg"
+            with row.image.open("rb") as fh:
+                img_bytes = fh.read()
+        except Exception:
+            pass
+
+    try:
+        pdf = render_cv_pdf(ctx, profile_image_bytes=img_bytes, profile_image_mime=img_mime)
+    except RuntimeError as exc:
+        return HttpResponse(str(exc), status=500, content_type="text/plain")
+
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="cv_rafael_correia.pdf"'
     return response
