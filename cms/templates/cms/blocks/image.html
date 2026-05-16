@@ -41,7 +41,7 @@
     </a>
 
     {% if value.caption %}
-      <figcaption class="sf-caption">{{ value.caption|linebreaksbr }}</figcaption>
+      <figcaption class="sf-caption sf-caption-spacing-{{ value.caption_spacing|default:'sm' }}">{{ value.caption|linebreaksbr }}</figcaption>
     {% endif %}
 
   </figure>

@@ -140,6 +140,17 @@ class PrettyImageBlock(blocks.StructBlock):
     open_in_new = blocks.BooleanBlock(required=False, default=False)
     alt_override = blocks.CharBlock(required=False, max_length=160, help_text="Optional: override alt text.")
 
+    caption_spacing = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("sm", "Small"),
+            ("md", "Medium"),
+            ("lg", "Large"),
+        ],
+        default="sm",
+        help_text="Space between the image and its caption.",
+    )
+
     class Meta:
         icon = "image"
         label = "Image"
