@@ -2,41 +2,53 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Education, Experience, Skill, Publication, PUB_TYPE_CHOICES, PUB_TYPE_ORDER
 from .models import Grant, Award, Language
-from .models import SiteCopy, SiteAsset
+from .models import SiteContent
 
-# ---------- COPY / ASSET HELPERS ----------
-def _copy_dict():
-    rows = SiteCopy.objects.filter(active=True).order_by("-updated_at", "-id")
-    seen = set()
-    copy = {k: "" for k, _ in SiteCopy.COPY_KEYS}
-    for row in rows:
-        if row.key not in seen:
-            copy[row.key] = row.text
-            seen.add(row.key)
-    return copy
+# ---------- SITE CONTENT HELPERS ----------
+COPY_KEYS = [
+    "about_title", "about_lead", "about_intro_headline",
+    "about_intro_body", "about_quote", "skills_title", "skills_lead",
+]
 
-def _asset_url(key):
-    row = (SiteAsset.objects
-           .filter(key=key, active=True)
-           .order_by("-updated_at", "-id")
-           .first())
-    return row.image.url if row else ""
+
+def _site_content():
+    return SiteContent.objects.first()
+
+
+def _copy_dict(sc):
+    if not sc:
+        return {k: "" for k in COPY_KEYS}
+    return {k: (getattr(sc, k, "") or "") for k in COPY_KEYS}
+
+
+def _image_url(img, spec="width-1024"):
+    if not img:
+        return ""
+    try:
+        return img.get_rendition(spec).url
+    except Exception:
+        try:
+            return img.file.url
+        except Exception:
+            return ""
 
 # ---------- PAGES ----------
 def about(request):
+    sc = _site_content()
     context = {
         "skills": Skill.objects.filter(active=True).order_by("order", "id"),
-        "copy": _copy_dict(),
+        "copy": _copy_dict(sc),
         "assets": {
-            "about_profile": _asset_url("about_profile"),
+            "about_profile": _image_url(sc.about_profile if sc else None),
         },
     }
     return render(request, "about.html", context)
 
 def index(request):
+    sc = _site_content()
     context = {
         "assets": {
-            "home_profile": _asset_url("home_profile"),
+            "home_profile": _image_url(sc.home_profile if sc else None),
         },
     }
     return render(request, "index.html", context)
@@ -80,13 +92,14 @@ def resume_pdf(request):
     ctx["languages"] = Language.objects.all()
 
     img_bytes, img_mime = None, None
-    row = (SiteAsset.objects.filter(key="home_profile", active=True)
-           .order_by("-updated_at", "-id").first())
-    if row:
+    sc = _site_content()
+    img = sc.home_profile if sc else None
+    if img:
         try:
-            img_mime = mimetypes.guess_type(row.image.name)[0] or "image/jpeg"
-            with row.image.open("rb") as fh:
-                img_bytes = fh.read()
+            img_mime = mimetypes.guess_type(img.file.name)[0] or "image/jpeg"
+            img.file.open("rb")
+            img_bytes = img.file.read()
+            img.file.close()
         except Exception:
             pass
 
