@@ -225,6 +225,11 @@ class SiteContent(BaseGenericSetting):
     skills_title         = models.CharField(max_length=200, blank=True, default="Skills")
     skills_lead          = models.TextField(blank=True)
 
+    github_username      = models.CharField(
+        max_length=100, blank=True,
+        help_text="GitHub username, used to show live repo/stars stats.",
+    )
+
     about_profile = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True,
         on_delete=models.SET_NULL, related_name="+",
@@ -253,6 +258,7 @@ class SiteContent(BaseGenericSetting):
             [FieldPanel("about_profile"), FieldPanel("home_profile")],
             heading="Profile images",
         ),
+        FieldPanel("github_username"),
     ]
 
     class Meta:

@@ -12,6 +12,7 @@ from django.conf import settings
 from main.sitemaps import StaticViewSitemap
 from cms.feeds import BlogRssFeed, BlogAtomFeed
 from portfolio.api import api_router
+from main.api import SiteBundleView
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -25,6 +26,7 @@ urlpatterns = [
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
 
+    path("api/v2/site/", SiteBundleView.as_view(), name="api-site"),
     path("api/v2/", api_router.urls),
 
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
