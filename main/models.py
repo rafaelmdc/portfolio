@@ -9,6 +9,7 @@ from .validators import validate_image_file
 from modelcluster.models import ClusterableModel
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
+from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 
 
 # ---------- helpers ----------
@@ -272,6 +273,57 @@ class SiteAsset(Timestamped):
 
     def __str__(self):
         return f"{self.get_key_display()} ({'active' if self.active else 'inactive'})"
+
+
+# ---------- consolidated site content (Wagtail settings) ----------
+@register_setting
+class SiteContent(BaseGenericSetting):
+    """
+    Single global home for the editable copy + profile images that used to live
+    in the SiteCopy / SiteAsset key-value tables. Edited under Wagtail
+    Settings → Site content. Profile images are Wagtail images (renditions).
+    """
+
+    about_title          = models.CharField(max_length=200, blank=True, default="About")
+    about_lead           = models.TextField(blank=True)
+    about_intro_headline = models.CharField(max_length=300, blank=True)
+    about_intro_body     = models.TextField(blank=True)
+    about_quote          = models.TextField(blank=True)
+    skills_title         = models.CharField(max_length=200, blank=True, default="Skills")
+    skills_lead          = models.TextField(blank=True)
+
+    about_profile = models.ForeignKey(
+        "wagtailimages.Image", null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="+",
+    )
+    home_profile = models.ForeignKey(
+        "wagtailimages.Image", null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="+",
+    )
+
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("about_title"),
+                FieldPanel("about_lead"),
+                FieldPanel("about_intro_headline"),
+                FieldPanel("about_intro_body"),
+                FieldPanel("about_quote"),
+            ],
+            heading="About copy",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("skills_title"), FieldPanel("skills_lead")],
+            heading="Skills copy",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("about_profile"), FieldPanel("home_profile")],
+            heading="Profile images",
+        ),
+    ]
+
+    class Meta:
+        verbose_name = "Site content"
 
 
 PUB_TYPE_CHOICES = [
