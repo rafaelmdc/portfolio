@@ -13,7 +13,6 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.postgres',
     "main",
-    "django_ckeditor_5",
     # Wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -83,22 +82,6 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CKEDITOR_5_CONFIGS = {
-    "default": {
-        "toolbar": [
-            "heading", "|",
-            "bold", "italic", "link",
-            "bulletedList", "numberedList",
-            "blockQuote",
-            "|",
-            "insertTable", "mediaEmbed",
-            "undo", "redo",
-        ],
-    },
-}
-CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-CKEDITOR_5_UPLOAD_PATH = "uploads/ckeditor/"
 
 WAGTAIL_SITE_NAME = "Portfolio"
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
