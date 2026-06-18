@@ -206,76 +206,9 @@ class Language(models.Model):
     ]
 
 
-# ---------- site copy / assets ----------
-class SiteCopy(Timestamped):
-    COPY_KEYS = [
-        ("about_title", "About: Section Title"),
-        ("about_lead", "About: Lead Paragraph"),
-        ("about_intro_headline", "About: Intro Headline"),
-        ("about_intro_body", "About: Intro Body"),
-        ("skills_title", "Skills: Section Title"),
-        ("skills_lead", "Skills: Lead Paragraph"),
-        ("about_quote", "About: Quote"),
-    ]
-
-    key = models.CharField(max_length=64, choices=COPY_KEYS, db_index=True)
-    text = models.TextField()
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name_plural = "Site Copy"
-        indexes = [models.Index(fields=["key", "active"])]
-
-    def clean(self):
-        if self.active:
-            qs = SiteCopy.objects.filter(key=self.key, active=True)
-            if self.pk:
-                qs = qs.exclude(pk=self.pk)
-            if qs.exists():
-                raise ValidationError(
-                    f"Only one active entry is allowed for key='{self.key}'."
-                )
-
-    def __str__(self):
-        return f"{self.get_key_display()} ({'active' if self.active else 'inactive'})"
-
-
-class SiteAsset(Timestamped):
-    """
-    Single active asset per key (like SiteCopy but for images/files).
-    """
-
-    ASSET_KEYS = [
-        ("about_profile", "About: Profile Image"),
-        ("home_profile", "Home: Profile Image"),
-        # add more later (e.g., "home_hero", "resume_pdf", etc.)
-    ]
-
-    key = models.CharField(max_length=64, choices=ASSET_KEYS, db_index=True)
-    image = models.ImageField(upload_to=site_upload_to, validators=[validate_image_file])
-    alt_text = models.CharField(max_length=160, blank=True)
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = "Site Asset"
-        verbose_name_plural = "Site Assets"
-        indexes = [models.Index(fields=["key", "active"])]
-
-    def clean(self):
-        if self.active:
-            qs = SiteAsset.objects.filter(key=self.key, active=True)
-            if self.pk:
-                qs = qs.exclude(pk=self.pk)
-            if qs.exists():
-                raise ValidationError(
-                    f"Only one active asset is allowed for key='{self.key}'."
-                )
-
-    def __str__(self):
-        return f"{self.get_key_display()} ({'active' if self.active else 'inactive'})"
-
-
 # ---------- consolidated site content (Wagtail settings) ----------
+# (Legacy SiteCopy / SiteAsset key-value models were removed once their data was
+#  migrated into SiteContent below; site_upload_to is kept for old migrations.)
 @register_setting
 class SiteContent(BaseGenericSetting):
     """
