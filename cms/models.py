@@ -9,6 +9,8 @@ from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 
 from wagtail import blocks
+from wagtail.api import APIField
+from wagtail.images.api.fields import ImageRenditionField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.embeds.blocks import EmbedBlock
@@ -503,6 +505,22 @@ class BlogPage(Page):
         ]
     )
 
+    @property
+    def tag_names(self):
+        return [t.name for t in self.tags.all()]
+
+    api_fields = [
+        APIField("intro"),
+        APIField("date"),
+        APIField("featured"),
+        APIField("reading_time_minutes"),
+        APIField("hero_caption"),
+        APIField("hero_image", serializer=ImageRenditionField("width-1200")),
+        APIField("hero_thumb", serializer=ImageRenditionField("fill-600x400", source="hero_image")),
+        APIField("body"),
+        APIField("tag_names"),
+    ]
+
     class Meta:
         verbose_name = "Blog post"
 
@@ -529,6 +547,8 @@ class PortfolioIndexPage(RoutablePageMixin, Page):
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
     ]
+
+    api_fields = [APIField("intro")]
 
     def get_projects(self):
         return (
@@ -605,6 +625,20 @@ class PortfolioProjectPage(Page):
         FieldPanel("body"),
     ]
 
+    @property
+    def tag_names(self):
+        return [t.name for t in self.tags.all()]
+
+    api_fields = [
+        APIField("subtitle"),
+        APIField("external_url"),
+        APIField("github_url"),
+        APIField("cover_image", serializer=ImageRenditionField("width-1200")),
+        APIField("cover_thumb", serializer=ImageRenditionField("fill-800x600", source="cover_image")),
+        APIField("body"),
+        APIField("tag_names"),
+    ]
+
     class Meta:
         verbose_name = "Portfolio project"
 
@@ -626,4 +660,5 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
     ]
-    
+
+    api_fields = [APIField("intro")]
