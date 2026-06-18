@@ -6,7 +6,9 @@ from django.utils.text import slugify
 import os, uuid
 from .validators import validate_image_file
 
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from modelcluster.models import ClusterableModel
+from modelcluster.fields import ParentalKey
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
 
 
 # ---------- helpers ----------
@@ -60,7 +62,7 @@ class Education(models.Model):
     ]
 
 
-class Experience(models.Model):
+class Experience(ClusterableModel):
     role = models.CharField(max_length=200)
     company = models.CharField(max_length=200)
     location = models.CharField(max_length=200, blank=True)
@@ -86,12 +88,13 @@ class Experience(models.Model):
             heading="Years",
         ),
         FieldPanel("blurb"),
+        InlinePanel("bullets", heading="Bullet points", label="Bullet"),
         FieldPanel("order"),
     ]
 
 
 class ExperienceBullet(models.Model):
-    experience = models.ForeignKey(
+    experience = ParentalKey(
         Experience, on_delete=models.CASCADE, related_name="bullets"
     )
     text = models.CharField(max_length=300)
