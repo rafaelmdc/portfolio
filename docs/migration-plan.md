@@ -1,8 +1,21 @@
 # Migration Plan — Headless Wagtail + React/Tailwind
 
-Status: planning. All work happens on a feature branch; `main` auto-deploys via
-Argo CD (DockerHub image built on push to `main`). Nothing reaches `main` until a
-phase is working and approved.
+Status: **Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 next.** All work on the
+`rework` branch; `main` auto-deploys via Argo CD on Kubernetes (Argo watches the
+homelab repo + DockerHub `latest`). Nothing reaches `main`/homelab until the end.
+
+Progress notes:
+- Phase 0: image confirmed on Wagtail 7.4.2 / Django 5.2.15.
+- Phase 1: CV models are Wagtail snippets; Experience bullets inline; SiteCopy/
+  SiteAsset consolidated into the SiteContent settings object (copy + Wagtail
+  images w/ renditions, data-migrated); views/CV-PDF read SiteContent; legacy
+  models, duplicate django-admin, dead signals and django-ckeditor-5 removed.
+- Phase 2: Wagtail REST API v2 at /api/v2/ (pages/images/documents); api_fields
+  on blog/portfolio pages; StreamField image blocks embed rendition URLs;
+  /api/v2/site/ bundle (copy, images, CV snippets, ORCID, live cached GitHub
+  stats, has_research flag). Old Django pages still render unchanged.
+- Phase 3 setup TODO: add django-cors-headers for the Next.js dev origin
+  (deferred to the frontend rebuild).
 
 ## Target architecture
 
