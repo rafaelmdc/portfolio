@@ -6,6 +6,8 @@ from django.utils.text import slugify
 import os, uuid
 from .validators import validate_image_file
 
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+
 
 # ---------- helpers ----------
 def site_upload_to(_instance, filename):
@@ -45,6 +47,18 @@ class Education(models.Model):
     def __str__(self):
         return f"{self.title} @ {self.institution}"
 
+    panels = [
+        FieldPanel("title"),
+        FieldPanel("institution"),
+        FieldPanel("location"),
+        MultiFieldPanel(
+            [FieldPanel("start_year"), FieldPanel("end_year")],
+            heading="Years",
+        ),
+        FieldPanel("blurb"),
+        FieldPanel("order"),
+    ]
+
 
 class Experience(models.Model):
     role = models.CharField(max_length=200)
@@ -62,6 +76,18 @@ class Experience(models.Model):
 
     def __str__(self):
         return f"{self.role} @ {self.company}"
+
+    panels = [
+        FieldPanel("role"),
+        FieldPanel("company"),
+        FieldPanel("location"),
+        MultiFieldPanel(
+            [FieldPanel("start_year"), FieldPanel("end_year")],
+            heading="Years",
+        ),
+        FieldPanel("blurb"),
+        FieldPanel("order"),
+    ]
 
 
 class ExperienceBullet(models.Model):
@@ -109,6 +135,26 @@ class Grant(models.Model):
     def __str__(self):
         return f"{self.title} ({self.funder})"
 
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("title"),
+                FieldPanel("funder"),
+                FieldPanel("role"),
+                FieldPanel("amount"),
+                FieldPanel("start_year"),
+                FieldPanel("end_year"),
+            ],
+            heading="Grant",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("description"), FieldPanel("url")],
+            heading="Details",
+        ),
+        FieldPanel("orcid_put_code"),
+        FieldPanel("order"),
+    ]
+
 
 class Award(models.Model):
     title       = models.CharField(max_length=300)
@@ -126,6 +172,15 @@ class Award(models.Model):
     def __str__(self):
         return f"{self.title} — {self.issuer}"
 
+    panels = [
+        FieldPanel("title"),
+        FieldPanel("issuer"),
+        FieldPanel("year"),
+        FieldPanel("description"),
+        FieldPanel("url"),
+        FieldPanel("order"),
+    ]
+
 
 class Language(models.Model):
     name       = models.CharField(max_length=80)
@@ -139,6 +194,12 @@ class Language(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_level_display()})"
+
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("level"),
+        FieldPanel("order"),
+    ]
 
 
 # ---------- site copy / assets ----------
@@ -261,6 +322,34 @@ class Publication(models.Model):
             return f"https://doi.org/{self.doi}"
         return self.url
 
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("title"),
+                FieldPanel("authors"),
+                FieldPanel("highlight_name"),
+                FieldPanel("venue"),
+                FieldPanel("year"),
+                FieldPanel("pub_type"),
+            ],
+            heading="Publication",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("doi"), FieldPanel("url")],
+            heading="Links",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("abstract"),
+                FieldPanel("citation_count"),
+                FieldPanel("featured"),
+                FieldPanel("order"),
+            ],
+            heading="Details",
+        ),
+        FieldPanel("orcid_put_code"),
+    ]
+
 
 class Skill(Timestamped):
     name = models.CharField(max_length=80)
@@ -280,6 +369,14 @@ class Skill(Timestamped):
 
     def __str__(self):
         return self.name
+
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("description"),
+        FieldPanel("icon"),
+        FieldPanel("order"),
+        FieldPanel("active"),
+    ]
 
 
 # ---------- portfolio ----------
