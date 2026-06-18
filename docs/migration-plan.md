@@ -6,14 +6,21 @@ phase is working and approved.
 
 ## Target architecture
 
-- **One React app** (Vite + TS + Tailwind + React Router + TanStack Query).
-  - `/` — single scrollable landing page (About, Skills, Work, Research, Contact).
-  - `/blog`, `/blog/:slug` — separate routes.
-  - `/portfolio/:slug` — project detail routes.
+- **Next.js frontend** (App Router + TS + Tailwind), its own image/Deployment.
+  - `/` — single scrollable landing page (About, Skills, Timeline, Work, Research, Contact).
+  - `/blog`, `/blog/[slug]` — separate routes (SSG/ISR for SEO).
+  - `/portfolio/[slug]` — project detail routes.
 - **One Wagtail backend** (no more half-Django/half-Wagtail). All content edited in `/cms`.
 - **Headless via Wagtail REST API**; StreamField serialized to JSON.
-- **Single Docker image**: Wagtail serves the built React bundle (WhiteNoise) + the API,
-  so the Argo/DockerHub pipeline stays unchanged.
+- **Deploy:** Argo CD on Kubernetes; Argo watches the `Rafael-Homelab` repo and pulls `latest`
+  from DockerHub. Adding the frontend is a one-file manifest change — done **last**, with the
+  user. Do not touch the homelab repo until the migration is otherwise complete.
+
+## Locked decisions
+- Frontend: **Next.js** (own Deployment) · package manager **pnpm**.
+- Backend run/migrate locally via **docker compose (dev)** (matches prod versions).
+- Model→snippet migration verified against a **prod DB dump** (user provides).
+- Deployment wiring (homelab manifest) is the final phase; untouched until then.
 
 ## Design direction — "Marginalia"
 
@@ -68,7 +75,8 @@ Skills are color-coded by the two halves of the field (computational vs biology)
 - Keep `/resume/pdf/` as a direct endpoint (React links to it).
 - Expose Wagtail renditions for responsive `srcset`.
 
-## Phase 3 — React + Tailwind frontend
+## Phase 3 — Next.js + Tailwind frontend
+- Scaffold Next.js (App Router) + Tailwind + pnpm; TanStack Query for client fetches.
 - Build the "Marginalia" design system (tokens, type, motion primitives).
 - Landing sections (each fetches its API slice): Hero, About, Skills, Work, Research, Contact.
 - Blog index (featured + pagination + tag filter) and post detail.
@@ -77,11 +85,12 @@ Skills are color-coded by the two halves of the field (computational vs biology)
   paragraph, image, gallery/carousel, embed, callout, code+highlight, button, divider,
   spacer, blockquote, PDF downloads, nested section), honoring all presentation controls.
 
-## Phase 4 — SEO, feeds, deployment
-- Prerender/SSR for blog + project routes (SPA SEO).
+## Phase 4 — SEO, feeds, deployment (LAST)
+- SEO/SSR comes free with Next.js SSG/ISR for blog + project routes.
 - Keep RSS/Atom feeds + sitemap server-side in Wagtail.
-- Node build stage in Dockerfile → collected into staticfiles; test build green on branch
-  before merge (push to `main` = deploy).
+- Build + push the Next.js frontend image and the (consolidated) Wagtail image to DockerHub.
+- Add the frontend Deployment/Service/Ingress to the homelab manifests (one-file change) and
+  let Argo sync. This is the only step that touches `Rafael-Homelab/`; do it last, with the user.
 
 ## Feature additions (folded into the phases)
 - **Live citation counts / ORCID badge** on publications (uses `citation_count`, `orcid_put_code`) — Phase 2/3.
@@ -100,7 +109,8 @@ Skills are color-coded by the two halves of the field (computational vs biology)
 1. StreamField → React rendering is the largest single chunk.
 2. SPA SEO for the blog (needs the Phase 4 prerender/SSR decision).
 3. Data migration of `main` models — verify no content loss.
-4. Dockerfile Node build stage must keep CI green (auto-deploy on `main`).
+4. Two images (frontend + backend) and the homelab manifest change land last; don't touch
+   `Rafael-Homelab/` until then (Argo auto-syncs it).
 
 ## Suggested order
 Phase 0 → 1 → 2 (backend consolidated, old site still works) → 3 → 4.
