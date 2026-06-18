@@ -25,6 +25,23 @@ from wagtail.documents.blocks import DocumentChooserBlock
 # Shared StreamField blocks (used by BlogPage + PortfolioProjectPage)
 # =============================================================================
 
+def _image_api_rep(image, alt_override=None):
+    """Serialise a Wagtail image to self-contained rendition URLs for the API."""
+    if not image:
+        return None
+    full = image.get_rendition("width-1600")
+    thumb = image.get_rendition("fill-600x400")
+    return {
+        "id": image.id,
+        "title": image.title,
+        "alt": alt_override or image.title,
+        "url": full.url,
+        "width": full.width,
+        "height": full.height,
+        "thumb": thumb.url,
+    }
+
+
 class PrettyEmbedBlock(blocks.StructBlock):
     """Embed with presentation controls (matches your existing blog embed block)."""
 
@@ -141,6 +158,11 @@ class PrettyImageBlock(blocks.StructBlock):
     link_url = blocks.URLBlock(required=False, help_text="Optional: make image clickable.")
     open_in_new = blocks.BooleanBlock(required=False, default=False)
     alt_override = blocks.CharBlock(required=False, max_length=160, help_text="Optional: override alt text.")
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["image"] = _image_api_rep(value.get("image"), value.get("alt_override"))
+        return rep
 
     class Meta:
         icon = "image"
@@ -279,6 +301,11 @@ class GalleryBlock(blocks.StructBlock):
         help_text="Auto-advance slides every 4 seconds.",
     )
     images = blocks.ListBlock(ImageChooserBlock())
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["images"] = [_image_api_rep(img) for img in value.get("images") or []]
+        return rep
 
     class Meta:
         icon = "image"
