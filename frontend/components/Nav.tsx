@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 
@@ -8,6 +8,28 @@ export type NavLink = { href: string; n: string; label: string };
 
 export default function Nav({ links }: { links: NavLink[] }) {
   const [open, setOpen] = useState(false);
+
+  // Shift + 1..9 jumps to the matching §-numbered section. Uses the physical
+  // key code (so the Shift "!" remapping doesn't matter) and ignores typing.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+      const m = /^Digit([1-9])$/.exec(e.code);
+      if (!m) return;
+      const el = document.activeElement as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable))
+        return;
+      const link = links.find((l) => l.n === `§${m[1]}`);
+      if (!link) return;
+      const target = document.getElementById(link.href.slice(1));
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth" });
+      history.replaceState(null, "", link.href);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [links]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md backdrop-saturate-150">
@@ -18,10 +40,11 @@ export default function Nav({ links }: { links: NavLink[] }) {
 
         {/* desktop links */}
         <div className="ml-auto hidden gap-[22px] md:flex">
-          {links.map((l) => (
+          {links.map((l, i) => (
             <a
               key={l.href}
               href={l.href}
+              title={`Shift+${i + 1}`}
               className="font-mono text-[12.5px] text-muted transition hover:text-ink"
             >
               <span className="text-primary/70">{l.n}</span> {l.label}
