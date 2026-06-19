@@ -1,5 +1,6 @@
 import type { StreamBlock, ImageRendition } from "@/lib/types";
 import { mediaUrl } from "@/lib/api";
+import CodeBlock from "./CodeBlock";
 
 /* ---------- helpers ---------- */
 function embedSrc(url: string): string | null {
@@ -60,27 +61,6 @@ function ImageBlock({ value }: { value: Record<string, unknown> }) {
         </figcaption>
       )}
     </figure>
-  );
-}
-
-function CodeBlock({ value }: { value: Record<string, unknown> }) {
-  const terminal = value.style === "terminal";
-  return (
-    <div
-      className={`my-7 overflow-hidden rounded-xl border border-border ${
-        terminal ? "bg-[#16131f] text-[#e7e3f0]" : "bg-surface"
-      }`}
-    >
-      {Boolean(value.title || value.language) && (
-        <div className="flex items-center justify-between border-b border-border/40 px-4 py-2 font-mono text-[11.5px] text-muted">
-          <span>{(value.title as string) || ""}</span>
-          <span>{value.language as string}</span>
-        </div>
-      )}
-      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-[1.6]">
-        <code>{value.code as string}</code>
-      </pre>
-    </div>
   );
 }
 
