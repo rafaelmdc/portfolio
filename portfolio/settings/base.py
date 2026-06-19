@@ -86,6 +86,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 WAGTAIL_SITE_NAME = "Portfolio"
+
+# Allow the headless frontend to fetch the full blog/portfolio list in one call.
+WAGTAILAPI_LIMIT_MAX = 100
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
 
 # Optional: ORCID public profile ID (e.g. "0000-0001-2345-6789")
