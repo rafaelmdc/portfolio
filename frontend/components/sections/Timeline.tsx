@@ -11,11 +11,13 @@ function Item({
   title,
   org,
   range,
+  blurb,
   bullets,
 }: {
   title: string;
   org: string;
   range: string;
+  blurb?: string;
   bullets?: string[];
 }) {
   return (
@@ -27,6 +29,7 @@ function Item({
       <p className="m-0 mb-[6px] text-[13.5px] text-muted">
         <em>{org}</em>
       </p>
+      {blurb && <p className="m-0 mb-[6px] text-[13.5px]">{blurb}</p>}
       {bullets && bullets.length > 0 && (
         <ul className="mt-2 list-disc pl-[18px] text-[13.5px]">
           {bullets.map((b, i) => (
@@ -80,6 +83,7 @@ export default function Timeline({
                     title={x.role}
                     org={`${x.company}${x.location ? ` · ${x.location}` : ""}`}
                     range={years(x.start_year, x.end_year)}
+                    blurb={x.blurb}
                     bullets={x.bullets}
                   />
                 ))}
@@ -98,6 +102,7 @@ export default function Timeline({
                     title={e.title}
                     org={`${e.institution}${e.location ? ` · ${e.location}` : ""}`}
                     range={years(e.start_year, e.end_year)}
+                    blurb={e.blurb}
                   />
                 ))}
               </Stream>
