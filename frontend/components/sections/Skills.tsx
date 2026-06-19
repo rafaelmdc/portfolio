@@ -17,11 +17,11 @@ export default function Skills({ bundle }: { bundle: SiteBundle }) {
         <Reveal>
           <div className="mb-[22px] flex justify-center gap-[18px] font-mono text-[11.5px] text-muted">
             <span>
-              <i className="mr-[6px] inline-block h-[9px] w-[9px] rounded-full align-middle bg-sky" />
+              <i className="mr-[6px] inline-block h-[9px] w-[9px] rounded-full align-middle bg-comp" />
               computational
             </span>
             <span>
-              <i className="mr-[6px] inline-block h-[9px] w-[9px] rounded-full align-middle bg-mint" />
+              <i className="mr-[6px] inline-block h-[9px] w-[9px] rounded-full align-middle bg-bio" />
               biology
             </span>
           </div>
@@ -36,7 +36,7 @@ export default function Skills({ bundle }: { bundle: SiteBundle }) {
               >
                 <span
                   className={`h-[9px] w-[9px] flex-none rounded-full ${
-                    BIO.test(s.name) ? "bg-mint" : "bg-sky"
+                    BIO.test(s.name) ? "bg-bio" : "bg-comp"
                   }`}
                 />
                 {s.name}

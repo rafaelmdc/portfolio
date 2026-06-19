@@ -15,6 +15,9 @@
   --peach: #fce0cf;
   --sky: #d3e7f8;
   --chip-ink: #3a3550;
+  /* readable category accents (skills legend/dots) */
+  --c-comp: #3f74d6;
+  --c-bio: #2f9e6b;
   --shadow: 0 1px 2px rgba(30, 32, 41, 0.04), 0 12px 32px -12px rgba(30, 32, 41, 0.18);
 }
 
@@ -32,6 +35,8 @@
   --peach: rgba(240, 160, 122, 0.2);
   --sky: rgba(107, 176, 230, 0.2);
   --chip-ink: #d8d4e6;
+  --c-comp: #8fb3ff;
+  --c-bio: #74d3a3;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -18px rgba(0, 0, 0, 0.6);
 }
 
@@ -48,6 +53,8 @@
   --color-peach: var(--peach);
   --color-sky: var(--sky);
   --color-chip-ink: var(--chip-ink);
+  --color-comp: var(--c-comp);
+  --color-bio: var(--c-bio);
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains);

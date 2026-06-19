@@ -27,7 +27,7 @@ export default function About({ bundle }: { bundle: SiteBundle }) {
         <Reveal>
           <Eyebrow>§1 — About</Eyebrow>
         </Reveal>
-        <div className="grid grid-cols-1 items-start gap-[54px] md:grid-cols-[1.4fr_0.9fr]">
+        <div className="grid grid-cols-1 items-center gap-[54px] md:grid-cols-[1.4fr_0.9fr]">
           <Reveal>
             <h2 className="mb-5 font-display text-[clamp(28px,4vw,40px)] font-medium">
               {copy.about_intro_headline || "Pipelines that connect biology with clean code."}
@@ -45,15 +45,15 @@ export default function About({ bundle }: { bundle: SiteBundle }) {
           </Reveal>
 
           <Reveal>
-            {img && (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={mediaUrl(img.url)}
-                alt={img.alt}
-                className="mb-[18px] block aspect-square w-full rounded-2xl border border-border object-cover shadow-[var(--shadow)]"
-              />
-            )}
-            <div className="rounded-2xl border border-border bg-surface p-[22px] shadow-[var(--shadow)]">
+            <div className="rounded-2xl border border-border bg-surface p-5 shadow-[var(--shadow)]">
+              {img && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={mediaUrl(img.url)}
+                  alt={img.alt}
+                  className="mb-5 block aspect-[5/4] w-full rounded-xl object-cover"
+                />
+              )}
               <h3 className="mb-[14px] font-mono text-[13px] font-normal tracking-[0.04em] text-muted">
                 {"// at a glance"}
               </h3>
