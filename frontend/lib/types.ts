@@ -31,6 +31,13 @@ export type SiteBundle = {
   orcid_id: string;
   has_research: boolean;
   sections: HomeSection[];
+  contact: {
+    email: string;
+    linkedin_url: string;
+    github_username: string;
+    full_name: string;
+  };
+  cv: { enabled: boolean; url: string };
 };
 
 /* CMS-controlled homepage sections (ordered). Marker sections only carry an

@@ -1,4 +1,5 @@
 import type { SiteBundle, Education, Experience } from "@/lib/types";
+import { mediaUrl } from "@/lib/api";
 import Eyebrow from "../Eyebrow";
 import Reveal from "../Reveal";
 
@@ -103,6 +104,20 @@ export default function Timeline({
             </Reveal>
           )}
         </div>
+        {bundle.cv?.enabled && bundle.cv.url && (
+          <Reveal>
+            <div className="mt-12 flex justify-center">
+              <a
+                href={mediaUrl(bundle.cv.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-[9px] rounded-[11px] border border-primary bg-primary px-[18px] py-3 font-mono text-[13px] text-[var(--on-primary)] transition hover:-translate-y-0.5"
+              >
+                ↗ Open full CV (PDF)
+              </a>
+            </div>
+          </Reveal>
+        )}
       </div>
     </section>
   );
