@@ -9,6 +9,14 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - image: hydrodog11/portfolio
+            context: .
+          - image: hydrodog11/portfolio-frontend
+            context: frontend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,13 +30,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push
+      - name: Build and push ${{ matrix.image }}
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ${{ matrix.context }}
           push: true
           tags: |
-            hydrodog11/portfolio:latest
-            hydrodog11/portfolio:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            ${{ matrix.image }}:latest
+            ${{ matrix.image }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
