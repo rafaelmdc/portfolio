@@ -6,21 +6,32 @@ import type {
   ProjectDetail,
 } from "./types";
 
-// Server-side base URL for the headless Wagtail backend.
-export const API_BASE =
-  process.env.WAGTAIL_API_URL?.replace(/\/$/, "") || "http://localhost:8000";
+// Server-side (SSR) base URL for the headless Wagtail backend. In production
+// this is an internal/in-cluster address that is NOT exposed to the public
+// internet; the browser never uses it (see mediaUrl + next.config rewrites).
+const INTERNAL_API_URL = (
+  process.env.INTERNAL_API_URL ||
+  process.env.WAGTAIL_API_URL ||
+  "http://localhost:8000"
+).replace(/\/$/, "");
 
 const REVALIDATE = 300; // seconds (ISR)
 
-/** Prefix backend-relative media/rendition paths with the API origin. */
+/**
+ * Browser-facing asset URL (images, CV, documents). These are served
+ * same-origin and proxied to the backend by next.config `rewrites()`, so a
+ * backend-relative path (e.g. "/media/…") is returned unchanged. Absolute
+ * URLs (external) pass through.
+ */
 export function mediaUrl(path: string | null | undefined): string {
   if (!path) return "";
   if (path.startsWith("http")) return path;
-  return `${API_BASE}${path}`;
+  return path;
 }
 
 async function getJSON<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  // Server-side fetch goes straight to the internal backend (no proxy hop).
+  const res = await fetch(`${INTERNAL_API_URL}${path}`, {
     next: { revalidate: REVALIDATE },
   });
   if (!res.ok) {

@@ -334,6 +334,23 @@ class PdfDownloadsBlock(blocks.StructBlock):
         help_text="Add 1–4 PDFs (e.g. poster, report, appendix, slides).",
     )
 
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        items = []
+        for d in value.get("documents") or []:
+            doc = d.get("document")
+            if not doc:
+                continue
+            items.append({
+                "label": d.get("label") or doc.title,
+                "note": d.get("note") or "",
+                "open_in_new": bool(d.get("open_in_new")),
+                "url": doc.url,          # relative /documents/<id>/<file> — proxied
+                "filename": doc.filename,
+            })
+        rep["documents"] = items
+        return rep
+
     class Meta:
         icon = "doc-full-inverse"
         label = "PDF downloads"

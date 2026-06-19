@@ -195,7 +195,8 @@ class SiteBundleView(APIView):
             },
             "cv": {
                 "enabled": bool(sc.cv_enabled) if sc else False,
-                # Stable endpoint that regenerates if stale, then opens inline.
-                "url": "/resume/pdf/" if (sc and sc.cv_enabled) else "",
+                # Slashless so the frontend proxy doesn't hit an APPEND_SLASH
+                # loop; regenerates-if-stale then redirects to the inline PDF.
+                "url": "/resume/pdf" if (sc and sc.cv_enabled) else "",
             },
         })

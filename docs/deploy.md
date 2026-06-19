@@ -17,15 +17,22 @@ runs as non-root on **:3000**, and needs **no backend access at build time**
 
 ## Runtime config
 
+The frontend is the **only** public component. It proxies the browser-facing
+backend paths through itself (`next.config.ts` `rewrites()`), so the backend can
+stay **in-network only** — nothing on the Django/Wagtail side is exposed to the
+public internet.
+
 Frontend container env:
 
-- `WAGTAIL_API_URL` — public URL of the backend. Used for server-side JSON
-  fetches **and** for the media/image URLs baked into the HTML (loaded by the
-  browser), so it must be **publicly reachable**, not an internal-only Service
-  name. e.g. `https://api.rafael.duarte-correia.pt`.
+- `INTERNAL_API_URL` — in-cluster URL of the backend Service, used only for
+  server-side (SSR) JSON fetches. e.g. `http://portfolio-web:8000`. **Not
+  public.** (`WAGTAIL_API_URL` is still honoured as a fallback.)
 
-Backend env: unchanged from today (see `.env.prod.example`). Ensure CORS is not
-required — the frontend fetches server-side only.
+Proxied to the backend by the frontend (browser → frontend origin → backend):
+`/api/*`, `/media/*`, `/documents/*`, `/resume/*`. Everything else on the
+backend (notably `/cms/`) is **not** proxied — reach the CMS over LAN/VPN.
+
+No CORS config needed — the browser only ever talks to the frontend origin.
 
 ## What the API exposes (already live on this branch)
 
@@ -40,12 +47,16 @@ required — the frontend fetches server-side only.
 Add to the portfolio app manifests in `Rafael-Homelab/kubernetes/...`:
 
 1. A **Deployment** for `hydrodog11/portfolio-frontend:latest`
-   (containerPort 3000, env `WAGTAIL_API_URL=<public backend URL>`).
+   (containerPort 3000, env `INTERNAL_API_URL=http://<backend-service>:8000`).
 2. A **Service** targeting port 3000.
-3. **Ingress** routing:
-   - the site root → frontend Service,
-   - `/cms`, `/api`, `/media`, `/documents`, `/resume`, `/sitemap.xml`, feeds →
-     backend Service (so the browser can reach media/admin/API on the public host).
+3. **Ingress**: route the public host **entirely to the frontend Service**.
+   The frontend proxies `/api`, `/media`, `/documents`, `/resume` to the backend
+   internally — so the **backend Service stays cluster-internal (ClusterIP, no
+   public Ingress)**. Reach `/cms/` over LAN/VPN or a port-forward.
+
+Optionally schedule the CV refresh: a **CronJob** running
+`python manage.py gen_cv` (daily or weekly) on the backend image keeps the
+cached CV PDF fresh without relying on a visitor click.
 
 Then let Argo sync. Verify, then retire the old monolith routing.
 
@@ -59,7 +70,7 @@ docker compose -f docker-compose.dev.yml exec web python manage.py seed_demo
 # frontend image
 make frontend-build
 docker run --rm --add-host=host.docker.internal:host-gateway \
-  -e WAGTAIL_API_URL=http://host.docker.internal:8000 \
+  -e INTERNAL_API_URL=http://host.docker.internal:8000 \
   -p 3200:3000 hydrodog11/portfolio-frontend:latest
 # → http://localhost:3200
 ```

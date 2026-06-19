@@ -184,17 +184,28 @@ function block(b: StreamBlock): React.ReactNode {
       );
     }
     case "pdfs": {
-      const docs = (v.documents as Record<string, unknown>[]) || [];
+      type Pdf = { label?: string; note?: string; url?: string; open_in_new?: boolean };
+      const docs = (v.documents as Pdf[]) || [];
       return (
         <div className="my-6 rounded-xl border border-border bg-surface p-5">
           {v.title ? <p className="font-display text-[18px] font-medium">{v.title as string}</p> : null}
           {v.description ? <p className="mb-3 text-[14px] text-muted">{v.description as string}</p> : null}
-          <div className="flex flex-wrap gap-2">
-            {docs.map((d, i) => (
-              <span key={i} className="rounded-md bg-mint px-3 py-1.5 font-mono text-[12px] text-chip-ink">
-                {(d.label as string) || "PDF"}
-              </span>
-            ))}
+          <div className="flex flex-wrap gap-x-2 gap-y-3">
+            {docs.map((d, i) =>
+              d.url ? (
+                <span key={i} className="flex flex-col gap-0.5">
+                  <a
+                    href={mediaUrl(d.url)}
+                    target={d.open_in_new ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-mint px-3 py-1.5 font-mono text-[12px] text-chip-ink transition hover:-translate-y-0.5"
+                  >
+                    ↓ {d.label || "PDF"}
+                  </a>
+                  {d.note ? <span className="text-[11px] text-muted">{d.note}</span> : null}
+                </span>
+              ) : null,
+            )}
           </div>
         </div>
       );
