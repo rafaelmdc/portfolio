@@ -56,12 +56,27 @@ def github_stats(username, ttl=GITHUB_CACHE_TTL):
             lang = r.get("language")
             if lang:
                 langs[lang] = langs.get(lang, 0) + 1
+        # Lifetime public commits authored by the user (search API, cached).
+        total_commits = None
+        try:
+            sr = requests.get(
+                "https://api.github.com/search/commits",
+                params={"q": f"author:{username}", "per_page": 1},
+                headers={"Accept": "application/vnd.github+json"},
+                timeout=8,
+            ).json()
+            if isinstance(sr, dict) and "total_count" in sr:
+                total_commits = sr["total_count"]
+        except Exception:
+            pass
+
         data = {
             "username": username,
             "public_repos": user.get("public_repos"),
             "followers": user.get("followers"),
             "total_stars": sum(r.get("stargazers_count", 0) for r in repos),
             "top_language": max(langs, key=langs.get) if langs else None,
+            "total_commits": total_commits,
         }
     except Exception:
         data = None
@@ -113,6 +128,9 @@ class SiteBundleView(APIView):
             for k in [
                 "about_title", "about_lead", "about_intro_headline",
                 "about_intro_body", "about_quote", "skills_title", "skills_lead",
+                "hero_eyebrow", "hero_headline", "hero_highlight",
+                "hero_cta_primary", "hero_cta_secondary",
+                "contact_headline", "contact_note", "about_focus",
             ]
         }
 
@@ -163,6 +181,17 @@ class SiteBundleView(APIView):
                 "linkedin_url": (sc.linkedin_url if sc else "") or "",
                 "github_username": (sc.github_username if sc else "") or "",
                 "full_name": (sc.full_name if sc else "") or "",
+                "show_email": bool(sc.contact_show_email) if sc else True,
+                "show_github": bool(sc.contact_show_github) if sc else True,
+                "show_linkedin": bool(sc.contact_show_linkedin) if sc else True,
+                "show_blog": bool(sc.contact_show_blog) if sc else True,
+            },
+            "stats": {
+                k: bool(getattr(sc, k)) if sc else False
+                for k in [
+                    "stat_focus", "stat_repos", "stat_stars", "stat_language",
+                    "stat_followers", "stat_commits", "stat_publications", "stat_honors",
+                ]
             },
             "cv": {
                 "enabled": bool(sc.cv_enabled) if sc else False,

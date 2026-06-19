@@ -242,6 +242,43 @@ class SiteContent(BaseGenericSetting):
         help_text="GitHub username, used to show live repo/stars stats.",
     )
 
+    # ---- Hero copy (all editable, with sensible defaults) ----
+    hero_eyebrow   = models.CharField(
+        max_length=200, blank=True, default="MSc Bioinformatics · biology ∩ data")
+    hero_headline  = models.CharField(
+        max_length=200, blank=True,
+        default="I turn biological questions into reproducible code.")
+    hero_highlight = models.CharField(
+        max_length=100, blank=True, default="reproducible code.",
+        help_text="Part of the headline to highlight (must appear in the headline).")
+    hero_cta_primary   = models.CharField(max_length=60, blank=True, default="View selected work")
+    hero_cta_secondary = models.CharField(max_length=60, blank=True, default="Timeline & CV")
+
+    # ---- Contact copy + which buttons show ----
+    contact_headline = models.CharField(
+        max_length=200, blank=True,
+        default="Let's turn biology into something runnable.")
+    contact_note = models.CharField(
+        max_length=200, blank=True,
+        default="always happy to talk research, code, or collaboration")
+    contact_show_email    = models.BooleanField(default=True)
+    contact_show_github   = models.BooleanField(default=True)
+    contact_show_linkedin = models.BooleanField(default=True)
+    contact_show_blog     = models.BooleanField(default=True)
+
+    # ---- About "at a glance" stats — each row toggleable ----
+    about_focus = models.CharField(
+        max_length=120, blank=True, default="bioinformatics · genomics",
+        help_text="Value shown for the 'focus' row.")
+    stat_focus        = models.BooleanField(default=True, verbose_name="Show focus")
+    stat_repos        = models.BooleanField(default=False, verbose_name="Show public repos")
+    stat_stars        = models.BooleanField(default=True, verbose_name="Show total stars")
+    stat_language     = models.BooleanField(default=True, verbose_name="Show top language")
+    stat_followers    = models.BooleanField(default=False, verbose_name="Show followers")
+    stat_commits      = models.BooleanField(default=True, verbose_name="Show commits")
+    stat_publications = models.BooleanField(default=True, verbose_name="Show publications")
+    stat_honors       = models.BooleanField(default=False, verbose_name="Show honors")
+
     # ---- CV PDF (auto-generated into a Wagtail Document, cached) ----
     CV_REFRESH_CHOICES = [("daily", "Daily"), ("weekly", "Weekly")]
     cv_enabled = models.BooleanField(
@@ -281,6 +318,41 @@ class SiteContent(BaseGenericSetting):
         MultiFieldPanel(
             [FieldPanel("skills_title"), FieldPanel("skills_lead")],
             heading="Skills copy",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("hero_eyebrow"),
+                FieldPanel("hero_headline"),
+                FieldPanel("hero_highlight"),
+                FieldPanel("hero_cta_primary"),
+                FieldPanel("hero_cta_secondary"),
+            ],
+            heading="Hero copy",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("about_focus"),
+                FieldPanel("stat_focus"),
+                FieldPanel("stat_repos"),
+                FieldPanel("stat_stars"),
+                FieldPanel("stat_language"),
+                FieldPanel("stat_followers"),
+                FieldPanel("stat_commits"),
+                FieldPanel("stat_publications"),
+                FieldPanel("stat_honors"),
+            ],
+            heading="About — at-a-glance stats",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("contact_headline"),
+                FieldPanel("contact_note"),
+                FieldPanel("contact_show_email"),
+                FieldPanel("contact_show_github"),
+                FieldPanel("contact_show_linkedin"),
+                FieldPanel("contact_show_blog"),
+            ],
+            heading="Contact section",
         ),
         MultiFieldPanel(
             [FieldPanel("about_profile"), FieldPanel("home_profile")],
