@@ -19,11 +19,19 @@ export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
+  // Research only exists when publications are present; on the home page we can
+  // tell from the DOM (the section is rendered conditionally).
+  const [hideResearch, setHideResearch] = useState(false);
+
+  const dests = useMemo(
+    () => (hideResearch ? DESTS.filter((d) => d.href !== "/#research") : DESTS),
+    [hideResearch],
+  );
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
-    return s ? DESTS.filter((d) => d.label.toLowerCase().includes(s)) : DESTS;
-  }, [q]);
+    return s ? dests.filter((d) => d.label.toLowerCase().includes(s)) : dests;
+  }, [q, dests]);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -31,19 +39,28 @@ export default function CommandPalette() {
     setActive(0);
   }, []);
 
+  const reveal = useCallback(() => {
+    // Research only exists when publications are present; on the home page we
+    // can tell from the DOM (the section is rendered conditionally).
+    setHideResearch(
+      window.location.pathname === "/" && !document.getElementById("research"),
+    );
+    setOpen(true);
+  }, []);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (open) close();
-        else setOpen(true);
+        else reveal();
       } else if (e.key === "Escape") {
         close();
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, close]);
+  }, [open, close, reveal]);
 
   if (!open) return null;
 
@@ -93,6 +110,13 @@ export default function CommandPalette() {
               setActive((a) => Math.max(a - 1, 0));
             } else if (e.key === "Enter" && results[active]) {
               go(results[active].href);
+            } else if (q === "" && /^[1-9]$/.test(e.key)) {
+              // Type a section number (§1, §2, …) to jump straight there.
+              const dest = dests.find((d) => d.hint === `§${e.key}`);
+              if (dest) {
+                e.preventDefault();
+                go(dest.href);
+              }
             }
           }}
           placeholder="Jump to…"
