@@ -66,13 +66,19 @@ export type SiteBundle = {
     linkedin_url: string;
     github_username: string;
     full_name: string;
+    role_title: string;
     show_email: boolean;
     show_github: boolean;
     show_linkedin: boolean;
     show_blog: boolean;
   };
+  uses: Uses;
   cv: { enabled: boolean; url: string };
 };
+
+export type UsesItem = { name: string; detail: string; url: string };
+export type UsesCategory = { heading: string; items: UsesItem[] };
+export type Uses = { intro: string; categories: UsesCategory[] };
 
 /* CMS-controlled homepage sections (ordered). Marker sections only carry an
    optional title override; gallery/carousel carry their own content. */
@@ -187,11 +193,13 @@ export type BlogListItem = {
   reading_time_minutes: number | null;
   hero_thumb: ImageRendition | null;
   card_thumb: ImageRendition | null;
+  card_lqip: ImageRendition | null;
   tag_names: string[];
 };
 
 export type BlogDetail = BlogListItem & {
   hero_image: ImageRendition | null;
+  hero_lqip: ImageRendition | null;
   hero_caption: string;
   featured: boolean;
   body: StreamBlock[];
@@ -202,13 +210,21 @@ export type ProjectListItem = {
   title: string;
   meta: PageMeta;
   subtitle: string;
+  date: string | null;
   cover_thumb: ImageRendition | null;
   card_thumb: ImageRendition | null;
+  card_lqip: ImageRendition | null;
   tag_names: string[];
 };
 
 export type ProjectDetail = ProjectListItem & {
   cover_image: ImageRendition | null;
+  cover_lqip: ImageRendition | null;
+  result_metric: string;
+  tech_list: string[];
+  problem: string;
+  approach: string;
+  outcome: string;
   external_url: string;
   github_url: string;
   body: StreamBlock[];

@@ -126,6 +126,29 @@ def _live_projects_count():
     return PortfolioProjectPage.objects.live().public().count()
 
 
+def _uses(sc):
+    """Serialise the /uses StreamField into clean category/item objects."""
+    if not sc or not sc.uses:
+        return []
+    out = []
+    for block in sc.uses:
+        if block.block_type != "category":
+            continue
+        v = block.value
+        out.append({
+            "heading": str(v.get("heading", "")),
+            "items": [
+                {
+                    "name": str(it.get("name", "")),
+                    "detail": str(it.get("detail", "")),
+                    "url": str(it.get("url", "")),
+                }
+                for it in v.get("items", [])
+            ],
+        })
+    return out
+
+
 class SiteBundleView(APIView):
     def get(self, request):
         sc = SiteContent.objects.first()
@@ -188,6 +211,7 @@ class SiteBundleView(APIView):
                 "linkedin_url": (sc.linkedin_url if sc else "") or "",
                 "github_username": (sc.github_username if sc else "") or "",
                 "full_name": (sc.full_name if sc else "") or "",
+                "role_title": (sc.role_title if sc else "") or "",
                 "show_email": bool(sc.contact_show_email) if sc else True,
                 "show_github": bool(sc.contact_show_github) if sc else True,
                 "show_linkedin": bool(sc.contact_show_linkedin) if sc else True,
@@ -206,6 +230,10 @@ class SiteBundleView(APIView):
                 "projects_count": _live_projects_count(),
                 "current_status": (sc.current_status if sc else "") or "",
                 "primary_domain": (sc.primary_domain if sc else "") or "",
+            },
+            "uses": {
+                "intro": (sc.uses_intro if sc else "") or "",
+                "categories": _uses(sc),
             },
             "cv": {
                 "enabled": bool(sc.cv_enabled) if sc else False,

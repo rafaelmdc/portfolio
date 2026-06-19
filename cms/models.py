@@ -13,7 +13,7 @@ from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.embeds.blocks import EmbedBlock
-from wagtail.fields import StreamField
+from wagtail.fields import RichTextField, StreamField
 from wagtail.images import get_image_model_string
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page, PageManager
@@ -548,7 +548,9 @@ class BlogPage(HeadlessMixin, Page):
         APIField("hero_caption"),
         APIField("hero_image", serializer=ImageRenditionField("width-1200")),
         APIField("hero_thumb", serializer=ImageRenditionField("fill-600x400", source="hero_image")),
+        APIField("hero_lqip", serializer=ImageRenditionField("fill-32x20|jpegquality-30", source="hero_image")),
         APIField("card_thumb", serializer=ImageRenditionField("fill-800x800", source="card_image")),
+        APIField("card_lqip", serializer=ImageRenditionField("fill-24x24|jpegquality-30", source="card_image")),
         APIField("body"),
         APIField("tag_names"),
     ]
@@ -594,6 +596,29 @@ class PortfolioProjectPage(HeadlessMixin, Page):
 
     subtitle = models.CharField(max_length=160, blank=True)
 
+    date = models.DateField(
+        "Project date",
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Used to order projects and drive prev/next navigation.",
+    )
+
+    # Case-study spine. All optional — old projects keep rendering body-only.
+    problem = RichTextField(blank=True, help_text="The challenge / context.")
+    approach = RichTextField(blank=True, help_text="How you tackled it.")
+    outcome = RichTextField(blank=True, help_text="The result / impact.")
+    result_metric = models.CharField(
+        max_length=120,
+        blank=True,
+        help_text='One-line headline result, e.g. "3.2× faster variant calls".',
+    )
+    tech_stack = models.CharField(
+        max_length=300,
+        blank=True,
+        help_text="Comma-separated tech chips, e.g. Nextflow, Python, Postgres.",
+    )
+
     cover_image = models.ForeignKey(
         get_image_model_string(),
         null=True,
@@ -631,8 +656,19 @@ class PortfolioProjectPage(HeadlessMixin, Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("subtitle"),
+        FieldPanel("date"),
         FieldPanel("cover_image"),
         FieldPanel("card_image"),
+        MultiFieldPanel(
+            [
+                FieldPanel("result_metric"),
+                FieldPanel("tech_stack"),
+                FieldPanel("problem"),
+                FieldPanel("approach"),
+                FieldPanel("outcome"),
+            ],
+            heading="Case study",
+        ),
         MultiFieldPanel(
             [
                 FieldPanel("external_url"),
@@ -648,13 +684,25 @@ class PortfolioProjectPage(HeadlessMixin, Page):
     def tag_names(self):
         return [t.name for t in self.tags.all()]
 
+    @property
+    def tech_list(self):
+        return [t.strip() for t in self.tech_stack.split(",") if t.strip()]
+
     api_fields = [
         APIField("subtitle"),
+        APIField("date"),
+        APIField("result_metric"),
+        APIField("tech_list"),
+        APIField("problem"),
+        APIField("approach"),
+        APIField("outcome"),
         APIField("external_url"),
         APIField("github_url"),
         APIField("cover_image", serializer=ImageRenditionField("width-1200")),
         APIField("cover_thumb", serializer=ImageRenditionField("fill-800x600", source="cover_image")),
+        APIField("cover_lqip", serializer=ImageRenditionField("fill-32x24|jpegquality-30", source="cover_image")),
         APIField("card_thumb", serializer=ImageRenditionField("fill-800x800", source="card_image")),
+        APIField("card_lqip", serializer=ImageRenditionField("fill-24x24|jpegquality-30", source="card_image")),
         APIField("body"),
         APIField("tag_names"),
     ]

@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   // Self-contained server bundle for a small production Docker image.
   output: "standalone",
 
+  // Wrap client-side route changes in document.startViewTransition so the
+  // @view-transition cross-fade in globals.css actually fires on <Link> nav.
+  experimental: {
+    viewTransition: true,
+  },
+
   // Browser-facing backend paths (/api, /media, /documents, /resume) are
   // proxied to the in-cluster backend by Route Handlers (app/*/[...path]/route.ts),
   // NOT next.config rewrites — rewrite destinations are frozen at build time, so

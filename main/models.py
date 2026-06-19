@@ -8,8 +8,24 @@ from .validators import validate_image_file
 
 from modelcluster.models import ClusterableModel
 from modelcluster.fields import ParentalKey
+from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
+from wagtail.fields import StreamField
+
+
+class UsesItemBlock(blocks.StructBlock):
+    name = blocks.CharBlock(help_text="Tool / app / piece of gear.")
+    detail = blocks.CharBlock(required=False, help_text="Optional short note.")
+    url = blocks.URLBlock(required=False, help_text="Optional link.")
+
+
+class UsesCategoryBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(help_text="e.g. Editor, Bioinformatics, Homelab.")
+    items = blocks.ListBlock(UsesItemBlock())
+
+    class Meta:
+        label = "Category"
 
 
 # ---------- helpers ----------
@@ -319,6 +335,15 @@ class SiteContent(BaseGenericSetting):
         on_delete=models.SET_NULL, related_name="+",
     )
 
+    # ---- /uses page ----
+    uses_intro = models.CharField(
+        max_length=250, blank=True,
+        help_text="Short intro line for the /uses page.")
+    uses = StreamField(
+        [("category", UsesCategoryBlock())],
+        blank=True, use_json_field=True,
+        help_text="Tools/gear grouped by category, shown on /uses.")
+
     panels = [
         MultiFieldPanel(
             [
@@ -379,6 +404,10 @@ class SiteContent(BaseGenericSetting):
         MultiFieldPanel(
             [FieldPanel("about_profile"), FieldPanel("home_profile")],
             heading="Profile images",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("uses_intro"), FieldPanel("uses")],
+            heading="/uses page",
         ),
         MultiFieldPanel(
             [

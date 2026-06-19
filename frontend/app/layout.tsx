@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import CommandPalette from "@/components/CommandPalette";
+
+// Privacy-friendly analytics (self-hosted Umami). No-op until the env vars are
+// set on the deployment, so it stays out of the way in dev/preview.
+const UMAMI_SRC = process.env.NEXT_PUBLIC_UMAMI_SRC;
+const UMAMI_WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -43,6 +49,9 @@ export const metadata: Metadata = {
     title: "Rafael Correia — Bioinformatics",
     description: DESCRIPTION,
   },
+  alternates: {
+    types: { "application/rss+xml": "/blog/feed.xml" },
+  },
 };
 
 // Set the theme before paint to avoid a flash of the wrong palette.
@@ -69,6 +78,9 @@ export default function RootLayout({
       >
         {children}
         <CommandPalette />
+        {UMAMI_SRC && UMAMI_WEBSITE_ID && (
+          <Script src={UMAMI_SRC} data-website-id={UMAMI_WEBSITE_ID} strategy="afterInteractive" />
+        )}
       </body>
     </html>
   );

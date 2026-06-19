@@ -1,7 +1,8 @@
-import type { BlogDetail } from "@/lib/types";
-import { mediaUrl } from "@/lib/api";
+import type { BlogDetail, BlogListItem } from "@/lib/types";
 import InnerHeader from "@/components/InnerHeader";
 import StreamField from "@/components/streamfield/StreamField";
+import Media from "@/components/Media";
+import PostNav, { type NavLink } from "@/components/PostNav";
 
 function fmtDate(d: string) {
   if (!d) return "";
@@ -13,7 +14,17 @@ function fmtDate(d: string) {
 }
 
 /** Presentational blog post, shared by the live page and the CMS preview. */
-export default function BlogPostView({ post }: { post: BlogDetail }) {
+export default function BlogPostView({
+  post,
+  prev,
+  next,
+  related,
+}: {
+  post: BlogDetail;
+  prev?: NavLink | null;
+  next?: NavLink | null;
+  related?: BlogListItem[];
+}) {
   return (
     <>
       <InnerHeader />
@@ -42,11 +53,14 @@ export default function BlogPostView({ post }: { post: BlogDetail }) {
         )}
         {post.hero_image && (
           <figure className="mb-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={mediaUrl(post.hero_image.url)}
+            <Media
+              src={post.hero_image.url}
+              lqip={post.hero_lqip?.url}
               alt={post.hero_image.alt}
+              width={post.hero_image.width}
+              height={post.hero_image.height}
               className="w-full rounded-2xl border border-border"
+              imgClassName="w-full h-auto"
             />
             {post.hero_caption && (
               <figcaption className="mt-2 text-center font-mono text-[12px] text-muted">
@@ -59,6 +73,7 @@ export default function BlogPostView({ post }: { post: BlogDetail }) {
           <StreamField blocks={post.body} />
         </article>
       </main>
+      <PostNav base="/blog" prev={prev} next={next} related={related} />
     </>
   );
 }

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Dest = { label: string; hint: string; href: string };
 type NavLink = { href: string; n: string; label: string };
+type SearchEntry = { title: string; href: string; type: "post" | "project"; tags: string[] };
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -12,6 +13,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 function readDests(): Dest[] {
   const home: Dest = { label: "Home", hint: "top", href: "/" };
   const blog: Dest = { label: "Blog", hint: "↗", href: "/blog" };
+  const uses: Dest = { label: "Uses", hint: "↗", href: "/uses" };
   let links: NavLink[] = [];
   try {
     const raw = document.getElementById("__nav_sections")?.dataset.sections;
@@ -24,7 +26,7 @@ function readDests(): Dest[] {
     hint: l.n,
     href: `/${l.href}`, // "#about" -> "/#about"
   }));
-  return [home, ...sections, blog];
+  return [home, ...sections, blog, uses];
 }
 
 export default function CommandPalette() {
@@ -32,11 +34,15 @@ export default function CommandPalette() {
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const [dests, setDests] = useState<Dest[]>([]);
+  const [content, setContent] = useState<Dest[]>([]);
 
+  // When searching, also match blog posts + projects (fetched on first open).
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
-    return s ? dests.filter((d) => d.label.toLowerCase().includes(s)) : dests;
-  }, [q, dests]);
+    if (!s) return dests;
+    const pool = [...dests, ...content];
+    return pool.filter((d) => d.label.toLowerCase().includes(s));
+  }, [q, dests, content]);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -47,7 +53,22 @@ export default function CommandPalette() {
   const reveal = useCallback(() => {
     setDests(readDests());
     setOpen(true);
-  }, []);
+    // Lazy-load the content index once; cached by the browser thereafter.
+    if (content.length === 0) {
+      fetch("/search-index.json")
+        .then((r) => (r.ok ? r.json() : []))
+        .then((entries: SearchEntry[]) =>
+          setContent(
+            entries.map((e) => ({
+              label: e.title,
+              hint: e.type,
+              href: e.href,
+            })),
+          ),
+        )
+        .catch(() => {});
+    }
+  }, [content.length]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -120,7 +141,7 @@ export default function CommandPalette() {
               }
             }
           }}
-          placeholder="Jump to…"
+          placeholder="Search posts, projects, sections…"
           className="w-full border-b border-border bg-transparent px-4 py-3.5 font-mono text-[14px] outline-none"
         />
         <ul className="max-h-[50vh] overflow-y-auto p-2">
