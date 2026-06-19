@@ -1,5 +1,4 @@
 import type { SiteBundle } from "@/lib/types";
-import { mediaUrl } from "@/lib/api";
 import Eyebrow from "../Eyebrow";
 import Reveal from "../Reveal";
 
@@ -14,13 +13,20 @@ export default function About({
   num: number;
   title?: string;
 }) {
-  const { copy, images, github, awards, publications, stats } = bundle;
-  const img = images.about_profile;
+  const { copy, github, awards, publications, stats, about_extra } = bundle;
 
   // Each row is shown only when toggled on (CMS) and its data exists.
   const facts: Fact[] = [];
+  if (stats.stat_status && about_extra.current_status)
+    facts.push({ label: "currently", value: about_extra.current_status });
+  if (stats.stat_domain && about_extra.primary_domain)
+    facts.push({ label: "domain", value: about_extra.primary_domain });
   if (stats.stat_focus && copy.about_focus)
     facts.push({ label: "focus", value: copy.about_focus });
+  if (stats.stat_building && about_extra.building_since)
+    facts.push({ label: "building since", value: String(about_extra.building_since) });
+  if (stats.stat_projects && about_extra.projects_count)
+    facts.push({ label: "projects shipped", value: String(about_extra.projects_count) });
   if (stats.stat_repos && github?.public_repos != null)
     facts.push({ label: "public repos", value: String(github.public_repos) });
   if (stats.stat_stars && github?.total_stars)
@@ -61,14 +67,6 @@ export default function About({
 
           <Reveal>
             <div className="rounded-2xl border border-border bg-surface p-5 shadow-[var(--shadow)]">
-              {img && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={mediaUrl(img.url)}
-                  alt={img.alt}
-                  className="mb-5 block aspect-[5/4] w-full rounded-xl object-cover"
-                />
-              )}
               <h3 className="mb-[14px] font-mono text-[13px] font-normal tracking-[0.04em] text-muted">
                 {"// at a glance"}
               </h3>

@@ -48,9 +48,10 @@ export default async function BlogIndex() {
                 <div
                   className="h-28 rounded-xl bg-cover bg-center sm:h-full"
                   style={{
-                    backgroundImage: p.hero_thumb
-                      ? `url(${mediaUrl(p.hero_thumb.thumb)})`
-                      : "linear-gradient(135deg, var(--sky), var(--hl))",
+                    backgroundImage:
+                      p.card_thumb || p.hero_thumb
+                        ? `url(${mediaUrl((p.card_thumb || p.hero_thumb)!.url)})`
+                        : "linear-gradient(135deg, var(--sky), var(--hl))",
                   }}
                 />
                 <div>

@@ -185,37 +185,48 @@ function block(b: StreamBlock): React.ReactNode {
     }
     case "pdfs": {
       type Pdf = { label?: string; note?: string; url?: string; open_in_new?: boolean };
-      const docs = (v.documents as Pdf[]) || [];
+      const docs = ((v.documents as Pdf[]) || []).filter((d) => d.url);
+      if (!docs.length) return null;
       return (
-        <div className="my-6 rounded-xl border border-border bg-surface p-5">
-          {v.title ? <p className="font-display text-[18px] font-medium">{v.title as string}</p> : null}
+        <div className="my-6">
+          {v.title ? <p className="mb-1 font-display text-[18px] font-medium">{v.title as string}</p> : null}
           {v.description ? <p className="mb-3 text-[14px] text-muted">{v.description as string}</p> : null}
-          <div className="flex flex-wrap gap-x-4 gap-y-3">
-            {docs.map((d, i) =>
-              d.url ? (
-                <span key={i} className="flex flex-col gap-1">
-                  <span className="flex items-center gap-1.5">
-                    <span className="font-mono text-[12px] text-ink">{d.label || "PDF"}</span>
-                    <a
-                      href={mediaUrl(d.url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-md bg-mint px-2.5 py-1.5 font-mono text-[11.5px] text-chip-ink transition hover:-translate-y-0.5"
-                    >
-                      ⤢ view
-                    </a>
-                    <a
-                      href={mediaUrl(d.url)}
-                      download
-                      className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 font-mono text-[11.5px] text-muted transition hover:-translate-y-0.5 hover:text-ink"
-                    >
-                      ↓ download
-                    </a>
-                  </span>
-                  {d.note ? <span className="text-[11px] text-muted">{d.note}</span> : null}
+          <div className="flex flex-col gap-2.5">
+            {docs.map((d, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3.5 py-3"
+              >
+                <span
+                  aria-hidden
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-mint font-mono text-[10px] font-medium text-chip-ink"
+                >
+                  PDF
                 </span>
-              ) : null,
-            )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-mono text-[13px] text-ink">{d.label || "Document"}</p>
+                  {d.note ? <p className="truncate text-[11.5px] text-muted">{d.note}</p> : null}
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <a
+                    href={mediaUrl(d.url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 font-mono text-[12px] text-[var(--on-primary)] transition hover:-translate-y-0.5"
+                  >
+                    ⤢ View
+                  </a>
+                  <a
+                    href={mediaUrl(d.url)}
+                    download
+                    aria-label={`Download ${d.label || "document"}`}
+                    className="inline-flex items-center justify-center rounded-md border border-border px-2.5 py-1.5 font-mono text-[12px] text-muted transition hover:-translate-y-0.5 hover:text-ink"
+                  >
+                    ↓
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );

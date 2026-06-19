@@ -20,10 +20,29 @@ const jetbrains = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+// Public site origin — used to make OG/sitemap URLs absolute (social scrapers
+// need full URLs). Set SITE_URL in the frontend deployment; defaults to local.
+const SITE_URL = process.env.SITE_URL || "http://localhost:8000";
+
+const DESCRIPTION =
+  "Bioinformatics student turning biological questions into reproducible code. Pipelines, genomics, data-driven analysis.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Rafael Correia — Bioinformatics",
-  description:
-    "Bioinformatics student turning biological questions into reproducible code. Pipelines, genomics, data-driven analysis.",
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Rafael Correia",
+    title: "Rafael Correia — Bioinformatics",
+    description: DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rafael Correia — Bioinformatics",
+    description: DESCRIPTION,
+  },
 };
 
 // Set the theme before paint to avoid a flash of the wrong palette.

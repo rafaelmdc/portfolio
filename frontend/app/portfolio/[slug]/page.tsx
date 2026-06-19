@@ -13,9 +13,18 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) return {};
+  const images = project.cover_image ? [project.cover_image.url] : undefined;
   return {
     title: `${project.title} — Rafael Correia`,
     description: project.subtitle || undefined,
+    openGraph: {
+      type: "article",
+      title: project.title,
+      description: project.subtitle || undefined,
+      url: `/portfolio/${slug}`,
+      images,
+    },
+    twitter: { card: "summary_large_image", images },
   };
 }
 

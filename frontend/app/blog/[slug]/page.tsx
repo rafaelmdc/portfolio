@@ -13,9 +13,18 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) return {};
+  const images = post.hero_image ? [post.hero_image.url] : undefined;
   return {
     title: `${post.title} — Rafael Correia`,
     description: post.intro || undefined,
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.intro || undefined,
+      url: `/blog/${slug}`,
+      images,
+    },
+    twitter: { card: "summary_large_image", images },
   };
 }
 
