@@ -26,7 +26,7 @@ export default async function BlogIndex() {
   return (
     <>
       <InnerHeader />
-      <main className="mx-auto max-w-3xl px-7 py-20">
+      <main className="mx-auto max-w-5xl px-7 py-20">
         <Reveal>
           <Eyebrow>§ — Blog</Eyebrow>
           <h1 className="mb-12 font-display text-[clamp(34px,6vw,56px)] font-medium">

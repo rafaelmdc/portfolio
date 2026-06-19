@@ -32,7 +32,7 @@ export default async function ProjectPage({
   return (
     <>
       <InnerHeader />
-      <main className="mx-auto max-w-3xl px-7 py-16">
+      <main className="mx-auto max-w-5xl px-7 py-16">
         <div className="mb-3 font-mono text-[12px] text-muted">§ project</div>
         <h1 className="mb-3 font-display text-[clamp(32px,5.5vw,52px)] font-medium leading-[1.08]">
           {project.title}

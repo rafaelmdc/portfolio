@@ -43,13 +43,6 @@ export default function Hero({ bundle }: { bundle: SiteBundle }) {
           ↓ Timeline & CV
         </a>
       </div>
-      <aside
-        className="rise absolute right-7 top-[120px] hidden w-[178px] border-l-2 border-mint pl-3 font-mono text-[11.5px] leading-[1.5] text-muted lg:block"
-        style={{ animationDelay: "0.57s" }}
-      >
-        adaptive page — a research section appears once there are publications to
-        show.
-      </aside>
     </section>
   );
 }

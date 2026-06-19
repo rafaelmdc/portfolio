@@ -40,7 +40,7 @@ export default async function BlogPost({
   return (
     <>
       <InnerHeader />
-      <main className="mx-auto max-w-3xl px-7 py-16">
+      <main className="mx-auto max-w-5xl px-7 py-16">
         <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-[12px] text-muted">
           <span>{fmtDate(post.date)}</span>
           {post.reading_time_minutes ? <span>· {post.reading_time_minutes} min read</span> : null}
