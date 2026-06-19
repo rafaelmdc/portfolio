@@ -4,10 +4,12 @@ import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import CommandPalette from "@/components/CommandPalette";
 
-// Privacy-friendly analytics (self-hosted Umami). No-op until the env vars are
-// set on the deployment, so it stays out of the way in dev/preview.
-const UMAMI_SRC = process.env.NEXT_PUBLIC_UMAMI_SRC;
-const UMAMI_WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+// Privacy-friendly analytics (self-hosted Umami). Plain (non-public) env vars
+// so they're read at request time on the server — NEXT_PUBLIC_* would be frozen
+// into the image at build time and ignored at runtime. No-op until both are set
+// on the deployment, so it stays out of the way in dev/preview.
+const UMAMI_SRC = process.env.UMAMI_SRC;
+const UMAMI_WEBSITE_ID = process.env.UMAMI_WEBSITE_ID;
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
