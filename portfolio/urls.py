@@ -9,13 +9,11 @@ from wagtail import urls as wagtail_urls
 from wagtail.contrib.sitemaps import Sitemap as WagtailSitemap
 
 from django.conf import settings
-from main.sitemaps import StaticViewSitemap
 from cms.feeds import BlogRssFeed, BlogAtomFeed
 from portfolio.api import api_router
 from main.api import SiteBundleView
 
 sitemaps = {
-    "static": StaticViewSitemap,
     "wagtail": WagtailSitemap,
 }
 

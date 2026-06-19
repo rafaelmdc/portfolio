@@ -1,19 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}Page not found{% endblock %}
-{% block meta_description %}The page you're looking for doesn't exist.{% endblock %}
-
-{% block content %}
-<div class="container d-flex flex-column align-items-center justify-content-center text-center" style="min-height: 60vh; gap: 1rem;">
-  <p class="text-muted mb-0" style="font-size: 6rem; line-height:1; font-weight:700; opacity:.12;">404</p>
-  <h1 class="mb-2" style="margin-top:-1.5rem;">Page not found</h1>
-  <p class="text-muted" style="max-width: 38ch;">
-    That URL doesn't exist or may have been moved.
-  </p>
-  <div class="d-flex gap-3 flex-wrap justify-content-center">
-    <a href="/" class="btn btn-sm btn-outline-light">Go home</a>
-    <a href="/blog/" class="btn btn-sm btn-outline-light">Read the blog</a>
-    <a href="/portfolio/" class="btn btn-sm btn-outline-light">See portfolio</a>
+<!DOCTYPE html>
+<html lang="en" style="background:#0b1019;color:#e6e6e6;font-family:system-ui,sans-serif;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Page not found</title>
+</head>
+<body style="margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:2rem;">
+  <div>
+    <p style="font-size:5rem;font-weight:700;opacity:.12;margin:0;line-height:1;">404</p>
+    <h1 style="margin:.5rem 0 .75rem;font-size:1.6rem;">Page not found</h1>
+    <p style="opacity:.6;max-width:36ch;margin:0 auto 1.5rem;">
+      That URL doesn't exist or may have been moved.
+    </p>
+    <a href="/cms/" style="color:#1387c1;text-decoration:none;">Go to the CMS →</a>
   </div>
-</div>
-{% endblock %}
+</body>
+</html>
