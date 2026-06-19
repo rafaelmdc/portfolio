@@ -163,6 +163,16 @@ class PrettyImageBlock(blocks.StructBlock):
         rep = super().get_api_representation(value, context)
         rep["image"] = _image_api_rep(value.get("image"), value.get("alt_override"))
         return rep
+    caption_spacing = blocks.ChoiceBlock(
+        required=False,
+        choices=[
+            ("sm", "Small"),
+            ("md", "Medium"),
+            ("lg", "Large"),
+        ],
+        default="sm",
+        help_text="Space between the image and its caption.",
+    )
 
     class Meta:
         icon = "image"
