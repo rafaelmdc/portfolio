@@ -59,7 +59,7 @@ export default function Research({ bundle }: { bundle: SiteBundle }) {
         {bundle.publications.groups.map((g) => (
           <Reveal key={g.label}>
             <h3 className="mb-1 mt-6 font-mono text-[12px] tracking-[0.05em] text-muted">
-              // {g.label.toLowerCase()}
+              {`// ${g.label.toLowerCase()}`}
             </h3>
             {g.items.map((p) => (
               <Ref key={`${g.label}-${p.title}`} pub={p} index={i++} />

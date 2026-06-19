@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Dest = { label: string; hint: string; href: string };
 
@@ -25,37 +25,37 @@ export default function CommandPalette() {
     return s ? DESTS.filter((d) => d.label.toLowerCase().includes(s)) : DESTS;
   }, [q]);
 
+  const close = useCallback(() => {
+    setOpen(false);
+    setQ("");
+    setActive(0);
+  }, []);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((o) => !o);
+        if (open) close();
+        else setOpen(true);
       } else if (e.key === "Escape") {
-        setOpen(false);
+        close();
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      setQ("");
-      setActive(0);
-    }
-  }, [open]);
+  }, [open, close]);
 
   if (!open) return null;
 
   function go(href: string) {
-    setOpen(false);
+    close();
     window.location.href = href;
   }
 
   return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center bg-black/40 pt-[18vh]"
-      onClick={() => setOpen(false)}
+      onClick={close}
     >
       <div
         className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow)]"

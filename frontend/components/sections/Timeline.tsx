@@ -62,7 +62,7 @@ export default function Timeline({ bundle }: { bundle: SiteBundle }) {
           {exp.length > 0 && (
             <Reveal>
               <p className="m-0 mb-[22px] font-mono text-[12px] tracking-[0.05em] text-muted">
-                // research &amp; experience
+                {"// research & experience"}
               </p>
               <Stream>
                 {exp.map((x, i) => (
@@ -80,7 +80,7 @@ export default function Timeline({ bundle }: { bundle: SiteBundle }) {
           {edu.length > 0 && (
             <Reveal>
               <p className="m-0 mb-[22px] font-mono text-[12px] tracking-[0.05em] text-muted">
-                // education
+                {"// education"}
               </p>
               <Stream>
                 {edu.map((e, i) => (

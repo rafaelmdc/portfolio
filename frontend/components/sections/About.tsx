@@ -55,7 +55,7 @@ export default function About({ bundle }: { bundle: SiteBundle }) {
             )}
             <div className="rounded-2xl border border-border bg-surface p-[22px] shadow-[var(--shadow)]">
               <h3 className="mb-[14px] font-mono text-[13px] font-normal tracking-[0.04em] text-muted">
-                // at a glance
+                {"// at a glance"}
               </h3>
               {facts.map((f, i) => (
                 <div
