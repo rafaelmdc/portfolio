@@ -29,6 +29,17 @@ export function mediaUrl(path: string | null | undefined): string {
   return path;
 }
 
+/**
+ * Absolute, server-side-fetchable URL for a backend asset (e.g. an image
+ * rendition). Used where a fetcher needs a full URL — OG image generation,
+ * feeds — and must hit the in-cluster backend directly (not via Cloudflare).
+ */
+export function assetUrl(path: string | null | undefined): string {
+  if (!path) return "";
+  if (/^https?:\/\//.test(path)) return path;
+  return `${INTERNAL_API_URL}${path}`;
+}
+
 async function getJSON<T>(path: string): Promise<T> {
   // Server-side fetch goes straight to the internal backend (no proxy hop).
   const res = await fetch(`${INTERNAL_API_URL}${path}`, {
@@ -44,12 +55,14 @@ export function getSiteBundle(): Promise<SiteBundle> {
   return getJSON<SiteBundle>("/api/v2/site/");
 }
 
-const BLOG_FIELDS = "intro,date,hero_thumb,card_thumb,tag_names,reading_time_minutes";
+const BLOG_FIELDS =
+  "intro,date,hero_thumb,card_thumb,card_lqip,tag_names,reading_time_minutes";
 const BLOG_DETAIL_FIELDS =
-  "intro,date,featured,hero_image,hero_caption,reading_time_minutes,tag_names,body";
-const PROJECT_FIELDS = "subtitle,cover_thumb,card_thumb,tag_names";
+  "intro,date,featured,hero_image,hero_lqip,hero_caption,reading_time_minutes,tag_names,body";
+const PROJECT_FIELDS = "subtitle,date,cover_thumb,card_thumb,card_lqip,tag_names";
 const PROJECT_DETAIL_FIELDS =
-  "subtitle,cover_image,external_url,github_url,tag_names,body";
+  "subtitle,date,result_metric,tech_list,problem,approach,outcome," +
+  "cover_image,cover_lqip,external_url,github_url,tag_names,body";
 
 type ApiList<T> = { meta: { total_count: number }; items: T[] };
 
@@ -69,7 +82,7 @@ export async function getBlogPost(slug: string): Promise<BlogDetail | null> {
 
 export async function getProjects(): Promise<ProjectListItem[]> {
   const data = await getJSON<ApiList<ProjectListItem>>(
-    `/api/v2/pages/?type=cms.PortfolioProjectPage&fields=${PROJECT_FIELDS}&limit=50`,
+    `/api/v2/pages/?type=cms.PortfolioProjectPage&fields=${PROJECT_FIELDS}&order=-date&limit=50`,
   );
   return data.items;
 }
@@ -79,6 +92,35 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
     `/api/v2/pages/?type=cms.PortfolioProjectPage&slug=${encodeURIComponent(slug)}&fields=${PROJECT_DETAIL_FIELDS}`,
   );
   return data.items[0] ?? null;
+}
+
+/* ---- list navigation helpers (shared by blog + project detail) ---- */
+type Nav = { title: string; slug: string };
+type NavItem = { title: string; meta: { slug: string }; tag_names: string[] };
+
+/** Previous/next siblings of `slug` in an ordered list (list is newest-first). */
+export function adjacent<T extends NavItem>(
+  list: T[],
+  slug: string,
+): { prev: Nav | null; next: Nav | null } {
+  const i = list.findIndex((x) => x.meta.slug === slug);
+  if (i === -1) return { prev: null, next: null };
+  const at = (j: number): Nav | null =>
+    list[j] ? { title: list[j].title, slug: list[j].meta.slug } : null;
+  // Newest-first: "next" (newer) is the previous index, "prev" (older) is next.
+  return { next: at(i - 1), prev: at(i + 1) };
+}
+
+/** Up to `n` items sharing the most tags with `item` (excludes itself). */
+export function related<T extends NavItem>(list: T[], item: T, n = 3): T[] {
+  const tags = new Set(item.tag_names);
+  return list
+    .filter((x) => x.meta.slug !== item.meta.slug)
+    .map((x) => ({ x, score: x.tag_names.filter((t) => tags.has(t)).length }))
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n)
+    .map((s) => s.x);
 }
 
 // Detail fields requested per page type when rendering a CMS draft preview.

@@ -70,6 +70,14 @@ export default function Contact({
         <p className="mt-[26px] font-mono text-[13px] text-muted">
           {email} · {bundle.copy.contact_note || "always happy to talk research, code, or collaboration"}
         </p>
+        <div className="mt-3 flex flex-wrap justify-center gap-4 font-mono text-[12px] text-muted">
+          <Link href="/uses" className="transition hover:text-primary-ink">
+            /uses
+          </Link>
+          <a href="/blog/feed.xml" className="transition hover:text-primary-ink">
+            RSS
+          </a>
+        </div>
       </div>
     </footer>
   );

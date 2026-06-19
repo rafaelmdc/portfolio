@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { ProjectListItem } from "@/lib/types";
-import { mediaUrl } from "@/lib/api";
 import Eyebrow from "../Eyebrow";
 import Reveal from "../Reveal";
+import Media from "../Media";
 
 export default function Work({
   projects,
@@ -29,15 +29,20 @@ export default function Work({
                 href={`/portfolio/${slug}`}
                 className="mb-4 grid grid-cols-1 items-center gap-6 rounded-2xl border border-border bg-surface p-[22px] shadow-[var(--shadow)] transition hover:-translate-y-[3px] md:grid-cols-[120px_1fr_auto]"
               >
-                <div
-                  className="h-28 w-full rounded-xl bg-cover bg-center md:aspect-square md:h-auto"
-                  style={{
-                    backgroundImage:
-                      p.card_thumb || p.cover_thumb
-                        ? `url(${mediaUrl((p.card_thumb || p.cover_thumb)!.url)})`
-                        : "linear-gradient(135deg, var(--sky), var(--mint))",
-                  }}
-                />
+                {p.card_thumb || p.cover_thumb ? (
+                  <Media
+                    src={(p.card_thumb || p.cover_thumb)!.url}
+                    lqip={p.card_lqip?.url}
+                    alt={p.title}
+                    className="h-28 w-full rounded-xl md:aspect-square md:h-auto"
+                    imgClassName="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="h-28 w-full rounded-xl bg-cover bg-center md:aspect-square md:h-auto"
+                    style={{ background: "linear-gradient(135deg, var(--sky), var(--mint))" }}
+                  />
+                )}
                 <div>
                   <h3 className="mb-1.5 font-display text-[23px] font-medium">
                     {p.title}

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getBlogPosts, mediaUrl } from "@/lib/api";
+import { getBlogPosts } from "@/lib/api";
 import InnerHeader from "@/components/InnerHeader";
 import Eyebrow from "@/components/Eyebrow";
 import Reveal from "@/components/Reveal";
+import Media from "@/components/Media";
 
 export const metadata: Metadata = {
   title: "Blog — Rafael Correia",
@@ -45,15 +46,20 @@ export default async function BlogIndex() {
                 href={`/blog/${p.meta.slug}`}
                 className="grid grid-cols-1 gap-5 rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-[3px] hover:shadow-[var(--shadow)] sm:grid-cols-[160px_1fr]"
               >
-                <div
-                  className="h-28 rounded-xl bg-cover bg-center sm:h-full"
-                  style={{
-                    backgroundImage:
-                      p.card_thumb || p.hero_thumb
-                        ? `url(${mediaUrl((p.card_thumb || p.hero_thumb)!.url)})`
-                        : "linear-gradient(135deg, var(--sky), var(--hl))",
-                  }}
-                />
+                {p.card_thumb || p.hero_thumb ? (
+                  <Media
+                    src={(p.card_thumb || p.hero_thumb)!.url}
+                    lqip={p.card_lqip?.url}
+                    alt={p.title}
+                    className="h-28 rounded-xl sm:h-full"
+                    imgClassName="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="h-28 rounded-xl bg-cover bg-center sm:h-full"
+                    style={{ background: "linear-gradient(135deg, var(--sky), var(--hl))" }}
+                  />
+                )}
                 <div>
                   <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-[11.5px] text-muted">
                     <span>{fmtDate(p.date)}</span>

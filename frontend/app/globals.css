@@ -140,6 +140,12 @@ body {
   }
 }
 
+/* Smooth cross-fade between routes (View Transitions API). Disabled under
+   reduced-motion by the media query below. */
+@view-transition {
+  navigation: auto;
+}
+
 /* Scroll-reveal primitive */
 .reveal {
   opacity: 0;
@@ -165,5 +171,10 @@ body {
   }
   .hl-sweep {
     background-size: 100% 40% !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
