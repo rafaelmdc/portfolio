@@ -674,6 +674,103 @@ class PortfolioProjectPage(Page):
 # Home
 # =============================================================================
 
+# ---------------------------------------------------------------------------
+# Home page sections — a CMS-controlled, reorderable list of homepage sections.
+#
+# Marker sections (about/skills/timeline/work/research/contact) draw their
+# content from the CV snippets / SiteBundle; the block only controls presence,
+# order and an optional heading override, and (unlike gallery/carousel) appears
+# in the navbar. Gallery and carousel carry their own content and stay out of
+# the nav.
+# ---------------------------------------------------------------------------
+
+
+class _MarkerSectionBlock(blocks.StructBlock):
+    """A content section whose data comes from the SiteBundle; the block just
+    toggles it on and optionally overrides its heading."""
+
+    title = blocks.CharBlock(
+        required=False,
+        max_length=120,
+        help_text="Optional heading override (defaults to the standard title).",
+    )
+
+
+class HomeGalleryImageBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    caption = blocks.CharBlock(required=False, max_length=160)
+
+
+class HomeGalleryBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, max_length=120, default="Gallery")
+    intro = blocks.CharBlock(required=False, max_length=240)
+    items = blocks.ListBlock(HomeGalleryImageBlock())
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["items"] = [
+            {"image": _image_api_rep(it.get("image")), "caption": it.get("caption") or ""}
+            for it in value.get("items") or []
+        ]
+        return rep
+
+    class Meta:
+        icon = "image"
+        label = "Gallery section"
+
+
+class HomeCarouselSlideBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    caption = blocks.CharBlock(required=False, max_length=160)
+    link = blocks.URLBlock(required=False)
+
+
+class HomeCarouselBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, max_length=120)
+    intro = blocks.CharBlock(required=False, max_length=240)
+    autoplay = blocks.BooleanBlock(
+        required=False, default=True, help_text="Auto-advance every 5 seconds."
+    )
+    slides = blocks.ListBlock(HomeCarouselSlideBlock())
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["slides"] = [
+            {
+                "image": _image_api_rep(s.get("image")),
+                "caption": s.get("caption") or "",
+                "link": s.get("link") or "",
+            }
+            for s in value.get("slides") or []
+        ]
+        return rep
+
+    class Meta:
+        icon = "image"
+        label = "Carousel section"
+
+
+class HomeSectionStream(blocks.StreamBlock):
+    about = _MarkerSectionBlock(icon="user", label="About")
+    skills = _MarkerSectionBlock(icon="cog", label="Skills")
+    timeline = _MarkerSectionBlock(icon="list-ul", label="Timeline")
+    work = _MarkerSectionBlock(icon="folder-open-inverse", label="Work / Projects")
+    research = _MarkerSectionBlock(icon="doc-full", label="Research / Publications")
+    contact = _MarkerSectionBlock(icon="mail", label="Contact")
+    gallery = HomeGalleryBlock()
+    carousel = HomeCarouselBlock()
+
+    class Meta:
+        block_counts = {
+            "about": {"max_num": 1},
+            "skills": {"max_num": 1},
+            "timeline": {"max_num": 1},
+            "work": {"max_num": 1},
+            "research": {"max_num": 1},
+            "contact": {"max_num": 1},
+        }
+
+
 class HomePage(Page):
     max_count = 1
     subpage_types = ["cms.BlogIndexPage", "cms.PortfolioIndexPage"]
@@ -684,8 +781,19 @@ class HomePage(Page):
         help_text="Optional short intro text for the homepage",
     )
 
+    sections = StreamField(
+        HomeSectionStream(),
+        use_json_field=True,
+        blank=True,
+        help_text=(
+            "The homepage sections, in order. Add/remove sections to control "
+            "what shows and the navbar; gallery and carousel stay out of the nav."
+        ),
+    )
+
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
+        FieldPanel("sections"),
     ]
 
-    api_fields = [APIField("intro")]
+    api_fields = [APIField("intro"), APIField("sections")]

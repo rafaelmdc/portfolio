@@ -94,6 +94,16 @@ def _publication(p):
     }
 
 
+def _home_sections():
+    """Serialise the HomePage section StreamField (incl. image renditions)."""
+    from cms.models import HomePage
+
+    home = HomePage.objects.first()
+    if not home or not home.sections:
+        return []
+    return home.sections.stream_block.get_api_representation(home.sections, {})
+
+
 class SiteBundleView(APIView):
     def get(self, request):
         sc = SiteContent.objects.first()
@@ -147,4 +157,5 @@ class SiteBundleView(APIView):
             "github": github_stats(sc.github_username if sc else ""),
             "orcid_id": getattr(settings, "ORCID_ID", ""),
             "has_research": bool(pubs),
+            "sections": _home_sections(),
         })
