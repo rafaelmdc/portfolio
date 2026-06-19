@@ -1,8 +1,9 @@
 # Migration Plan — Headless Wagtail + React/Tailwind
 
-Status: **Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 next.** All work on the
-`rework` branch; `main` auto-deploys via Argo CD on Kubernetes (Argo watches the
-homelab repo + DockerHub `latest`). Nothing reaches `main`/homelab until the end.
+Status: **Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 next.** All
+work on the `rework` branch; `main` auto-deploys via Argo CD on Kubernetes (Argo
+watches the homelab repo + DockerHub `latest`). Nothing reaches `main`/homelab
+until the end.
 
 Progress notes:
 - Phase 0: image confirmed on Wagtail 7.4.2 / Django 5.2.15.
@@ -14,8 +15,15 @@ Progress notes:
   on blog/portfolio pages; StreamField image blocks embed rendition URLs;
   /api/v2/site/ bundle (copy, images, CV snippets, ORCID, live cached GitHub
   stats, has_research flag). Old Django pages still render unchanged.
-- Phase 3 setup TODO: add django-cors-headers for the Next.js dev origin
-  (deferred to the frontend rebuild).
+- Phase 3: Next.js 16 + Tailwind v4 app in frontend/. Marginalia design system
+  (pastel light + derived dark, Fraunces/Inter/JetBrains Mono, highlighter hero,
+  scroll-reveal, ⌘K palette). One-page landing wired to /api/v2/site/; /blog,
+  /blog/[slug], /portfolio/[slug] via SSG; full StreamField → React renderer.
+  Server-side fetch only (ISR 5m), so no CORS needed. tsc + eslint + build clean.
+- Phase 4 (next, LAST): Dockerfile for the frontend; build/push both images;
+  add the frontend Deployment/Service/Ingress to the homelab manifests (one-file
+  change) for Argo. Optional polish: per-post OG images, blog tag filtering,
+  View Transitions. Only this phase touches Rafael-Homelab/.
 
 ## Target architecture
 
