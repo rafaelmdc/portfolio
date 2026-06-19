@@ -36,7 +36,7 @@ export default function About({
   if (stats.stat_followers && github?.followers != null)
     facts.push({ label: "followers", value: String(github.followers) });
   if (stats.stat_commits && github?.total_commits != null)
-    facts.push({ label: "commits", value: github.total_commits.toLocaleString() });
+    facts.push({ label: "public commits", value: github.total_commits.toLocaleString() });
   if (stats.stat_publications && publications.flat.length)
     facts.push({ label: "publications", value: String(publications.flat.length) });
   if (stats.stat_honors && awards.length)
