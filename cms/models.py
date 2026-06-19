@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from django.core.paginator import Paginator
+from django.conf import settings
 from django.db import models
-from django.shortcuts import render
+from django.shortcuts import redirect
 
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
@@ -12,14 +12,22 @@ from wagtail import blocks
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
-from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page, PageManager
 from wagtail.search import index
+
+from wagtail_headless_preview.models import HeadlessMixin, HeadlessServeMixin
 from wagtail.documents.blocks import DocumentChooserBlock
+
+
+def frontend_url(path: str = "/") -> str:
+    """Absolute URL on the public Next.js frontend (for headless redirects)."""
+    base = getattr(settings, "FRONTEND_BASE_URL", "http://localhost:8000").rstrip("/")
+    return base + path
+
 
 # =============================================================================
 # Shared StreamField blocks (used by BlogPage + PortfolioProjectPage)
@@ -82,7 +90,6 @@ class PrettyEmbedBlock(blocks.StructBlock):
     class Meta:
         icon = "media"
         label = "Embed"
-        template = "cms/blocks/embed.html"
 
 
 class PrettyImageBlock(blocks.StructBlock):
@@ -177,7 +184,6 @@ class PrettyImageBlock(blocks.StructBlock):
     class Meta:
         icon = "image"
         label = "Image"
-        template = "cms/blocks/image.html"
 
 
 class HeadingBlock(blocks.StructBlock):
@@ -189,7 +195,6 @@ class HeadingBlock(blocks.StructBlock):
 
     class Meta:
         icon = "title"
-        template = "cms/blocks/heading.html"
 
 
 class AlignedParagraphBlock(blocks.StructBlock):
@@ -209,7 +214,6 @@ class AlignedParagraphBlock(blocks.StructBlock):
     class Meta:
         icon = "doc-full"
         label = "Paragraph (aligned)"
-        template = "cms/blocks/aligned_paragraph.html"
 
 
 class CalloutBlock(blocks.StructBlock):
@@ -223,7 +227,6 @@ class CalloutBlock(blocks.StructBlock):
     class Meta:
         icon = "placeholder"
         label = "Callout"
-        template = "cms/blocks/callout.html"
 
 
 class CodeBlock(blocks.StructBlock):
@@ -257,7 +260,6 @@ class CodeBlock(blocks.StructBlock):
     class Meta:
         icon = "code"
         label = "Code block"
-        template = "cms/blocks/code.html"
 
 
 class ButtonBlock(blocks.StructBlock):
@@ -271,14 +273,12 @@ class ButtonBlock(blocks.StructBlock):
     class Meta:
         icon = "link"
         label = "Button"
-        template = "cms/blocks/button.html"
 
 
 class DividerBlock(blocks.StaticBlock):
     class Meta:
         icon = "horizontalrule"
         label = "Divider"
-        template = "cms/blocks/divider.html"
 
 
 class SpacerBlock(blocks.ChoiceBlock):
@@ -293,7 +293,6 @@ class SpacerBlock(blocks.ChoiceBlock):
     class Meta:
         icon = "arrows-up-down"
         label = "Spacer"
-        template = "cms/blocks/spacer.html"
 
 
 class GalleryBlock(blocks.StructBlock):
@@ -320,7 +319,6 @@ class GalleryBlock(blocks.StructBlock):
     class Meta:
         icon = "image"
         label = "Gallery"
-        template = "cms/blocks/gallery.html"
 
 class PdfItemBlock(blocks.StructBlock):
     document = DocumentChooserBlock(required=True)
@@ -364,7 +362,6 @@ class PdfDownloadsBlock(blocks.StructBlock):
     class Meta:
         icon = "doc-full-inverse"
         label = "PDF downloads"
-        template = "cms/blocks/pdf_downloads.html"
         
 class SectionInnerStream(blocks.StreamBlock):
     heading = HeadingBlock()
@@ -395,7 +392,6 @@ class SectionBlock(blocks.StructBlock):
     class Meta:
         icon = "placeholder"
         label = "Section"
-        template = "cms/blocks/section.html"
 
 class BodyStream(blocks.StreamBlock):
     """
@@ -435,47 +431,18 @@ class BlogPageTag(TaggedItemBase):
     )
 
 
-class BlogIndexPage(RoutablePageMixin, Page):
+class BlogIndexPage(HeadlessServeMixin, Page):
+    # Headless: the blog list lives on the Next.js frontend. The backend page is
+    # just a container; both serve and preview redirect there (no Django render).
     max_count = 1
     parent_page_types = ["cms.HomePage"]
     subpage_types = ["cms.BlogPage"]
 
-    def get_posts(self):
-        return (
-            BlogPage.objects.child_of(self)
-            .live()
-            .public()
-            .prefetch_related("tagged_items__tag")
-            .order_by("-first_published_at")
-        )
-
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
-
-        qs = self.get_posts()
-
-        featured_post = qs.filter(featured=True).first() or qs.first()
-        if featured_post:
-            qs = qs.exclude(id=featured_post.id)
-
-        paginator = Paginator(qs, 9)
-        page_number = request.GET.get("page")
-        posts_page = paginator.get_page(page_number)
-
-        context["featured_post"] = featured_post
-        context["posts"] = posts_page
-        return context
-
-    @route(r"^tag/(?P<tag_slug>[-\w]+)/$")
-    def posts_by_tag(self, request, tag_slug):
-        posts = self.get_posts().filter(tags__slug=tag_slug)
-        context = self.get_context(request)
-        context["posts"] = posts
-        context["filtered_tag_slug"] = tag_slug
-        return render(request, "cms/blog_index_page.html", context)
+    def serve_preview(self, request, mode_name):
+        return redirect(frontend_url("/blog"))
 
 
-class BlogPage(Page):
+class BlogPage(HeadlessMixin, Page):
     objects = PageManager()
 
     date = models.DateField("Post date", db_index=True)
@@ -591,7 +558,9 @@ class PortfolioPageTag(TaggedItemBase):
     )
 
 
-class PortfolioIndexPage(RoutablePageMixin, Page):
+class PortfolioIndexPage(HeadlessServeMixin, Page):
+    # Headless: the project list lives on the Next.js frontend. Both serve and
+    # preview redirect there (no Django render).
     max_count = 1
     parent_page_types = ["cms.HomePage"]
     subpage_types = ["cms.PortfolioProjectPage"]
@@ -604,36 +573,11 @@ class PortfolioIndexPage(RoutablePageMixin, Page):
 
     api_fields = [APIField("intro")]
 
-    def get_projects(self):
-        return (
-            PortfolioProjectPage.objects.child_of(self)
-            .live()
-            .public()
-            .prefetch_related("tagged_items__tag")
-            .order_by("-first_published_at")
-        )
-
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
-        qs = self.get_projects()
-
-        tag = request.GET.get("tag")
-        if tag:
-            qs = qs.filter(tags__slug=tag)
-
-        context["projects"] = qs
-        context["active_tag"] = tag
-        return context
-
-    @route(r"^tag/(?P<tag_slug>[-\w]+)/$")
-    def projects_by_tag(self, request, tag_slug, *args, **kwargs):
-        context = self.get_context(request)
-        context["projects"] = self.get_projects().filter(tags__slug=tag_slug)
-        context["active_tag"] = tag_slug
-        return render(request, "cms/portfolio_index_page.html", context)
+    def serve_preview(self, request, mode_name):
+        return redirect(frontend_url("/portfolio"))
 
 
-class PortfolioProjectPage(Page):
+class PortfolioProjectPage(HeadlessMixin, Page):
     parent_page_types = ["cms.PortfolioIndexPage"]
     subpage_types = []
 
@@ -798,7 +742,7 @@ class HomeSectionStream(blocks.StreamBlock):
         }
 
 
-class HomePage(Page):
+class HomePage(HeadlessMixin, Page):
     max_count = 1
     subpage_types = ["cms.BlogIndexPage", "cms.PortfolioIndexPage"]
 
