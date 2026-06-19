@@ -49,6 +49,22 @@ export default function CommandPalette() {
 
   function go(href: string) {
     close();
+    // In-page anchors while already on the home page: scroll directly so it
+    // works even when the hash matches the current URL.
+    const hash = href.startsWith("/#") ? href.slice(1) : null;
+    if (hash && window.location.pathname === "/") {
+      const el = document.getElementById(hash.slice(1));
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        history.replaceState(null, "", hash);
+        return;
+      }
+    }
+    if (href === "/" && window.location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      history.replaceState(null, "", "/");
+      return;
+    }
     window.location.href = href;
   }
 
