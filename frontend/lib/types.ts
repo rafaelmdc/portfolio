@@ -1,0 +1,139 @@
+export type ImageRendition = {
+  url: string;
+  width: number;
+  height: number;
+  thumb: string;
+  alt: string;
+};
+
+export type SiteBundle = {
+  copy: {
+    about_title: string;
+    about_lead: string;
+    about_intro_headline: string;
+    about_intro_body: string;
+    about_quote: string;
+    skills_title: string;
+    skills_lead: string;
+  };
+  images: {
+    about_profile: ImageRendition | null;
+    home_profile: ImageRendition | null;
+  };
+  skills: { name: string; description: string; icon: string }[];
+  education: Education[];
+  experience: Experience[];
+  publications: { groups: PublicationGroup[]; flat: Publication[] };
+  grants: Grant[];
+  awards: Award[];
+  languages: { name: string; level: string; level_display: string }[];
+  github: GithubStats | null;
+  orcid_id: string;
+  has_research: boolean;
+};
+
+export type Education = {
+  title: string;
+  institution: string;
+  location: string;
+  start_year: number;
+  end_year: number | null;
+  blurb: string;
+};
+
+export type Experience = {
+  role: string;
+  company: string;
+  location: string;
+  start_year: number;
+  end_year: number | null;
+  blurb: string;
+  bullets: string[];
+};
+
+export type Publication = {
+  title: string;
+  authors: string;
+  authors_display: string;
+  venue: string;
+  year: number;
+  pub_type: string;
+  doi: string;
+  url: string;
+  link: string;
+  citation_count: number;
+  featured: boolean;
+};
+
+export type PublicationGroup = { label: string; items: Publication[] };
+
+export type Grant = {
+  title: string;
+  funder: string;
+  role: string;
+  amount: string;
+  start_year: number | null;
+  end_year: number | null;
+  description: string;
+  url: string;
+};
+
+export type Award = {
+  title: string;
+  issuer: string;
+  year: number | null;
+  description: string;
+  url: string;
+};
+
+export type GithubStats = {
+  username: string;
+  public_repos: number | null;
+  followers: number | null;
+  total_stars: number;
+  top_language: string | null;
+};
+
+/* ---- Wagtail pages API ---- */
+export type StreamBlock = { type: string; value: unknown; id: string };
+
+export type PageMeta = {
+  type: string;
+  slug: string;
+  html_url: string;
+  first_published_at: string;
+};
+
+export type BlogListItem = {
+  id: number;
+  title: string;
+  meta: PageMeta;
+  intro: string;
+  date: string;
+  reading_time_minutes: number | null;
+  hero_thumb: ImageRendition | null;
+  tag_names: string[];
+};
+
+export type BlogDetail = BlogListItem & {
+  hero_image: ImageRendition | null;
+  hero_caption: string;
+  featured: boolean;
+  body: StreamBlock[];
+};
+
+export type ProjectListItem = {
+  id: number;
+  title: string;
+  meta: PageMeta;
+  subtitle: string;
+  cover_thumb: ImageRendition | null;
+  tag_names: string[];
+};
+
+export type ProjectDetail = ProjectListItem & {
+  cover_image: ImageRendition | null;
+  external_url: string;
+  github_url: string;
+  body: StreamBlock[];
+};

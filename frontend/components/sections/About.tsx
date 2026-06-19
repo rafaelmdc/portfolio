@@ -1,0 +1,77 @@
+import type { SiteBundle } from "@/lib/types";
+import { mediaUrl } from "@/lib/api";
+import Eyebrow from "../Eyebrow";
+import Reveal from "../Reveal";
+
+type Fact = { label: string; value: string };
+
+export default function About({ bundle }: { bundle: SiteBundle }) {
+  const { copy, images, github, awards, publications, has_research } = bundle;
+  const img = images.about_profile;
+
+  const facts: Fact[] = [{ label: "focus", value: "bioinformatics · genomics" }];
+  if (github?.public_repos != null)
+    facts.push({ label: "public repos", value: String(github.public_repos) });
+  if (github?.total_stars)
+    facts.push({ label: "total stars", value: String(github.total_stars) });
+  if (github?.top_language)
+    facts.push({ label: "top language", value: github.top_language });
+  if (awards.length)
+    facts.push({ label: "honors", value: awards[0].title });
+  if (has_research)
+    facts.push({ label: "publications", value: String(publications.flat.length) });
+
+  return (
+    <section id="about" className="border-b border-border py-24">
+      <div className="mx-auto max-w-5xl px-7">
+        <Reveal>
+          <Eyebrow>§1 — About</Eyebrow>
+        </Reveal>
+        <div className="grid grid-cols-1 items-start gap-[54px] md:grid-cols-[1.4fr_0.9fr]">
+          <Reveal>
+            <h2 className="mb-5 font-display text-[clamp(28px,4vw,40px)] font-medium">
+              {copy.about_intro_headline || "Pipelines that connect biology with clean code."}
+            </h2>
+            <p className="mb-[18px]">
+              {copy.about_lead ||
+                "I'm a bioinformatics student interested in using data and code to study biological systems."}
+            </p>
+            {copy.about_intro_body && <p className="mb-[18px]">{copy.about_intro_body}</p>}
+            {copy.about_quote && (
+              <blockquote className="mt-[22px] border-l-[3px] border-peach pl-5 font-display text-[21px] italic leading-[1.4]">
+                “{copy.about_quote}”
+              </blockquote>
+            )}
+          </Reveal>
+
+          <Reveal>
+            {img && (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={mediaUrl(img.url)}
+                alt={img.alt}
+                className="mb-[18px] block aspect-square w-full rounded-2xl border border-border object-cover shadow-[var(--shadow)]"
+              />
+            )}
+            <div className="rounded-2xl border border-border bg-surface p-[22px] shadow-[var(--shadow)]">
+              <h3 className="mb-[14px] font-mono text-[13px] font-normal tracking-[0.04em] text-muted">
+                // at a glance
+              </h3>
+              {facts.map((f, i) => (
+                <div
+                  key={f.label}
+                  className={`flex justify-between gap-3 py-[9px] font-mono text-[13px] ${
+                    i > 0 ? "border-t border-dashed border-border" : ""
+                  }`}
+                >
+                  <span className="whitespace-nowrap text-muted">{f.label}</span>
+                  <span className="text-right font-medium">{f.value}</span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
