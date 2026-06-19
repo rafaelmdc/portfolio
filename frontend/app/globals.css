@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* ---------------- Marginalia design tokens ---------------- */
+:root {
+  --bg: #f7f5fb;
+  --surface: #ffffff;
+  --ink: #1e2029;
+  --muted: #6e6e7b;
+  --border: #e7e3f0;
+  --primary: #6a4fbf;
+  --primary-ink: #543ca6;
+  --on-primary: #ffffff;
+  --hl: #e0d6f7;
+  --mint: #cfeee0;
+  --peach: #fce0cf;
+  --sky: #d3e7f8;
+  --chip-ink: #3a3550;
+  /* readable category accents (skills legend/dots) */
+  --c-comp: #3f74d6;
+  --c-bio: #2f9e6b;
+  --shadow: 0 1px 2px rgba(30, 32, 41, 0.04), 0 12px 32px -12px rgba(30, 32, 41, 0.18);
+}
+
+[data-theme="dark"] {
+  --bg: #121218;
+  --surface: #1b1b23;
+  --ink: #eceaf2;
+  --muted: #9a98a8;
+  --border: #2a2a35;
+  --primary: #b9a6f5;
+  --primary-ink: #cdbefa;
+  --on-primary: #16131f;
+  --hl: rgba(155, 126, 224, 0.34);
+  --mint: rgba(111, 203, 160, 0.2);
+  --peach: rgba(240, 160, 122, 0.2);
+  --sky: rgba(107, 176, 230, 0.2);
+  --chip-ink: #d8d4e6;
+  --c-comp: #8fb3ff;
+  --c-bio: #74d3a3;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -18px rgba(0, 0, 0, 0.6);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-hl: var(--hl);
+  --color-mint: var(--mint);
+  --color-peach: var(--peach);
+  --color-sky: var(--sky);
+  --color-chip-ink: var(--chip-ink);
+  --color-comp: var(--c-comp);
+  --color-bio: var(--c-bio);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Rich-text (Wagtail RichText HTML) */
+.rich a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.rich p {
+  margin: 0 0 1rem;
+}
+.rich ul,
+.rich ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+.rich ul {
+  list-style: disc;
+}
+.rich ol {
+  list-style: decimal;
+}
+.rich li {
+  margin-bottom: 0.35rem;
+}
+.rich blockquote {
+  margin: 1rem 0;
+  border-left: 3px solid var(--peach);
+  padding-left: 1rem;
+  font-style: italic;
+}
+.rich h2,
+.rich h3,
+.rich h4 {
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  margin: 1.4rem 0 0.6rem;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Highlighter sweep used on the hero phrase */
+.hl-sweep {
+  background: linear-gradient(var(--hl), var(--hl)) no-repeat;
+  background-size: 0% 40%;
+  background-position: 0 86%;
+  padding: 0 0.04em;
+  border-radius: 2px;
+  animation: hl-sweep 0.7s ease 1.1s forwards;
+}
+@keyframes hl-sweep {
+  to {
+    background-size: 100% 40%;
+  }
+}
+
+/* Hero load-in (staggered via inline animation-delay) */
+.rise {
+  opacity: 0;
+  animation: rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Scroll-reveal primitive */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal,
+  .rise {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hl-sweep {
+    background-size: 100% 40% !important;
+  }
+}

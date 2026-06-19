@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-mode="portfolio">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rafael Correia — Marginalia direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F5FB; --surface:#FFFFFF; --text:#1E2029; --muted:#6E6E7B;
+    --border:#E7E3F0; --primary:#6A4FBF; --primary-ink:#543CA6;
+    --hl:#E0D6F7; --mint:#CFEEE0; --peach:#FCE0CF; --sky:#D3E7F8;
+    --chip-ink:#3A3550;
+    --shadow:0 1px 2px rgba(30,32,41,.04), 0 12px 32px -12px rgba(30,32,41,.18);
+    --maxw:1080px;
+  }
+  [data-theme="dark"]{
+    --bg:#121218; --surface:#1B1B23; --text:#ECEAF2; --muted:#9A98A8;
+    --border:#2A2A35; --primary:#B9A6F5; --primary-ink:#CDBEFA;
+    --hl:rgba(155,126,224,.34); --mint:rgba(111,203,160,.20); --peach:rgba(240,160,122,.20); --sky:rgba(107,176,230,.20);
+    --chip-ink:#D8D4E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 40px -18px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .4s ease,color .4s ease}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .mono{font-family:"JetBrains Mono",monospace}
+  a{color:var(--primary);text-decoration:none}
+
+  [data-mode="portfolio"] .only-research{display:none!important}
+  [data-mode="research"] .only-portfolio{display:none!important}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:saturate(1.4) blur(10px);
+    background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid var(--border)}
+  nav{display:flex;align-items:center;gap:28px;height:62px}
+  .brand{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:13px}
+  .brand b{color:var(--primary)}
+  .navlinks{display:flex;gap:22px;margin-left:auto}
+  .navlinks a{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted);transition:color .2s}
+  .navlinks a:hover{color:var(--text)}
+  .navlinks .s{color:var(--primary);opacity:.7}
+  .tools{display:flex;align-items:center;gap:10px;margin-left:8px}
+  .kbd{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);border:1px solid var(--border);
+    border-radius:7px;padding:4px 8px;background:var(--surface)}
+  .toggle{cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);
+    height:34px;border-radius:9px;display:grid;place-items:center;font-size:15px;transition:.2s;padding:0 10px}
+  .toggle:hover{border-color:var(--primary)}
+  #modeBtn{font-family:"JetBrains Mono",monospace;font-size:11px;gap:6px;display:flex;align-items:center}
+  @media(max-width:760px){.navlinks{display:none}}
+
+  .progress{position:fixed;top:0;left:0;height:2px;background:var(--primary);width:0;z-index:60;transition:width .1s linear}
+
+  section{padding:96px 0;border-bottom:1px solid var(--border)}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--primary);
+    letter-spacing:.06em;display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .eyebrow::after{content:"";height:1px;flex:1;background:var(--border)}
+  h1,h2,h3{font-family:"Fraunces",serif;font-weight:500;letter-spacing:-.01em;margin:0}
+
+  /* hero */
+  .hero{padding:104px 0 92px;position:relative}
+  .hero h1{font-size:clamp(40px,6.4vw,80px);line-height:1.04;font-weight:500;margin:0 0 26px;max-width:16ch}
+  .hl{background:linear-gradient(var(--hl),var(--hl)) no-repeat;background-size:0% 40%;
+    background-position:0 86%;padding:0 .04em;border-radius:2px}
+  .lede{font-size:clamp(17px,2vw,20px);color:var(--muted);max-width:56ch;margin:0 0 34px}
+  .lede b{color:var(--text);font-weight:500}
+  .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{font-family:"JetBrains Mono",monospace;font-size:13px;padding:12px 18px;border-radius:11px;
+    border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:.2s;display:inline-flex;gap:9px;align-items:center}
+  .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  [data-theme="dark"] .btn.primary{color:#16131f}
+  .margin-note{position:absolute;right:0;top:120px;width:178px;font-family:"JetBrains Mono",monospace;
+    font-size:11.5px;color:var(--muted);line-height:1.5;border-left:2px solid var(--mint);padding-left:12px}
+  @media(max-width:980px){.margin-note{display:none}}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:54px;align-items:start}
+  @media(max-width:820px){.about-grid{grid-template-columns:1fr;gap:34px}}
+  .about-grid h2{font-size:clamp(28px,4vw,40px);margin-bottom:20px}
+  .about-grid p{margin:0 0 18px}
+  blockquote{margin:22px 0 0;font-family:"Fraunces",serif;font-style:italic;font-size:21px;line-height:1.4;
+    border-left:3px solid var(--peach);padding:6px 0 6px 20px}
+  .profile{width:100%;border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);
+    display:block;margin-bottom:18px;aspect-ratio:1/1;object-fit:cover;background:var(--mint)}
+  .facts{border:1px solid var(--border);border-radius:16px;background:var(--surface);padding:22px;box-shadow:var(--shadow)}
+  .facts h3{font-size:13px;font-family:"JetBrains Mono",monospace;color:var(--muted);font-weight:400;margin-bottom:14px;letter-spacing:.04em}
+  .fact{display:flex;justify-content:space-between;gap:12px;font-family:"JetBrains Mono",monospace;font-size:13px;
+    padding:9px 0;border-top:1px dashed var(--border)}
+  .fact span:first-child{color:var(--muted);white-space:nowrap}
+  .fact b{font-weight:500;text-align:right}
+
+  /* skills — centered rows + domain legend */
+  .legend{display:flex;gap:18px;justify-content:center;font-family:"JetBrains Mono",monospace;
+    font-size:11.5px;color:var(--muted);margin-bottom:22px}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .skills{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:860px;margin:0 auto}
+  .skill{border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:11px 15px;
+    font-size:14px;display:flex;align-items:center;gap:10px;transition:.2s;cursor:default}
+  .skill:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--primary)}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+
+  /* timeline */
+  .tl-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px}
+  @media(max-width:820px){.tl-grid{grid-template-columns:1fr;gap:40px}}
+  .tl-head{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.05em;margin:0 0 22px}
+  .tl{position:relative;padding-left:26px}
+  .tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--border)}
+  .tl-item{position:relative;padding-bottom:30px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:6px;width:12px;height:12px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--primary)}
+  .tl-item h4{font-family:"Fraunces",serif;font-weight:500;font-size:18px;margin:0 0 3px}
+  .tl-year{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--primary-ink);
+    background:var(--hl);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:7px}
+  .tl-org{font-size:13.5px;color:var(--muted);margin:0 0 6px}
+  .tl-item ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;color:var(--text)}
+  .tl-item li{margin-bottom:4px}
+
+  /* work */
+  .project{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:center;
+    border:1px solid var(--border);border-radius:16px;background:var(--surface);padding:22px;box-shadow:var(--shadow);transition:.25s;margin-bottom:16px}
+  .project:hover{transform:translateY(-3px)}
+  .pcover{height:96px;border-radius:12px}
+  .project h3{font-size:23px;margin-bottom:6px}
+  .project p{margin:0;color:var(--muted);font-size:14.5px}
+  .ptags{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+  .tag{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--chip-ink);background:var(--mint);border-radius:6px;padding:3px 8px}
+  .arrow{font-family:"JetBrains Mono",monospace;color:var(--primary);font-size:20px}
+  @media(max-width:680px){.project{grid-template-columns:1fr}.pcover{height:120px}.arrow{display:none}}
+
+  /* publications */
+  .ref{display:grid;grid-template-columns:42px 1fr;gap:18px;padding:22px 0;border-top:1px solid var(--border)}
+  .ref .num{font-family:"Fraunces",serif;font-size:19px;color:var(--muted)}
+  .ref .title{font-family:"Fraunces",serif;font-size:19px;line-height:1.35;margin:0 0 6px}
+  .ref .authors{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .ref .authors b{color:var(--text);font-weight:600}
+  .ref .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{font-family:"JetBrains Mono",monospace;font-size:11.5px;border-radius:6px;padding:3px 9px;color:var(--chip-ink)}
+  .pill.venue{background:var(--sky)} .pill.doi{background:var(--hl);color:var(--primary-ink)}
+  .pill.cite{background:var(--peach)} .pill.year{background:transparent;color:var(--muted);border:1px solid var(--border)}
+
+  footer{padding:72px 0 90px;text-align:center}
+  footer h2{font-size:clamp(30px,5vw,52px);margin-bottom:18px}
+  footer .mono{color:var(--muted);font-size:13px;margin-top:26px}
+
+  .rise{opacity:0}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .rise,.reveal{opacity:1!important;transform:none!important}
+    .hl{background-size:100% 40%!important}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="bar"></div>
+
+<header>
+  <div class="wrap"><nav>
+    <span class="brand">rafael<b>.correia</b>()</span>
+    <div class="navlinks">
+      <a href="#about"><span class="s">§1</span> about</a>
+      <a href="#skills"><span class="s">§2</span> skills</a>
+      <a href="#timeline"><span class="s">§3</span> timeline</a>
+      <a href="#work"><span class="s">§4</span> work</a>
+      <a href="#pubs" class="only-research"><span class="s">§5</span> research</a>
+      <a href="#blog"><span class="s">↗</span> blog</a>
+    </div>
+    <div class="tools">
+      <button class="toggle" id="modeBtn" title="Preview what unlocks when you publish">mode ⇄ <b id="modeLabel">portfolio</b></button>
+      <span class="kbd">⌘K</span>
+      <button class="toggle" id="themeBtn" aria-label="Toggle theme">◐</button>
+    </div>
+  </nav></div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" style="border-bottom:none">
+    <div class="eyebrow rise" data-d="0">§0 — MSc Bioinformatics · biology ∩ data</div>
+    <h1 class="rise" data-d="1">I turn biological questions into <span class="hl">reproducible code.</span></h1>
+    <p class="lede rise" data-d="2">Hi, I'm <b>Rafael Correia</b>, a bioinformatics student at the University of Porto.
+      I build pipelines that turn messy biology into structured, data-driven insight.</p>
+    <div class="cta rise" data-d="3">
+      <button class="btn primary">↗ View selected work</button>
+      <button class="btn">↓ Download CV (PDF)</button>
+    </div>
+    <aside class="margin-note rise" data-d="3">
+      adaptive page —<br>a research section<br>appears once there are<br>publications to show.
+    </aside>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="eyebrow reveal">§1 — About</div>
+    <div class="about-grid">
+      <div class="reveal">
+        <h2>Pipelines that connect biology with clean code.</h2>
+        <p>I'm a bioinformatics student interested in using data and code to study biological systems.
+          My work focuses on data-driven biology — integrating informatics and evolutionary insight
+          into structured, reproducible analyses.</p>
+        <p>I like building uncomplicated, well-documented software that makes biology research easier.</p>
+        <blockquote>"At the intersection of biology and data, curiosity leads the way."</blockquote>
+      </div>
+      <div class="reveal">
+        <img class="profile" alt="Rafael Correia"
+             src="https://rafael.duarte-correia.pt/media/site/cf686fa8a5a446d3b304b489f8550876.png">
+        <div class="facts">
+          <h3>// at a glance</h3>
+          <div class="fact"><span>focus</span><b>bioinformatics · genomics</b></div>
+          <div class="fact"><span>public repos</span><b>—</b></div>
+          <div class="fact"><span>top language</span><b>Python</b></div>
+          <div class="fact"><span>honors</span><b>IJUP Best Poster '25</b></div>
+          <!-- appears only with publications -->
+          <div class="fact only-research"><span>publications</span><b>3</b></div>
+          <div class="fact only-research"><span>citations</span><b>—</b></div>
+          <div class="fact"><span>based in</span><b>Porto, PT</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="eyebrow reveal" style="justify-content:center">§2 — Skills</div>
+    <div class="legend reveal">
+      <span><i style="background:var(--sky)"></i>computational</span>
+      <span><i style="background:var(--mint)"></i>biology</span>
+    </div>
+    <div class="skills reveal">
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>Python</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>General Bioinformatics</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>SQL &amp; Databases</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>Docker</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>Data Science</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>Git &amp; Version Control</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>Rust</div>
+      <div class="skill"><span class="dot" style="background:var(--sky)"></span>R</div>
+      <div class="skill"><span class="dot" style="background:var(--mint)"></span>Genetics &amp; Molecular Biology</div>
+      <div class="skill"><span class="dot" style="background:var(--mint)"></span>Organism Biology &amp; Taxonomy</div>
+      <div class="skill"><span class="dot" style="background:var(--mint)"></span>Ecology &amp; Evolution</div>
+      <div class="skill"><span class="dot" style="background:var(--mint)"></span>Physiology &amp; Microbiology</div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline">
+    <div class="eyebrow reveal">§3 — Timeline</div>
+    <div class="tl-grid">
+      <div class="reveal">
+        <p class="tl-head">// research &amp; experience</p>
+        <div class="tl">
+          <div class="tl-item">
+            <h4>Researcher</h4>
+            <span class="tl-year">2025 — Present</span>
+            <p class="tl-org"><em>Escola Superior de Saúde · Porto</em></p>
+            <ul><li>Curated a structured database unifying microbiome–disease associations from the literature.</li>
+                <li>Ran preliminary analyses on microbiome datasets for diversity trends and candidate biomarkers.</li></ul>
+          </div>
+          <div class="tl-item">
+            <h4>Research Trainee</h4>
+            <span class="tl-year">2024 — 2025</span>
+            <p class="tl-org"><em>i3S — Instituto de Investigação e Inovação em Saúde · Porto</em></p>
+            <ul><li>Built Python pipelines for large-scale detection of polyQ sequences.</li>
+                <li>Integrated an SQLite database + stats framework comparing codon usage across taxa.</li>
+                <li>Best Poster Communication, 18ᵗʰ IJUP Young Researchers Meeting.</li></ul>
+          </div>
+          <div class="tl-item">
+            <h4>Research Trainee</h4>
+            <span class="tl-year">2021 — 2022</span>
+            <p class="tl-org"><em>ICBAS — Instituto de Ciências Biomédicas Abel Salazar · Porto</em></p>
+            <ul><li>Chromatographic isolation &amp; purification; NMR and mass spectrometry analysis.</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="tl-head">// education</p>
+        <div class="tl">
+          <div class="tl-item">
+            <h4>MSc, Bioinformatics</h4>
+            <span class="tl-year">2025 — Present</span>
+            <p class="tl-org"><em>Faculdade de Ciências, Universidade do Porto</em></p>
+          </div>
+          <div class="tl-item">
+            <h4>BSc, Biology</h4>
+            <span class="tl-year">2022 — 2025</span>
+            <p class="tl-org"><em>Faculdade de Ciências, Universidade do Porto</em></p>
+          </div>
+          <div class="tl-item">
+            <h4>Technological Course, Biotechnology</h4>
+            <span class="tl-year">2019 — 2022</span>
+            <p class="tl-org"><em>Colégio Internato dos Carvalhos · Porto</em></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="eyebrow reveal">§4 — Selected work</div>
+    <div class="project reveal">
+      <div class="pcover" style="background:linear-gradient(135deg,var(--sky),var(--mint))"></div>
+      <div>
+        <h3>PAARTA &amp; PAASTA</h3>
+        <p>A web atlas for exploring homorepeats, codon usage, taxonomy, provenance, and repeat-length
+          statistics across annotated genomes — powered by pipeline infrastructure.</p>
+        <div class="ptags">
+          <span class="tag">django</span><span class="tag">nextflow</span><span class="tag">celery</span>
+          <span class="tag">redis</span><span class="tag">codon-usage</span><span class="tag">comparative-genomics</span>
+        </div>
+      </div>
+      <span class="arrow">→</span>
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS (only when research exists) -->
+  <section id="pubs" class="only-research">
+    <div class="eyebrow reveal">§5 — Research · selected publications</div>
+    <div class="ref reveal">
+      <div class="num">01</div>
+      <div>
+        <p class="title">Large-scale detection of polyQ homorepeats across annotated genomes</p>
+        <p class="authors"><b>Correia R</b>, et al.</p>
+        <div class="meta">
+          <span class="pill year">2025</span><span class="pill venue">Example Venue</span>
+          <span class="pill doi">[doi] 10.0000/example</span><span class="pill cite">[cited by 0]</span>
+        </div>
+      </div>
+    </div>
+    <p class="mono" style="color:var(--muted);margin-top:18px;font-size:12.5px">
+      // placeholder — this whole section is hidden until real publications exist
+    </p>
+  </section>
+
+  <!-- CONTACT -->
+  <footer id="blog">
+    <div class="eyebrow reveal" style="justify-content:center">§ — Contact</div>
+    <h2 class="reveal">Let's turn biology<br>into something runnable.</h2>
+    <div class="cta reveal" style="justify-content:center">
+      <button class="btn primary">✦ Email me</button>
+      <button class="btn">↗ GitHub</button>
+      <button class="btn">↗ Read the blog</button>
+    </div>
+    <p class="mono">rafaelmdcorreia@gmail.com · always happy to talk research, code, or collaboration</p>
+  </footer>
+</main>
+
+<script>
+  const root=document.documentElement;
+  document.getElementById('themeBtn').onclick=()=>root.setAttribute('data-theme',root.getAttribute('data-theme')==='light'?'dark':'light');
+  const modeLabel=document.getElementById('modeLabel');
+  document.getElementById('modeBtn').onclick=()=>{
+    const m=root.getAttribute('data-mode')==='portfolio'?'research':'portfolio';
+    root.setAttribute('data-mode',m);modeLabel.textContent=m;
+  };
+  document.querySelectorAll('.rise').forEach(el=>{
+    const d=+el.dataset.d||0;
+    el.animate([{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'none'}],
+      {duration:650,delay:180+d*130,easing:'cubic-bezier(.2,.7,.2,1)',fill:'forwards'});
+  });
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  const bar=document.getElementById('bar');
+  addEventListener('scroll',()=>{const h=document.documentElement;bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
+</script>
+</body>
+</html>

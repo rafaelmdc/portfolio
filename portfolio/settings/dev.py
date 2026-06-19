@@ -7,7 +7,7 @@ SECRET_KEY = "dev-only-insecure-secret-key-do-not-use-in-production"
 
 ALLOWED_HOSTS = ["*"]
 
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000")  # noqa: F405
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")  # noqa: F405
 
 DATABASES = {
     "default": {

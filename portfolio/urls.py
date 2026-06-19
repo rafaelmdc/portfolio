@@ -9,11 +9,11 @@ from wagtail import urls as wagtail_urls
 from wagtail.contrib.sitemaps import Sitemap as WagtailSitemap
 
 from django.conf import settings
-from main.sitemaps import StaticViewSitemap
 from cms.feeds import BlogRssFeed, BlogAtomFeed
+from portfolio.api import api_router
+from main.api import SiteBundleView
 
 sitemaps = {
-    "static": StaticViewSitemap,
     "wagtail": WagtailSitemap,
 }
 
@@ -23,6 +23,9 @@ urlpatterns = [
 
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+
+    path("api/v2/site/", SiteBundleView.as_view(), name="api-site"),
+    path("api/v2/", api_router.urls),
 
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),

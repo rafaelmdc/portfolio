@@ -9,6 +9,8 @@ from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 
 from wagtail import blocks
+from wagtail.api import APIField
+from wagtail.images.api.fields import ImageRenditionField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.embeds.blocks import EmbedBlock
@@ -22,6 +24,23 @@ from wagtail.documents.blocks import DocumentChooserBlock
 # =============================================================================
 # Shared StreamField blocks (used by BlogPage + PortfolioProjectPage)
 # =============================================================================
+
+def _image_api_rep(image, alt_override=None):
+    """Serialise a Wagtail image to self-contained rendition URLs for the API."""
+    if not image:
+        return None
+    full = image.get_rendition("width-1600")
+    thumb = image.get_rendition("fill-600x400")
+    return {
+        "id": image.id,
+        "title": image.title,
+        "alt": alt_override or image.title,
+        "url": full.url,
+        "width": full.width,
+        "height": full.height,
+        "thumb": thumb.url,
+    }
+
 
 class PrettyEmbedBlock(blocks.StructBlock):
     """Embed with presentation controls (matches your existing blog embed block)."""
@@ -140,6 +159,10 @@ class PrettyImageBlock(blocks.StructBlock):
     open_in_new = blocks.BooleanBlock(required=False, default=False)
     alt_override = blocks.CharBlock(required=False, max_length=160, help_text="Optional: override alt text.")
 
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["image"] = _image_api_rep(value.get("image"), value.get("alt_override"))
+        return rep
     caption_spacing = blocks.ChoiceBlock(
         required=False,
         choices=[
@@ -289,6 +312,11 @@ class GalleryBlock(blocks.StructBlock):
     )
     images = blocks.ListBlock(ImageChooserBlock())
 
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["images"] = [_image_api_rep(img) for img in value.get("images") or []]
+        return rep
+
     class Meta:
         icon = "image"
         label = "Gallery"
@@ -315,6 +343,23 @@ class PdfDownloadsBlock(blocks.StructBlock):
         max_num=4,
         help_text="Add 1–4 PDFs (e.g. poster, report, appendix, slides).",
     )
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        items = []
+        for d in value.get("documents") or []:
+            doc = d.get("document")
+            if not doc:
+                continue
+            items.append({
+                "label": d.get("label") or doc.title,
+                "note": d.get("note") or "",
+                "open_in_new": bool(d.get("open_in_new")),
+                "url": doc.url,          # relative /documents/<id>/<file> — proxied
+                "filename": doc.filename,
+            })
+        rep["documents"] = items
+        return rep
 
     class Meta:
         icon = "doc-full-inverse"
@@ -514,6 +559,22 @@ class BlogPage(Page):
         ]
     )
 
+    @property
+    def tag_names(self):
+        return [t.name for t in self.tags.all()]
+
+    api_fields = [
+        APIField("intro"),
+        APIField("date"),
+        APIField("featured"),
+        APIField("reading_time_minutes"),
+        APIField("hero_caption"),
+        APIField("hero_image", serializer=ImageRenditionField("width-1200")),
+        APIField("hero_thumb", serializer=ImageRenditionField("fill-600x400", source="hero_image")),
+        APIField("body"),
+        APIField("tag_names"),
+    ]
+
     class Meta:
         verbose_name = "Blog post"
 
@@ -540,6 +601,8 @@ class PortfolioIndexPage(RoutablePageMixin, Page):
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
     ]
+
+    api_fields = [APIField("intro")]
 
     def get_projects(self):
         return (
@@ -616,6 +679,20 @@ class PortfolioProjectPage(Page):
         FieldPanel("body"),
     ]
 
+    @property
+    def tag_names(self):
+        return [t.name for t in self.tags.all()]
+
+    api_fields = [
+        APIField("subtitle"),
+        APIField("external_url"),
+        APIField("github_url"),
+        APIField("cover_image", serializer=ImageRenditionField("width-1200")),
+        APIField("cover_thumb", serializer=ImageRenditionField("fill-800x600", source="cover_image")),
+        APIField("body"),
+        APIField("tag_names"),
+    ]
+
     class Meta:
         verbose_name = "Portfolio project"
 
@@ -623,6 +700,103 @@ class PortfolioProjectPage(Page):
 # =============================================================================
 # Home
 # =============================================================================
+
+# ---------------------------------------------------------------------------
+# Home page sections — a CMS-controlled, reorderable list of homepage sections.
+#
+# Marker sections (about/skills/timeline/work/research/contact) draw their
+# content from the CV snippets / SiteBundle; the block only controls presence,
+# order and an optional heading override, and (unlike gallery/carousel) appears
+# in the navbar. Gallery and carousel carry their own content and stay out of
+# the nav.
+# ---------------------------------------------------------------------------
+
+
+class _MarkerSectionBlock(blocks.StructBlock):
+    """A content section whose data comes from the SiteBundle; the block just
+    toggles it on and optionally overrides its heading."""
+
+    title = blocks.CharBlock(
+        required=False,
+        max_length=120,
+        help_text="Optional heading override (defaults to the standard title).",
+    )
+
+
+class HomeGalleryImageBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    caption = blocks.CharBlock(required=False, max_length=160)
+
+
+class HomeGalleryBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, max_length=120, default="Gallery")
+    intro = blocks.CharBlock(required=False, max_length=240)
+    items = blocks.ListBlock(HomeGalleryImageBlock())
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["items"] = [
+            {"image": _image_api_rep(it.get("image")), "caption": it.get("caption") or ""}
+            for it in value.get("items") or []
+        ]
+        return rep
+
+    class Meta:
+        icon = "image"
+        label = "Gallery section"
+
+
+class HomeCarouselSlideBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    caption = blocks.CharBlock(required=False, max_length=160)
+    link = blocks.URLBlock(required=False)
+
+
+class HomeCarouselBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, max_length=120)
+    intro = blocks.CharBlock(required=False, max_length=240)
+    autoplay = blocks.BooleanBlock(
+        required=False, default=True, help_text="Auto-advance every 5 seconds."
+    )
+    slides = blocks.ListBlock(HomeCarouselSlideBlock())
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context)
+        rep["slides"] = [
+            {
+                "image": _image_api_rep(s.get("image")),
+                "caption": s.get("caption") or "",
+                "link": s.get("link") or "",
+            }
+            for s in value.get("slides") or []
+        ]
+        return rep
+
+    class Meta:
+        icon = "image"
+        label = "Carousel section"
+
+
+class HomeSectionStream(blocks.StreamBlock):
+    about = _MarkerSectionBlock(icon="user", label="About")
+    skills = _MarkerSectionBlock(icon="cog", label="Skills")
+    timeline = _MarkerSectionBlock(icon="list-ul", label="Timeline")
+    work = _MarkerSectionBlock(icon="folder-open-inverse", label="Work / Projects")
+    research = _MarkerSectionBlock(icon="doc-full", label="Research / Publications")
+    contact = _MarkerSectionBlock(icon="mail", label="Contact")
+    gallery = HomeGalleryBlock()
+    carousel = HomeCarouselBlock()
+
+    class Meta:
+        block_counts = {
+            "about": {"max_num": 1},
+            "skills": {"max_num": 1},
+            "timeline": {"max_num": 1},
+            "work": {"max_num": 1},
+            "research": {"max_num": 1},
+            "contact": {"max_num": 1},
+        }
+
 
 class HomePage(Page):
     max_count = 1
@@ -634,7 +808,19 @@ class HomePage(Page):
         help_text="Optional short intro text for the homepage",
     )
 
+    sections = StreamField(
+        HomeSectionStream(),
+        use_json_field=True,
+        blank=True,
+        help_text=(
+            "The homepage sections, in order. Add/remove sections to control "
+            "what shows and the navbar; gallery and carousel stay out of the nav."
+        ),
+    )
+
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
+        FieldPanel("sections"),
     ]
-    
+
+    api_fields = [APIField("intro"), APIField("sections")]

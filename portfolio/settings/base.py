@@ -13,10 +13,10 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.postgres',
     "main",
-    "django_ckeditor_5",
     # Wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
     "wagtail.contrib.table_block",
     "wagtail.embeds",
     "wagtail.sites",
@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail",
+    "wagtail.api.v2",
+    "rest_framework",
     "modelcluster",
     "taggit",
     "cms",
@@ -83,24 +85,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CKEDITOR_5_CONFIGS = {
-    "default": {
-        "toolbar": [
-            "heading", "|",
-            "bold", "italic", "link",
-            "bulletedList", "numberedList",
-            "blockQuote",
-            "|",
-            "insertTable", "mediaEmbed",
-            "undo", "redo",
-        ],
-    },
-}
-CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-CKEDITOR_5_UPLOAD_PATH = "uploads/ckeditor/"
-
 WAGTAIL_SITE_NAME = "Portfolio"
-WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
+
+# Allow the headless frontend to fetch the full blog/portfolio list in one call.
+WAGTAILAPI_LIMIT_MAX = 100
+WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:3000")
+
+# Open PDFs (e.g. the generated CV) inline in the browser instead of downloading.
+WAGTAILDOCS_INLINE_CONTENT_TYPES = ["application/pdf"]
 
 # Optional: ORCID public profile ID (e.g. "0000-0001-2345-6789")
 ORCID_ID             = os.environ.get("ORCID_ID", "")
