@@ -40,7 +40,10 @@ export default function Nav({ hasResearch }: { hasResearch: boolean }) {
             <span className="text-primary/70">↗</span> blog
           </Link>
         </div>
-        <div className="ml-auto md:ml-0">
+        <div className="ml-auto flex items-center gap-2.5 md:ml-0">
+          <span className="hidden rounded-md border border-border bg-surface px-2 py-1 font-mono text-[11px] text-muted sm:inline">
+            ⌘K
+          </span>
           <ThemeToggle />
         </div>
       </nav>

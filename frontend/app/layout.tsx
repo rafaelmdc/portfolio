@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import CommandPalette from "@/components/CommandPalette";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -48,6 +49,7 @@ export default function RootLayout({
         className={`${fraunces.variable} ${inter.variable} ${jetbrains.variable}`}
       >
         {children}
+        <CommandPalette />
       </body>
     </html>
   );
