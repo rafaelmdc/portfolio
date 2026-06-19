@@ -15,12 +15,6 @@ export default function InnerHeader() {
           >
             ← back
           </Link>
-          <Link
-            href="/blog"
-            className="font-mono text-[12.5px] text-muted transition hover:text-ink"
-          >
-            blog
-          </Link>
           <ThemeToggle />
         </div>
       </nav>
