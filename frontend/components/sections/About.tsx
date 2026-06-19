@@ -14,20 +14,27 @@ export default function About({
   num: number;
   title?: string;
 }) {
-  const { copy, images, github, awards, publications, has_research } = bundle;
+  const { copy, images, github, awards, publications, stats } = bundle;
   const img = images.about_profile;
 
-  const facts: Fact[] = [{ label: "focus", value: "bioinformatics · genomics" }];
-  if (github?.public_repos != null)
+  // Each row is shown only when toggled on (CMS) and its data exists.
+  const facts: Fact[] = [];
+  if (stats.stat_focus && copy.about_focus)
+    facts.push({ label: "focus", value: copy.about_focus });
+  if (stats.stat_repos && github?.public_repos != null)
     facts.push({ label: "public repos", value: String(github.public_repos) });
-  if (github?.total_stars)
+  if (stats.stat_stars && github?.total_stars)
     facts.push({ label: "total stars", value: String(github.total_stars) });
-  if (github?.top_language)
+  if (stats.stat_language && github?.top_language)
     facts.push({ label: "top language", value: github.top_language });
-  if (awards.length)
-    facts.push({ label: "honors", value: awards[0].title });
-  if (has_research)
+  if (stats.stat_followers && github?.followers != null)
+    facts.push({ label: "followers", value: String(github.followers) });
+  if (stats.stat_commits && github?.total_commits != null)
+    facts.push({ label: "commits", value: github.total_commits.toLocaleString() });
+  if (stats.stat_publications && publications.flat.length)
     facts.push({ label: "publications", value: String(publications.flat.length) });
+  if (stats.stat_honors && awards.length)
+    facts.push({ label: "honors", value: awards[0].title });
 
   return (
     <section id="about" className="border-b border-border py-24">

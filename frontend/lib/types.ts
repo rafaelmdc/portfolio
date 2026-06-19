@@ -15,6 +15,24 @@ export type SiteBundle = {
     about_quote: string;
     skills_title: string;
     skills_lead: string;
+    hero_eyebrow: string;
+    hero_headline: string;
+    hero_highlight: string;
+    hero_cta_primary: string;
+    hero_cta_secondary: string;
+    contact_headline: string;
+    contact_note: string;
+    about_focus: string;
+  };
+  stats: {
+    stat_focus: boolean;
+    stat_repos: boolean;
+    stat_stars: boolean;
+    stat_language: boolean;
+    stat_followers: boolean;
+    stat_commits: boolean;
+    stat_publications: boolean;
+    stat_honors: boolean;
   };
   images: {
     about_profile: ImageRendition | null;
@@ -36,6 +54,10 @@ export type SiteBundle = {
     linkedin_url: string;
     github_username: string;
     full_name: string;
+    show_email: boolean;
+    show_github: boolean;
+    show_linkedin: boolean;
+    show_blog: boolean;
   };
   cv: { enabled: boolean; url: string };
 };
@@ -131,6 +153,7 @@ export type GithubStats = {
   followers: number | null;
   total_stars: number;
   top_language: string | null;
+  total_commits: number | null;
 };
 
 /* ---- Wagtail pages API ---- */
