@@ -57,6 +57,43 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Rich-text (Wagtail RichText HTML) */
+.rich a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.rich p {
+  margin: 0 0 1rem;
+}
+.rich ul,
+.rich ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+.rich ul {
+  list-style: disc;
+}
+.rich ol {
+  list-style: decimal;
+}
+.rich li {
+  margin-bottom: 0.35rem;
+}
+.rich blockquote {
+  margin: 1rem 0;
+  border-left: 3px solid var(--peach);
+  padding-left: 1rem;
+  font-style: italic;
+}
+.rich h2,
+.rich h3,
+.rich h4 {
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  margin: 1.4rem 0 0.6rem;
+}
+
 body {
   background: var(--bg);
   color: var(--ink);
