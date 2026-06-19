@@ -77,7 +77,7 @@ export default function Skills({
                   {s.description && (
                     <span
                       role="tooltip"
-                      className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-30 w-max max-w-[240px] -translate-x-1/2 translate-y-1 rounded-lg border border-border bg-surface px-3 py-2 text-left text-[12.5px] font-normal leading-snug text-ink opacity-0 shadow-[var(--shadow)] transition duration-100 group-hover:translate-y-0 group-hover:opacity-100"
+                      className="pointer-events-none invisible absolute bottom-[calc(100%+8px)] left-1/2 z-50 w-max max-w-[240px] -translate-x-1/2 translate-y-1 rounded-lg border border-border bg-surface px-3 py-2 text-left text-[12.5px] font-normal leading-snug text-ink shadow-[var(--shadow)] transition duration-100 group-hover:visible group-hover:translate-y-0"
                     >
                       {s.description}
                     </span>

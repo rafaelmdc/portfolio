@@ -1,5 +1,6 @@
 import type { SiteBundle, Education, Experience } from "@/lib/types";
 import { mediaUrl } from "@/lib/api";
+import { inline } from "@/lib/inline";
 import Eyebrow from "../Eyebrow";
 import Reveal from "../Reveal";
 
@@ -29,12 +30,12 @@ function Item({
       <p className="m-0 mb-[6px] text-[13.5px] text-muted">
         <em>{org}</em>
       </p>
-      {blurb && <p className="m-0 mb-[6px] text-[13.5px]">{blurb}</p>}
+      {blurb && <p className="m-0 mb-[6px] text-[13.5px]">{inline(blurb)}</p>}
       {bullets && bullets.length > 0 && (
         <ul className="mt-2 list-disc pl-[18px] text-[13.5px]">
           {bullets.map((b, i) => (
             <li key={i} className="mb-1">
-              {b}
+              {inline(b)}
             </li>
           ))}
         </ul>
