@@ -158,4 +158,15 @@ class SiteBundleView(APIView):
             "orcid_id": getattr(settings, "ORCID_ID", ""),
             "has_research": bool(pubs),
             "sections": _home_sections(),
+            "contact": {
+                "email": (sc.email if sc else "") or "",
+                "linkedin_url": (sc.linkedin_url if sc else "") or "",
+                "github_username": (sc.github_username if sc else "") or "",
+                "full_name": (sc.full_name if sc else "") or "",
+            },
+            "cv": {
+                "enabled": bool(sc.cv_enabled) if sc else False,
+                # Stable endpoint that regenerates if stale, then opens inline.
+                "url": "/resume/pdf/" if (sc and sc.cv_enabled) else "",
+            },
         })

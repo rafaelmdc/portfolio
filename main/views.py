@@ -77,37 +77,11 @@ def _resume_context():
 
 
 def resume_pdf(request):
-    import mimetypes
-    from main.cv_pdf import render_cv_pdf
+    """Open the cached, auto-generated CV PDF (regenerated only when stale)."""
+    from django.shortcuts import redirect
+    from main.cv import get_cv_document
 
-    ctx = _resume_context()
-    ctx["name"]      = "Rafael Correia"
-    ctx["title"]     = "Software Developer & Researcher"
-    ctx["email"]     = "rafaelmdcorreia@gmail.com"
-    ctx["github"]    = "github.com/rafaelmdc"
-    ctx["linkedin"]  = "linkedin.com/in/rafael-alexandre-correia-2b8a33213"
-    ctx["skills"]    = Skill.objects.filter(active=True).order_by("order", "id")
-    ctx["grants"]    = Grant.objects.all()
-    ctx["awards"]    = Award.objects.all()
-    ctx["languages"] = Language.objects.all()
-
-    img_bytes, img_mime = None, None
-    sc = _site_content()
-    img = sc.home_profile if sc else None
-    if img:
-        try:
-            img_mime = mimetypes.guess_type(img.file.name)[0] or "image/jpeg"
-            img.file.open("rb")
-            img_bytes = img.file.read()
-            img.file.close()
-        except Exception:
-            pass
-
-    try:
-        pdf = render_cv_pdf(ctx, profile_image_bytes=img_bytes, profile_image_mime=img_mime)
-    except RuntimeError as exc:
-        return HttpResponse(str(exc), status=500, content_type="text/plain")
-
-    response = HttpResponse(pdf, content_type="application/pdf")
-    response["Content-Disposition"] = 'attachment; filename="cv_rafael_correia.pdf"'
-    return response
+    doc = get_cv_document(_site_content())
+    if not doc:
+        return HttpResponse("CV is unavailable.", status=404, content_type="text/plain")
+    return redirect(doc.url)

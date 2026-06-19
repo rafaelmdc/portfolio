@@ -225,10 +225,38 @@ class SiteContent(BaseGenericSetting):
     skills_title         = models.CharField(max_length=200, blank=True, default="Skills")
     skills_lead          = models.TextField(blank=True)
 
+    # Personal / contact identity — feeds the CV PDF and the contact section.
+    full_name    = models.CharField(max_length=120, blank=True, default="Rafael Correia")
+    role_title   = models.CharField(
+        max_length=160, blank=True, default="Software Developer & Researcher",
+        help_text="Headline role, shown on the CV.",
+    )
+    email        = models.EmailField(blank=True, default="rafaelmdcorreia@gmail.com")
+    linkedin_url = models.URLField(
+        blank=True,
+        default="https://linkedin.com/in/rafael-alexandre-correia-2b8a33213",
+    )
+
     github_username      = models.CharField(
         max_length=100, blank=True,
         help_text="GitHub username, used to show live repo/stars stats.",
     )
+
+    # ---- CV PDF (auto-generated into a Wagtail Document, cached) ----
+    CV_REFRESH_CHOICES = [("daily", "Daily"), ("weekly", "Weekly")]
+    cv_enabled = models.BooleanField(
+        default=True, help_text="Show the 'Open CV' button on the site.",
+    )
+    cv_refresh = models.CharField(
+        max_length=10, choices=CV_REFRESH_CHOICES, default="weekly",
+        help_text="How often the CV PDF is regenerated from your CMS data.",
+    )
+    cv_document = models.ForeignKey(
+        "wagtaildocs.Document", null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="+",
+        help_text="Auto-generated CV PDF. Managed automatically — no need to set this.",
+    )
+    cv_generated_at = models.DateTimeField(null=True, blank=True, editable=False)
 
     about_profile = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True,
@@ -258,7 +286,24 @@ class SiteContent(BaseGenericSetting):
             [FieldPanel("about_profile"), FieldPanel("home_profile")],
             heading="Profile images",
         ),
-        FieldPanel("github_username"),
+        MultiFieldPanel(
+            [
+                FieldPanel("full_name"),
+                FieldPanel("role_title"),
+                FieldPanel("email"),
+                FieldPanel("linkedin_url"),
+                FieldPanel("github_username"),
+            ],
+            heading="Personal / contact",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("cv_enabled"),
+                FieldPanel("cv_refresh"),
+                FieldPanel("cv_document", read_only=True),
+            ],
+            heading="CV PDF",
+        ),
     ]
 
     class Meta:

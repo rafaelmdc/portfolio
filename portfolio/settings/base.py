@@ -91,6 +91,9 @@ WAGTAIL_SITE_NAME = "Portfolio"
 WAGTAILAPI_LIMIT_MAX = 100
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
 
+# Open PDFs (e.g. the generated CV) inline in the browser instead of downloading.
+WAGTAILDOCS_INLINE_CONTENT_TYPES = ["application/pdf"]
+
 # Optional: ORCID public profile ID (e.g. "0000-0001-2345-6789")
 ORCID_ID             = os.environ.get("ORCID_ID", "")
 # Your name as it appears in ORCID author lists — bolded in the PDF CV
