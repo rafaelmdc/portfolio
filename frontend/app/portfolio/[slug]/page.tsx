@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getProject, getProjects, mediaUrl } from "@/lib/api";
+import { getProject, mediaUrl } from "@/lib/api";
 import InnerHeader from "@/components/InnerHeader";
 import StreamField from "@/components/streamfield/StreamField";
 
-export async function generateStaticParams() {
-  const projects = await getProjects();
-  return projects.map((p) => ({ slug: p.meta.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

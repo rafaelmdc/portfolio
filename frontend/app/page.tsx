@@ -1,4 +1,9 @@
 import { getSiteBundle, getProjects } from "@/lib/api";
+
+// Rendered at request time against the backend Service (no API access needed at
+// image-build time). The backend caches GitHub stats, so this stays cheap.
+export const dynamic = "force-dynamic";
+
 import Nav from "@/components/Nav";
 import ScrollProgress from "@/components/ScrollProgress";
 import Hero from "@/components/sections/Hero";

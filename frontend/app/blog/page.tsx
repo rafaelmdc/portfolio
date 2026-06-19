@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Notes on bioinformatics, pipelines, and data-driven biology.",
 };
 
+export const dynamic = "force-dynamic";
+
 function fmtDate(d: string) {
   return new Date(d).toLocaleDateString("en-GB", {
     year: "numeric",

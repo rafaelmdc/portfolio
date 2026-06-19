@@ -1,9 +1,9 @@
 # Migration Plan — Headless Wagtail + React/Tailwind
 
-Status: **Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 next.** All
-work on the `rework` branch; `main` auto-deploys via Argo CD on Kubernetes (Argo
-watches the homelab repo + DockerHub `latest`). Nothing reaches `main`/homelab
-until the end.
+Status: **Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 (repo) ✅ —
+only the homelab manifest change remains.** All work on the `rework` branch;
+`main` auto-deploys via Argo CD on Kubernetes (Argo watches the homelab repo +
+DockerHub `latest`). Nothing reaches `main`/homelab until cutover.
 
 Progress notes:
 - Phase 0: image confirmed on Wagtail 7.4.2 / Django 5.2.15.
@@ -20,10 +20,14 @@ Progress notes:
   scroll-reveal, ⌘K palette). One-page landing wired to /api/v2/site/; /blog,
   /blog/[slug], /portfolio/[slug] via SSG; full StreamField → React renderer.
   Server-side fetch only (ISR 5m), so no CORS needed. tsc + eslint + build clean.
-- Phase 4 (next, LAST): Dockerfile for the frontend; build/push both images;
-  add the frontend Deployment/Service/Ingress to the homelab manifests (one-file
-  change) for Argo. Optional polish: per-post OG images, blog tag filtering,
-  View Transitions. Only this phase touches Rafael-Homelab/.
+- Phase 4 (repo side ✅): frontend Dockerfile (standalone, non-root, :3000),
+  next.config output:standalone, API routes switched to force-dynamic so the
+  image builds with no backend access; pinned pnpm via packageManager;
+  Makefile frontend-build/push targets; docs/deploy.md. Verified: image builds
+  offline and the running container serves all routes against a live backend.
+  REMAINING (not done, by design): the one-file homelab manifest change
+  (frontend Deployment/Service + Ingress split) — done last, with the user.
+  Optional polish: per-post OG images, blog tag filtering, View Transitions.
 
 ## Target architecture
 

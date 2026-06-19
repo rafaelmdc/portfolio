@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getBlogPost, getBlogPosts, mediaUrl } from "@/lib/api";
+import { getBlogPost, mediaUrl } from "@/lib/api";
 import InnerHeader from "@/components/InnerHeader";
 import StreamField from "@/components/streamfield/StreamField";
 
-export async function generateStaticParams() {
-  const posts = await getBlogPosts();
-  return posts.map((p) => ({ slug: p.meta.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

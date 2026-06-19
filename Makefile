@@ -1,9 +1,11 @@
-IMAGE := hydrodog11/portfolio
+IMAGE     := hydrodog11/portfolio
+FE_IMAGE  := hydrodog11/portfolio-frontend
 SHA   := $(shell git rev-parse --short HEAD)
 DC    := docker compose -f docker-compose.dev.yml
 MANAGE := $(DC) exec web python manage.py
 
 .PHONY: build push release \
+        frontend-build frontend-push frontend-release \
         dev-up dev-up-build dev-up-d dev-down dev-logs dev-shell dev-restart \
         migrate migrations shell dbshell \
         createsuperuser \
@@ -19,6 +21,16 @@ push: build
 	docker push $(IMAGE):latest
 
 release: push
+
+# ── Frontend (Next.js) image ────────────────────────────────────
+frontend-build:
+	docker build -t $(FE_IMAGE):$(SHA) -t $(FE_IMAGE):latest ./frontend
+
+frontend-push: frontend-build
+	docker push $(FE_IMAGE):$(SHA)
+	docker push $(FE_IMAGE):latest
+
+frontend-release: frontend-push
 
 # ── Dev environment ─────────────────────────────────────────────
 dev-up:
