@@ -32,9 +32,11 @@ cp .env.example .env
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-With the example environment, the site is available at `http://localhost:8000`.
-Use `HOST_PORT` in `.env` to change the host port. Wagtail admin is at
-`/cms/`; Django admin is at `/admin/`.
+With the example environment, the backend (headless API + CMS) is available at
+`http://localhost:3000`. Use `HOST_PORT` in `.env` to change the host port.
+Wagtail admin is at `/cms/`; Django admin is at `/admin/`. The public site is
+the Next.js frontend (`frontend/`, defaults to `http://localhost:8000`), which
+proxies the API/media to the backend.
 
 On first run, create an admin user:
 

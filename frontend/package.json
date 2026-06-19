@@ -4,9 +4,9 @@
   "private": true,
   "packageManager": "pnpm@9.15.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p ${PORT:-8000}",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT:-8000}",
     "lint": "eslint"
   },
   "dependencies": {

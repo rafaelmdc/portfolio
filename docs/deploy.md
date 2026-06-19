@@ -12,8 +12,10 @@ is the reference for that final step.
 | Frontend (Next.js) | `hydrodog11/portfolio-frontend` | `make frontend-release` (`frontend/Dockerfile`) |
 
 The frontend image is a standalone Next.js server (`output: "standalone"`),
-runs as non-root on **:3000**, and needs **no backend access at build time**
-(all API-backed routes are `force-dynamic`, rendered at request time).
+runs as non-root on **:8000** (override with `PORT`), and needs **no backend
+access at build time** (all API-backed routes are `force-dynamic`, rendered at
+request time). The backend image binds **:3000** by default (override with
+`APP_PORT`). The frontend (public) takes the port the tunnel already targets.
 
 ## Runtime config
 
@@ -25,8 +27,11 @@ public internet.
 Frontend container env:
 
 - `INTERNAL_API_URL` — in-cluster URL of the backend Service, used only for
-  server-side (SSR) JSON fetches. e.g. `http://portfolio-web:8000`. **Not
-  public.** (`WAGTAIL_API_URL` is still honoured as a fallback.)
+  server-side (SSR) JSON fetches. e.g. `http://portfolio:3000`. **Not public.**
+  (`WAGTAIL_API_URL` is still honoured as a fallback.)
+- The backend's `DJANGO_ALLOWED_HOSTS` must include the host in
+  `INTERNAL_API_URL` (the frontend proxy forwards `Host=target`), alongside the
+  public domain — e.g. `rafael.duarte-correia.pt,portfolio`.
 
 Proxied to the backend by the frontend (browser → frontend origin → backend):
 `/api/*`, `/media/*`, `/documents/*`, `/resume/*`. Everything else on the
@@ -47,12 +52,15 @@ No CORS config needed — the browser only ever talks to the frontend origin.
 Add to the portfolio app manifests in `Rafael-Homelab/kubernetes/...`:
 
 1. A **Deployment** for `hydrodog11/portfolio-frontend:latest`
-   (containerPort 3000, env `INTERNAL_API_URL=http://<backend-service>:8000`).
-2. A **Service** targeting port 3000.
-3. **Ingress**: route the public host **entirely to the frontend Service**.
-   The frontend proxies `/api`, `/media`, `/documents`, `/resume` to the backend
-   internally — so the **backend Service stays cluster-internal (ClusterIP, no
-   public Ingress)**. Reach `/cms/` over LAN/VPN or a port-forward.
+   (containerPort 8000, env `INTERNAL_API_URL=http://portfolio:3000`).
+2. A **Service** for the frontend targeting port 8000.
+3. Move the **existing backend** to port **3000** (`APP_PORT=3000`,
+   containerPort/probes/Service → 3000) and add the internal Service host to
+   `DJANGO_ALLOWED_HOSTS`.
+4. Repoint the **Cloudflare TunnelBinding** target from the backend to the
+   frontend Service (`…/portfolio-frontend…:8000`). The backend Service stays
+   cluster-internal (ClusterIP) — the frontend proxies `/api`, `/media`,
+   `/documents`, `/resume` to it. Reach `/cms/` over LAN/VPN or a port-forward.
 
 Optionally schedule the CV refresh: a **CronJob** running
 `python manage.py gen_cv` (daily or weekly) on the backend image keeps the
@@ -64,13 +72,13 @@ Then let Argo sync. Verify, then retire the old monolith routing.
 
 ```sh
 # backend
-make dev-up-d                      # stack on :8000
+make dev-up-d                      # stack on :3000 (HOST_PORT)
 docker compose -f docker-compose.dev.yml exec web python manage.py seed_demo
 
 # frontend image
 make frontend-build
 docker run --rm --add-host=host.docker.internal:host-gateway \
-  -e INTERNAL_API_URL=http://host.docker.internal:8000 \
-  -p 3200:3000 hydrodog11/portfolio-frontend:latest
+  -e INTERNAL_API_URL=http://host.docker.internal:3000 \
+  -p 3200:8000 hydrodog11/portfolio-frontend:latest
 # → http://localhost:3200
 ```

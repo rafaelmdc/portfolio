@@ -89,7 +89,7 @@ WAGTAIL_SITE_NAME = "Portfolio"
 
 # Allow the headless frontend to fetch the full blog/portfolio list in one call.
 WAGTAILAPI_LIMIT_MAX = 100
-WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:8000")
+WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:3000")
 
 # Open PDFs (e.g. the generated CV) inline in the browser instead of downloading.
 WAGTAILDOCS_INLINE_CONTENT_TYPES = ["application/pdf"]

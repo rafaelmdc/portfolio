@@ -12,7 +12,7 @@ import type {
 const INTERNAL_API_URL = (
   process.env.INTERNAL_API_URL ||
   process.env.WAGTAIL_API_URL ||
-  "http://localhost:8000"
+  "http://localhost:3000"
 ).replace(/\/$/, "");
 
 const REVALIDATE = 300; // seconds (ISR)
