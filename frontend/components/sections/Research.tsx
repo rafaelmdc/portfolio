@@ -46,16 +46,29 @@ function Ref({ pub, index }: { pub: Publication; index: number }) {
   );
 }
 
-export default function Research({ bundle }: { bundle: SiteBundle }) {
-  if (!bundle.has_research) return null;
+export default function Research({
+  bundle,
+  num,
+  title,
+}: {
+  bundle: SiteBundle;
+  num: number;
+  title?: string;
+}) {
   let i = 0;
+  const empty = bundle.publications.flat.length === 0;
 
   return (
     <section id="research" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-7">
         <Reveal>
-          <Eyebrow>§5 — Research · publications</Eyebrow>
+          <Eyebrow>§{num} — {title || "Research · publications"}</Eyebrow>
         </Reveal>
+        {empty && (
+          <Reveal>
+            <p className="text-muted">Publications will appear here soon.</p>
+          </Reveal>
+        )}
         {bundle.publications.groups.map((g) => (
           <Reveal key={g.label}>
             <h3 className="mb-1 mt-6 font-mono text-[12px] tracking-[0.05em] text-muted">

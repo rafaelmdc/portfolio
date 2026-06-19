@@ -4,14 +4,22 @@ import Reveal from "../Reveal";
 
 const EMAIL = "rafaelmdcorreia@gmail.com";
 
-export default function Contact({ bundle }: { bundle: SiteBundle }) {
+export default function Contact({
+  bundle,
+  num,
+  title,
+}: {
+  bundle: SiteBundle;
+  num: number;
+  title?: string;
+}) {
   const gh = bundle.github?.username;
   return (
     <footer id="contact" className="px-7 pb-[90px] pt-[72px] text-center">
       <div className="mx-auto max-w-5xl">
         <Reveal>
           <div className="mb-[18px] flex items-center justify-center gap-[10px] font-mono text-[12px] tracking-[0.06em] text-primary">
-            § — Contact
+            §{num} — {title || "Contact"}
           </div>
         </Reveal>
         <Reveal>

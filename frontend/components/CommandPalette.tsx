@@ -3,30 +3,35 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Dest = { label: string; hint: string; href: string };
+type NavLink = { href: string; n: string; label: string };
 
-const DESTS: Dest[] = [
-  { label: "Home", hint: "top", href: "/" },
-  { label: "About", hint: "§1", href: "/#about" },
-  { label: "Skills", hint: "§2", href: "/#skills" },
-  { label: "Timeline", hint: "§3", href: "/#timeline" },
-  { label: "Work", hint: "§4", href: "/#work" },
-  { label: "Research", hint: "§5", href: "/#research" },
-  { label: "Contact", hint: "§", href: "/#contact" },
-  { label: "Blog", hint: "↗", href: "/blog" },
-];
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// The home page publishes its live section list (order, titles, toggles) into
+// a hidden element; the palette reads it so it always mirrors the navbar.
+function readDests(): Dest[] {
+  const home: Dest = { label: "Home", hint: "top", href: "/" };
+  const blog: Dest = { label: "Blog", hint: "↗", href: "/blog" };
+  let links: NavLink[] = [];
+  try {
+    const raw = document.getElementById("__nav_sections")?.dataset.sections;
+    if (raw) links = JSON.parse(raw) as NavLink[];
+  } catch {
+    /* not on the home page — fall back to just Home + Blog */
+  }
+  const sections = links.map((l) => ({
+    label: cap(l.label),
+    hint: l.n,
+    href: `/${l.href}`, // "#about" -> "/#about"
+  }));
+  return [home, ...sections, blog];
+}
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
-  // Research only exists when publications are present; on the home page we can
-  // tell from the DOM (the section is rendered conditionally).
-  const [hideResearch, setHideResearch] = useState(false);
-
-  const dests = useMemo(
-    () => (hideResearch ? DESTS.filter((d) => d.href !== "/#research") : DESTS),
-    [hideResearch],
-  );
+  const [dests, setDests] = useState<Dest[]>([]);
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -40,11 +45,7 @@ export default function CommandPalette() {
   }, []);
 
   const reveal = useCallback(() => {
-    // Research only exists when publications are present; on the home page we
-    // can tell from the DOM (the section is rendered conditionally).
-    setHideResearch(
-      window.location.pathname === "/" && !document.getElementById("research"),
-    );
+    setDests(readDests());
     setOpen(true);
   }, []);
 

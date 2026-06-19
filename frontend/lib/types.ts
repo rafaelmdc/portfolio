@@ -30,6 +30,38 @@ export type SiteBundle = {
   github: GithubStats | null;
   orcid_id: string;
   has_research: boolean;
+  sections: HomeSection[];
+};
+
+/* CMS-controlled homepage sections (ordered). Marker sections only carry an
+   optional title override; gallery/carousel carry their own content. */
+export type HomeSectionType =
+  | "about"
+  | "skills"
+  | "timeline"
+  | "work"
+  | "research"
+  | "contact"
+  | "gallery"
+  | "carousel";
+
+export type GalleryItem = { image: ImageRendition | null; caption: string };
+export type CarouselSlide = {
+  image: ImageRendition | null;
+  caption: string;
+  link: string;
+};
+
+export type HomeSection = {
+  id: string;
+  type: HomeSectionType;
+  value: {
+    title?: string;
+    intro?: string;
+    autoplay?: boolean;
+    items?: GalleryItem[];
+    slides?: CarouselSlide[];
+  };
 };
 
 export type Education = {

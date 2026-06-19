@@ -4,14 +4,22 @@ import { mediaUrl } from "@/lib/api";
 import Eyebrow from "../Eyebrow";
 import Reveal from "../Reveal";
 
-export default function Work({ projects }: { projects: ProjectListItem[] }) {
+export default function Work({
+  projects,
+  num,
+  title,
+}: {
+  projects: ProjectListItem[];
+  num: number;
+  title?: string;
+}) {
   if (!projects.length) return null;
 
   return (
     <section id="work" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-7">
         <Reveal>
-          <Eyebrow>§4 — Selected work</Eyebrow>
+          <Eyebrow>§{num} — {title || "Selected work"}</Eyebrow>
         </Reveal>
         {projects.map((p) => {
           const slug = p.meta.slug;

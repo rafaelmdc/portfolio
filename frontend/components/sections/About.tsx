@@ -5,7 +5,15 @@ import Reveal from "../Reveal";
 
 type Fact = { label: string; value: string };
 
-export default function About({ bundle }: { bundle: SiteBundle }) {
+export default function About({
+  bundle,
+  num,
+  title,
+}: {
+  bundle: SiteBundle;
+  num: number;
+  title?: string;
+}) {
   const { copy, images, github, awards, publications, has_research } = bundle;
   const img = images.about_profile;
 
@@ -25,7 +33,7 @@ export default function About({ bundle }: { bundle: SiteBundle }) {
     <section id="about" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-7">
         <Reveal>
-          <Eyebrow>§1 — About</Eyebrow>
+          <Eyebrow>§{num} — {title || copy.about_title || "About"}</Eyebrow>
         </Reveal>
         <div className="grid grid-cols-1 items-center gap-[54px] md:grid-cols-[1.4fr_0.9fr]">
           <Reveal>

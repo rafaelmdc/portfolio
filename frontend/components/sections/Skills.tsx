@@ -4,7 +4,15 @@ import Reveal from "../Reveal";
 
 const BIO = /biolog|genetic|ecolog|evolu|physiolog|microbio|organism|taxonom|molecular|anatom/i;
 
-export default function Skills({ bundle }: { bundle: SiteBundle }) {
+export default function Skills({
+  bundle,
+  num,
+  title,
+}: {
+  bundle: SiteBundle;
+  num: number;
+  title?: string;
+}) {
   const skills = bundle.skills;
   if (!skills.length) return null;
 
@@ -12,7 +20,7 @@ export default function Skills({ bundle }: { bundle: SiteBundle }) {
     <section id="skills" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-7">
         <Reveal>
-          <Eyebrow centered>§2 — {bundle.copy.skills_title || "Skills"}</Eyebrow>
+          <Eyebrow centered>§{num} — {title || bundle.copy.skills_title || "Skills"}</Eyebrow>
         </Reveal>
         <Reveal>
           <div className="mb-[22px] flex justify-center gap-[18px] font-mono text-[11.5px] text-muted">

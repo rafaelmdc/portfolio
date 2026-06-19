@@ -4,18 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 
-const BASE_LINKS = [
-  { href: "#about", n: "§1", label: "about" },
-  { href: "#skills", n: "§2", label: "skills" },
-  { href: "#timeline", n: "§3", label: "timeline" },
-  { href: "#work", n: "§4", label: "work" },
-];
+export type NavLink = { href: string; n: string; label: string };
 
-export default function Nav({ hasResearch }: { hasResearch: boolean }) {
+export default function Nav({ links }: { links: NavLink[] }) {
   const [open, setOpen] = useState(false);
-  const links = hasResearch
-    ? [...BASE_LINKS, { href: "#research", n: "§5", label: "research" }]
-    : BASE_LINKS;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md backdrop-saturate-150">

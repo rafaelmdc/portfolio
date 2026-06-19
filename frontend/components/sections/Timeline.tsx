@@ -47,7 +47,15 @@ function Stream({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function Timeline({ bundle }: { bundle: SiteBundle }) {
+export default function Timeline({
+  bundle,
+  num,
+  title,
+}: {
+  bundle: SiteBundle;
+  num: number;
+  title?: string;
+}) {
   const exp: Experience[] = bundle.experience;
   const edu: Education[] = bundle.education;
   if (!exp.length && !edu.length) return null;
@@ -56,7 +64,7 @@ export default function Timeline({ bundle }: { bundle: SiteBundle }) {
     <section id="timeline" className="border-b border-border py-24">
       <div className="mx-auto max-w-5xl px-7">
         <Reveal>
-          <Eyebrow>§3 — Timeline</Eyebrow>
+          <Eyebrow>§{num} — {title || "Timeline"}</Eyebrow>
         </Reveal>
         <div className="grid grid-cols-1 gap-[54px] md:grid-cols-2">
           {exp.length > 0 && (
