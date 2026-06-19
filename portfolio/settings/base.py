@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "wagtail.admin",
     "wagtail",
     "wagtail.api.v2",
+    "wagtail_headless_preview",
     "rest_framework",
     "modelcluster",
     "taggit",
@@ -93,6 +94,16 @@ WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAIL_BASE_URL", "http://localhost:300
 
 # Open PDFs (e.g. the generated CV) inline in the browser instead of downloading.
 WAGTAILDOCS_INLINE_CONTENT_TYPES = ["application/pdf"]
+
+# Public Next.js frontend base URL. Headless page serve/preview redirect here,
+# and the CMS "Preview" opens <FRONTEND_BASE_URL>/preview?content_type=&token=.
+FRONTEND_BASE_URL = os.environ.get("FRONTEND_BASE_URL", "http://localhost:8000").rstrip("/")
+WAGTAIL_HEADLESS_PREVIEW = {
+    "CLIENT_URLS": {"default": FRONTEND_BASE_URL + "/preview"},
+    "SERVE_BASE_URL": FRONTEND_BASE_URL,
+    "REDIRECT_ON_PREVIEW": True,
+    "ENFORCE_TRAILING_SLASH": False,
+}
 
 # Optional: ORCID public profile ID (e.g. "0000-0001-2345-6789")
 ORCID_ID             = os.environ.get("ORCID_ID", "")

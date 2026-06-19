@@ -80,3 +80,30 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
   );
   return data.items[0] ?? null;
 }
+
+// Detail fields requested per page type when rendering a CMS draft preview.
+const HOME_DETAIL_FIELDS = "intro,sections";
+const PREVIEW_FIELDS: Record<string, string> = {
+  "cms.blogpage": BLOG_DETAIL_FIELDS,
+  "cms.portfolioprojectpage": PROJECT_DETAIL_FIELDS,
+  "cms.homepage": HOME_DETAIL_FIELDS,
+};
+
+/**
+ * Fetch an unsaved DRAFT page for the CMS preview. The backend's
+ * /api/v2/page_preview/ endpoint reconstructs the edited page from a signed
+ * token (see wagtail_headless_preview). Never cached — drafts change per edit.
+ */
+export async function getPreview(
+  contentType: string,
+  token: string,
+): Promise<Record<string, unknown> | null> {
+  const fields = PREVIEW_FIELDS[contentType.toLowerCase()] ?? "";
+  const qs = new URLSearchParams({ content_type: contentType, token });
+  if (fields) qs.set("fields", fields);
+  const res = await fetch(`${INTERNAL_API_URL}/api/v2/page_preview/?${qs}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  return res.json() as Promise<Record<string, unknown>>;
+}
