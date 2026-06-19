@@ -30,7 +30,7 @@ export default function Work({
                 className="mb-4 grid grid-cols-1 items-center gap-6 rounded-2xl border border-border bg-surface p-[22px] shadow-[var(--shadow)] transition hover:-translate-y-[3px] md:grid-cols-[120px_1fr_auto]"
               >
                 <div
-                  className="h-24 rounded-xl bg-cover bg-center"
+                  className="aspect-square w-full max-w-[120px] rounded-xl bg-cover bg-center"
                   style={{
                     backgroundImage: p.cover_thumb
                       ? `url(${mediaUrl(p.cover_thumb.thumb)})`
