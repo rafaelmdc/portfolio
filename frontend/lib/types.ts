@@ -2,7 +2,9 @@ export type ImageRendition = {
   url: string;
   width: number;
   height: number;
-  thumb: string;
+  // Only present on SiteBundle images (hand-built with two renditions); page
+  // API renditions (cover_thumb/hero_thumb/card_thumb) expose `url` only.
+  thumb?: string;
   alt: string;
 };
 
@@ -33,6 +35,16 @@ export type SiteBundle = {
     stat_commits: boolean;
     stat_publications: boolean;
     stat_honors: boolean;
+    stat_building: boolean;
+    stat_projects: boolean;
+    stat_status: boolean;
+    stat_domain: boolean;
+  };
+  about_extra: {
+    building_since: number | null;
+    projects_count: number;
+    current_status: string;
+    primary_domain: string;
   };
   images: {
     about_profile: ImageRendition | null;
@@ -174,6 +186,7 @@ export type BlogListItem = {
   date: string;
   reading_time_minutes: number | null;
   hero_thumb: ImageRendition | null;
+  card_thumb: ImageRendition | null;
   tag_names: string[];
 };
 
@@ -190,6 +203,7 @@ export type ProjectListItem = {
   meta: PageMeta;
   subtitle: string;
   cover_thumb: ImageRendition | null;
+  card_thumb: ImageRendition | null;
   tag_names: string[];
 };
 

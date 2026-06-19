@@ -44,10 +44,10 @@ export function getSiteBundle(): Promise<SiteBundle> {
   return getJSON<SiteBundle>("/api/v2/site/");
 }
 
-const BLOG_FIELDS = "intro,date,hero_thumb,tag_names,reading_time_minutes";
+const BLOG_FIELDS = "intro,date,hero_thumb,card_thumb,tag_names,reading_time_minutes";
 const BLOG_DETAIL_FIELDS =
   "intro,date,featured,hero_image,hero_caption,reading_time_minutes,tag_names,body";
-const PROJECT_FIELDS = "subtitle,cover_thumb,tag_names";
+const PROJECT_FIELDS = "subtitle,cover_thumb,card_thumb,tag_names";
 const PROJECT_DETAIL_FIELDS =
   "subtitle,cover_image,external_url,github_url,tag_names,body";
 

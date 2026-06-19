@@ -475,6 +475,15 @@ class BlogPage(HeadlessMixin, Page):
         help_text="Optional caption under the hero image.",
     )
 
+    card_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Thumbnail shown on the blog index card. Falls back to the hero image.",
+    )
+
     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
 
     body = StreamField(
@@ -509,6 +518,7 @@ class BlogPage(HeadlessMixin, Page):
             [
                 FieldPanel("hero_image"),
                 FieldPanel("hero_caption"),
+                FieldPanel("card_image"),
             ],
             heading="Hero",
         ),
@@ -538,6 +548,7 @@ class BlogPage(HeadlessMixin, Page):
         APIField("hero_caption"),
         APIField("hero_image", serializer=ImageRenditionField("width-1200")),
         APIField("hero_thumb", serializer=ImageRenditionField("fill-600x400", source="hero_image")),
+        APIField("card_thumb", serializer=ImageRenditionField("fill-800x800", source="card_image")),
         APIField("body"),
         APIField("tag_names"),
     ]
@@ -591,6 +602,15 @@ class PortfolioProjectPage(HeadlessMixin, Page):
         related_name="+",
     )
 
+    card_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Square thumbnail shown on the work list. Falls back to the cover image.",
+    )
+
     external_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
 
@@ -612,6 +632,7 @@ class PortfolioProjectPage(HeadlessMixin, Page):
     content_panels = Page.content_panels + [
         FieldPanel("subtitle"),
         FieldPanel("cover_image"),
+        FieldPanel("card_image"),
         MultiFieldPanel(
             [
                 FieldPanel("external_url"),
@@ -633,6 +654,7 @@ class PortfolioProjectPage(HeadlessMixin, Page):
         APIField("github_url"),
         APIField("cover_image", serializer=ImageRenditionField("width-1200")),
         APIField("cover_thumb", serializer=ImageRenditionField("fill-800x600", source="cover_image")),
+        APIField("card_thumb", serializer=ImageRenditionField("fill-800x800", source="card_image")),
         APIField("body"),
         APIField("tag_names"),
     ]

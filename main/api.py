@@ -119,6 +119,13 @@ def _home_sections():
     return home.sections.stream_block.get_api_representation(home.sections, {})
 
 
+def _live_projects_count():
+    """Number of published portfolio projects (for the 'projects shipped' stat)."""
+    from cms.models import PortfolioProjectPage
+
+    return PortfolioProjectPage.objects.live().public().count()
+
+
 class SiteBundleView(APIView):
     def get(self, request):
         sc = SiteContent.objects.first()
@@ -191,7 +198,14 @@ class SiteBundleView(APIView):
                 for k in [
                     "stat_focus", "stat_repos", "stat_stars", "stat_language",
                     "stat_followers", "stat_commits", "stat_publications", "stat_honors",
+                    "stat_building", "stat_projects", "stat_status", "stat_domain",
                 ]
+            },
+            "about_extra": {
+                "building_since": (sc.building_since if sc else None) or None,
+                "projects_count": _live_projects_count(),
+                "current_status": (sc.current_status if sc else "") or "",
+                "primary_domain": (sc.primary_domain if sc else "") or "",
             },
             "cv": {
                 "enabled": bool(sc.cv_enabled) if sc else False,

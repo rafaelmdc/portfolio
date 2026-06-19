@@ -279,6 +279,21 @@ class SiteContent(BaseGenericSetting):
     stat_publications = models.BooleanField(default=True, verbose_name="Show publications")
     stat_honors       = models.BooleanField(default=False, verbose_name="Show honors")
 
+    # Extra at-a-glance rows
+    building_since = models.PositiveSmallIntegerField(
+        null=True, blank=True,
+        help_text="Year you started building/coding. Shown as a 'building since' row.")
+    current_status = models.CharField(
+        max_length=120, blank=True,
+        help_text="Short status line, e.g. 'MSc Bioinformatics @ NOVA'. Shown as 'currently'.")
+    primary_domain = models.CharField(
+        max_length=120, blank=True,
+        help_text="Your main field, e.g. 'genomics · pipelines'. Shown as 'domain'.")
+    stat_building     = models.BooleanField(default=True, verbose_name="Show 'building since'")
+    stat_projects     = models.BooleanField(default=True, verbose_name="Show projects shipped")
+    stat_status       = models.BooleanField(default=True, verbose_name="Show current status")
+    stat_domain       = models.BooleanField(default=False, verbose_name="Show primary domain")
+
     # ---- CV PDF (auto-generated into a Wagtail Document, cached) ----
     CV_REFRESH_CHOICES = [("daily", "Daily"), ("weekly", "Weekly")]
     cv_enabled = models.BooleanField(
@@ -340,6 +355,13 @@ class SiteContent(BaseGenericSetting):
                 FieldPanel("stat_commits"),
                 FieldPanel("stat_publications"),
                 FieldPanel("stat_honors"),
+                FieldPanel("building_since"),
+                FieldPanel("stat_building"),
+                FieldPanel("stat_projects"),
+                FieldPanel("current_status"),
+                FieldPanel("stat_status"),
+                FieldPanel("primary_domain"),
+                FieldPanel("stat_domain"),
             ],
             heading="About — at-a-glance stats",
         ),
