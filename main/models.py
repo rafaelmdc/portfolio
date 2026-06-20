@@ -9,7 +9,13 @@ from .validators import validate_image_file
 from modelcluster.models import ClusterableModel
 from modelcluster.fields import ParentalKey
 from wagtail import blocks
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
+from wagtail.admin.panels import (
+    FieldPanel,
+    MultiFieldPanel,
+    InlinePanel,
+    ObjectList,
+    TabbedInterface,
+)
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import StreamField
 
@@ -344,21 +350,25 @@ class SiteContent(BaseGenericSetting):
         blank=True, use_json_field=True,
         help_text="Tools/gear grouped by category, shown on /uses.")
 
-    panels = [
+    # Grouped into tabs to keep this (large) settings model manageable.
+    identity_panels = [
         MultiFieldPanel(
             [
-                FieldPanel("about_title"),
-                FieldPanel("about_lead"),
-                FieldPanel("about_intro_headline"),
-                FieldPanel("about_intro_body"),
-                FieldPanel("about_quote"),
+                FieldPanel("full_name"),
+                FieldPanel("role_title"),
+                FieldPanel("email"),
+                FieldPanel("linkedin_url"),
+                FieldPanel("github_username"),
             ],
-            heading="About copy",
+            heading="Personal / contact",
         ),
         MultiFieldPanel(
-            [FieldPanel("skills_title"), FieldPanel("skills_lead")],
-            heading="Skills copy",
+            [FieldPanel("about_profile"), FieldPanel("home_profile")],
+            heading="Profile images",
         ),
+    ]
+
+    hero_panels = [
         MultiFieldPanel(
             [
                 FieldPanel("hero_eyebrow"),
@@ -368,6 +378,19 @@ class SiteContent(BaseGenericSetting):
                 FieldPanel("hero_cta_secondary"),
             ],
             heading="Hero copy",
+        ),
+    ]
+
+    about_panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel("about_title"),
+                FieldPanel("about_lead"),
+                FieldPanel("about_intro_headline"),
+                FieldPanel("about_intro_body"),
+                FieldPanel("about_quote"),
+            ],
+            heading="About copy",
         ),
         MultiFieldPanel(
             [
@@ -391,6 +414,13 @@ class SiteContent(BaseGenericSetting):
             heading="About — at-a-glance stats",
         ),
         MultiFieldPanel(
+            [FieldPanel("skills_title"), FieldPanel("skills_lead")],
+            heading="Skills copy",
+        ),
+    ]
+
+    contact_panels = [
+        MultiFieldPanel(
             [
                 FieldPanel("contact_headline"),
                 FieldPanel("contact_note"),
@@ -401,24 +431,16 @@ class SiteContent(BaseGenericSetting):
             ],
             heading="Contact section",
         ),
-        MultiFieldPanel(
-            [FieldPanel("about_profile"), FieldPanel("home_profile")],
-            heading="Profile images",
-        ),
+    ]
+
+    uses_panels = [
         MultiFieldPanel(
             [FieldPanel("uses_intro"), FieldPanel("uses")],
             heading="/uses page",
         ),
-        MultiFieldPanel(
-            [
-                FieldPanel("full_name"),
-                FieldPanel("role_title"),
-                FieldPanel("email"),
-                FieldPanel("linkedin_url"),
-                FieldPanel("github_username"),
-            ],
-            heading="Personal / contact",
-        ),
+    ]
+
+    cv_panels = [
         MultiFieldPanel(
             [
                 FieldPanel("cv_enabled"),
@@ -428,6 +450,17 @@ class SiteContent(BaseGenericSetting):
             heading="CV PDF",
         ),
     ]
+
+    edit_handler = TabbedInterface(
+        [
+            ObjectList(identity_panels, heading="Identity"),
+            ObjectList(hero_panels, heading="Hero"),
+            ObjectList(about_panels, heading="About & Skills"),
+            ObjectList(contact_panels, heading="Contact"),
+            ObjectList(uses_panels, heading="/uses"),
+            ObjectList(cv_panels, heading="CV"),
+        ]
+    )
 
     class Meta:
         verbose_name = "Site content"
